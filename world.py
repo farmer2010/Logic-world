@@ -1,5 +1,6 @@
 import copy
 from image_factory import get_image
+import image_factory
 from block import Block
 import pygame
 pygame.init
@@ -91,6 +92,16 @@ class World:
         for x in range(self.w):
             for y in range(self.h):
                 self.field[x][y].draw(screen, self.pos)
+        mousepos = pygame.mouse.get_pos()
+        mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+        blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+        if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
+            if self.field[blockpos[0]][blockpos[1]].type == "air":
+                select_image = image_factory.get_block_image(self.select_block, [0, 0, 0, 0], {"activated" : 0})
+                select_image.convert_alpha()
+                select_image.set_alpha(90)
+                screen.blit(select_image, (blockpos[0] * 40 + self.pos[0], blockpos[1] * 40 + self.pos[1]))
+
     def change_image(self):
         for x in range(self.w):
             for y in range(self.h):
