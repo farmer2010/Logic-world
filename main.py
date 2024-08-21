@@ -31,4 +31,5 @@ while keep_going:
         screen.fill((255, 255, 255))
     pygame.display.update()
     timer.tick(60)
+    steps += 1
 pygame.quit()
