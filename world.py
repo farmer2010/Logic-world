@@ -24,8 +24,10 @@ class World:
         self.change_image()
         self.select_block = "wire"
         self.mousetag = 0
-        self.inventory = {"wire" : 999, "activator" : 999, "block" : 999}
+        self.inventory = {"wire" : 99999, "activator" : 99999, "block" : 99999, "NOT" : 99999, "wire box" : 99999}
         self.timer = 0
+        self.select_rotate = 0
+        self.r_tag = 0
 
     def update(self):
         keys = pygame.key.get_pressed()#проверка нажатий кнопок
@@ -36,6 +38,17 @@ class World:
             self.select_block = "activator"
         elif keys[pygame.K_3]:
             self.select_block = "block"
+        elif keys[pygame.K_4]:
+            self.select_block = "NOT"
+        #elif keys[pygame.K_5]:
+        #    self.select_block = "wire box"
+        if keys[pygame.K_r]:#поворот блока
+            if self.r_tag == 0:
+                self.select_rotate += 1
+                self.select_rotate %= 4
+                self.r_tag = 1
+        else:
+            self.r_tag = 0
         #установка и ломание
         if pygame.mouse.get_pressed()[0]:#установка
             mousepos = pygame.mouse.get_pos()
@@ -46,6 +59,8 @@ class World:
                     if self.field[blockpos[0]][blockpos[1]].glassed == 0:
                         self.timer = 0
                         self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, self.select_block)
+                        if self.select_block == "NOT":
+                            self.field[blockpos[0]][blockpos[1]].data["rotate"] = self.select_rotate
                         self.change_image()
                         self.mousetag = 1
                 elif self.mousetag == 0:#нажатие на блок
@@ -73,17 +88,30 @@ class World:
                 for y in range(self.h):
                     if self.field[x][y].type == "wire":
                         self.field[x][y].data["activated"] = 0
-                        self.field[x][y].change_image()
             for x in range(self.w):#распространение электричества
                 for y in range(self.h):
-                    if self.field[x][y].type == "activator":
+                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT":
                         if self.field[x][y].data["activated"] == 1:
                             self.field[x][y].update(self.field[x][y].data)
+            for x in range(self.w):#
+                for y in range(self.h):
+                    if self.field[x][y].type == "NOT":
+                        self.field[x][y].update(self.field[x][y].data, enr=0)
+            #gates = 1
+            #while gates > 0:#активация логических вентилей
+            #    gates = 0
+            #    for x in range(self.w):
+            #        for y in range(self.h):
+            #            if self.field[x][y].type == "NOT" and self.field[x][y].active == 0:
+            #                self.field[x][y].active = 1
+            #                gates += 1
+            #                self.field[x][y].update(self.field[x][y].data)
+            self.change_image()
 
-        #self.timer = 0
-        self.timer += 1
-        if self.timer >= 60:
-            self.timer = 0
+        self.timer = 0
+        #self.timer += 1
+        #if self.timer >= 60:
+        #    self.timer = 0
 
     def draw(self, screen):
         font = pygame.font.SysFont(None, 25)
@@ -97,7 +125,7 @@ class World:
         blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
             if self.field[blockpos[0]][blockpos[1]].type == "air":
-                select_image = image_factory.get_block_image(self.select_block, [0, 0, 0, 0], {"activated" : 0})
+                select_image = image_factory.get_block_image(self.select_block, [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
                 select_image.convert_alpha()
                 select_image.set_alpha(90)
                 screen.blit(select_image, (blockpos[0] * 40 + self.pos[0], blockpos[1] * 40 + self.pos[1]))

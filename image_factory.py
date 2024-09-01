@@ -19,8 +19,14 @@ def get_wire_image(neighbours, data):
 def get_activator_image(data):
     return(get_image(data["activated"], 2))
 
+def get_NOT_image(data, neighbours):
+    return(get_image(10 + data["activated"] * 2 + neighbours[0], 4 + data["rotate"]))
+
 def get_glass_image(neighbours):
-    return(get_image(2 + see[0] * 2 + see[3], see[2] * 2 + see[1]), (0, 0))
+    return(get_image(2 + neighbours[0] * 2 + neighbours[3], neighbours[2] * 2 + neighbours[1]), (0, 0))
+
+def get_wire_box_image(data):
+    return(get_image(0 + data["activated1"], 3 + data["activated2"]))
 
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
@@ -29,3 +35,7 @@ def get_block_image(sftype, neighbours, data):
         return(get_activator_image(data))
     elif sftype == "block":
         return(get_image(0, 1))
+    elif sftype == "NOT":
+        return(get_NOT_image(data, neighbours))
+    elif sftype == "wire box":
+        return(get_wire_box_image(data))

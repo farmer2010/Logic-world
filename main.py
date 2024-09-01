@@ -14,7 +14,7 @@ description = "Logic world"
 pygame.display.set_caption(description)
 timer = pygame.time.Clock()
 black = (0, 0, 0)
-game_world = world.World()
+game_world = world.World(int(W / 40), int(H / 40))
 
 while keep_going:
     events = pygame.event.get()
