@@ -22,9 +22,8 @@ class World:
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
         self.change_image()
-        self.select_block = "wire"
+        self.select_block = "air"
         self.mousetag = 0
-        self.inventory = {"wire" : 99999, "activator" : 99999, "block" : 99999, "NOT" : 99999, "wire box" : 99999}
         self.timer = 0
         self.select_rotate = 0
         self.r_tag = 0
@@ -49,6 +48,14 @@ class World:
                 self.r_tag = 1
         else:
             self.r_tag = 0
+        if keys[pygame.K_q]:#пипетка
+            mousepos = pygame.mouse.get_pos()
+            mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
+                self.select_block = self.field[blockpos[0]][blockpos[1]].type
+            else:
+                self.select_block = "air"
         #установка и ломание
         if pygame.mouse.get_pressed()[0]:#установка
             mousepos = pygame.mouse.get_pos()
@@ -128,9 +135,12 @@ class World:
         blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
             if self.field[blockpos[0]][blockpos[1]].type == "air":
-                select_image = image_factory.get_block_image(self.select_block, [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
-                select_image.convert_alpha()
-                select_image.set_alpha(90)
+                if self.select_block != "air":
+                    select_image = image_factory.get_block_image(self.select_block, [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
+                    select_image.convert_alpha()
+                    select_image.set_alpha(90)
+                else:
+                    select_image = image_factory.get_block_image("air", [], {})
                 screen.blit(select_image, (blockpos[0] * 40 + self.pos[0], blockpos[1] * 40 + self.pos[1]))
 
     def change_image(self):

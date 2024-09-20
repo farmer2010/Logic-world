@@ -39,3 +39,7 @@ def get_block_image(sftype, neighbours, data):
         return(get_NOT_image(data, neighbours))
     elif sftype == "wire box":
         return(get_wire_box_image(data))
+    elif sftype == "air":
+        img = pygame.Surface((40, 40))
+        img.set_colorkey((0, 0, 0))
+        return(img)
