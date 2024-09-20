@@ -74,7 +74,7 @@ class Block():
         if self.type == "activator":
             self.data["activated"] = not self.data["activated"]
 
-    def update(self, data, enr=1):#распространение энергии
+    def update(self, data={}, enr=1):#распространение энергии
         if self.type == "NOT":
             front_pos = self.get_rotate_position(self.data["rotate"])
             behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
@@ -90,19 +90,26 @@ class Block():
                 front_block = self.world.field[front_pos[0]][front_pos[1]]
                 if front_block.type == "wire" and front_block.active == 0 and self.data["activated"] and enr:
                     front_block.data["activated"] = self.data["activated"]
-                    front_block.update({"activated" : self.data["activated"], "rotate" : i})
+                    front_block.update({"rotate" : i})
         elif self.type == "wire box":
             if data["rotate"] == 1 or data["rotate"] == 3:#горизонтальный провод
                 self.data["activated1"] = 1
-        else:
+            elif data["rotate"] == 0 or data["rotate"] == 2:#вертикальный провод
+                self.data["activated2"] = 1
+            pos = self.get_rotate_position(data["rotate"])
+            if self.border(pos):
+                b = self.world.field[pos[0]][pos[1]]
+                if (b.type == "wire" or b.type == "wire box") and b.active == 0:
+                    b.update({"rotate" : data["rotate"]})  
+        else:#провод или активатор
             self.active = 1
+            self.data["activated"] = 1
             for i in range(4):
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     b = self.world.field[pos[0]][pos[1]]
-                    if b.type == "wire" or b.type == "wire box" and b.active == 0:
-                        b.data["activated"] = data["activated"]
-                        b.update({"activated" : data["activated"], "rotate" : i})
+                    if (b.type == "wire" or b.type == "wire box") and b.active == 0:
+                        b.update({"rotate" : i})
 
     def get_rotate_position(self, rotate):
         return([self.pos[0] + self.movelist[rotate][0], self.pos[1] + self.movelist[rotate][1]])
