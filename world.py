@@ -41,8 +41,8 @@ class World:
             self.select_block = "NOT"
         elif keys[pygame.K_5]:
             self.select_block = "wire box"
-        #elif keys[pygame.K_6]:
-        #    self.select_block = "AND"
+        elif keys[pygame.K_6]:
+            self.select_block = "AND"
         # поворот блока
         if keys[pygame.K_r]:
             if self.r_tag == 0:
@@ -104,7 +104,7 @@ class World:
                         self.field[x][y].data["activated2"] = 0
             for x in range(self.w):#распространение электричества
                 for y in range(self.h):
-                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT":
+                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT" or self.field[x][y].type == "AND":
                         if self.field[x][y].data["activated"] == 1:
                             self.field[x][y].update()
             for x in range(self.w):#активация логических вентилей
