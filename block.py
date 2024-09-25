@@ -1,5 +1,5 @@
 from random import randint as rand
-from image_factory import get_image
+from image_factory import *
 import pygame
 pygame.init()
 
@@ -12,6 +12,8 @@ def get_data(type_):
         return({"activated" : 0, "rotate" : 0})
     elif type_ == "wire box":
         return({"activated1" : 0, "activated2" : 0})#горизонтальный, вертикальный
+    elif type_ == "AND":
+        return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})#левый относительно выхода, правый относительно выхода
     else:
         return({})
 
@@ -34,19 +36,19 @@ class Block():
         ]
         self.active = 0
 
-    def change_image(self):
-        if self.type == "air":
+    def change_image(self):#сменить картинку
+        if self.type == "air":#воздух
             self.image.fill((0, 0, 0))
             self.image.set_colorkey((0, 0, 0))
-        elif self.type == "wire":
+        elif self.type == "wire":#провод
             see = [0, 0, 0, 0]
             for i in range(4):
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     see[i] = self.is_block_connect_with_wire(i)
-            self.image = get_image(6 + see[2] * 2 + see[3] + 4 * self.data["activated"], see[0] * 2 + see[1])
+            self.image = get_wire_image(self.data, see)
         elif self.type == "activator":
-            self.image = get_image(self.data["activated"], 2)
+            self.image = get_activator_image(self.data)
         elif self.type == "block":
             self.image = get_image(0, 1)
         elif self.type == "NOT":
@@ -54,9 +56,11 @@ class Block():
             front_pos = self.get_rotate_position(self.data["rotate"])
             if self.border(front_pos):
                 i = self.is_block_connect_with_wire(self.data["rotate"])
-            self.image = get_image(10 + self.data["activated"] * 2 + i, 4 + self.data["rotate"])
+            self.image = get_NOT_image(self.data, [i, 0, 0, 0])
         elif self.type == "wire box":
-            self.image = get_image(0 + self.data["activated1"], 3 + self.data["activated2"])
+            self.image = get_wire_box_image(self.data)
+        elif self.type == "AND":
+            self.image = get_AND_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
             for i in range(4):
@@ -75,29 +79,51 @@ class Block():
             self.data["activated"] = not self.data["activated"]
 
     def update(self, data={}, enr=1):#распространение энергии
-        if self.type == "NOT":
+        if self.type == "NOT":#не
             front_pos = self.get_rotate_position(self.data["rotate"])
             behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
             i = 0
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                if behind_block.type == "wire" or behind_block.type == "activator" or behind_block.type == "NOT":
+                if behind_block.type == "wire" or behind_block.type == "activator":
                     i = behind_block.data["activated"]
+                elif behind_block.type == "NOT" and (behind_block.data["rotate"] == self.data["rotate"]):
+                    i = behind_block.data["activated"]
+                elif behind_block.type == "wire box":
+                    if self.data["rotate"] == 0 or self.data["rotate"] == 2:
+                        i = behind_block.data["activated2"]
+                    elif self.data["rotate"] == 3 or self.data["rotate"] == 1:
+                        i = behind_block.data["activated1"]
             self.data["activated"] = not i
             if not i == 1:
                 self.active = 1
-            if self.border(front_pos):
+            if self.border(front_pos):#активация
                 front_block = self.world.field[front_pos[0]][front_pos[1]]
-                if front_block.type == "wire" and front_block.active == 0 and self.data["activated"] and enr:
-                    front_block.data["activated"] = self.data["activated"]
-                    front_block.update({"rotate" : i})
-        elif self.type == "wire box":
+                if enr and front_block.active == 0 and self.data["activated"]:#если можно передать сигнал вперед
+                    if front_block.type == "wire":#если передаем сигнал в провод
+                        front_block.data["activated"] = self.data["activated"]
+                        front_block.update({"rotate" : self.data["rotate"]})
+                    elif front_block.type == "wire box":#если передаем сигнал в распределитель
+                        if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверх - вниз
+                            front_block.data["activated2"] = self.data["activated"]
+                            front_block.update({"rotate" : self.data["rotate"]})
+                        elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
+                            front_block.data["activated1"] = self.data["activated"]
+                            front_block.update({"rotate" : self.data["rotate"]})
+        elif self.type == "AND":#и
+            left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
+            right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
+            in1 = 0
+            in2 = 0
+            if self.border(left_pos):
+                in1 = 0
+        elif self.type == "wire box":#распределительная коробка
             if data["rotate"] == 1 or data["rotate"] == 3:#горизонтальный провод
                 self.data["activated1"] = 1
             elif data["rotate"] == 0 or data["rotate"] == 2:#вертикальный провод
                 self.data["activated2"] = 1
             pos = self.get_rotate_position(data["rotate"])
-            if self.border(pos):
+            if self.border(pos):#распространение сигнала
                 b = self.world.field[pos[0]][pos[1]]
                 if (b.type == "wire" or b.type == "wire box") and b.active == 0:
                     b.update({"rotate" : data["rotate"]})  
@@ -120,4 +146,4 @@ class Block():
     def is_block_connect_with_wire(self, rotate):
         pos = self.get_rotate_position(rotate)
         b = self.world.field[pos[0]][pos[1]]
-        return(b.type == "wire" or b.type == "activator" or (b.type == "NOT" and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box")
+        return(b.type == "wire" or b.type == "activator" or (b.type == "NOT" and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or (b.type == "AND" and b.data["rotate"] != rotate))

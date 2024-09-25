@@ -13,8 +13,8 @@ def get_image(x, y, size=40):
     img = pygame.transform.scale(img, (size, size))
     return(img)
 
-def get_wire_image(neighbours, data):
-    return(get_image(6 + neighbours[0] * 2 + neighbours[3] + 4 * data["activated"], neighbours[2] * 2 + neighbours[1]))
+def get_wire_image(data, neighbours):
+    return(get_image(6 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], neighbours[0] * 2 + neighbours[1]))
 
 def get_activator_image(data):
     return(get_image(data["activated"], 2))
@@ -26,11 +26,14 @@ def get_glass_image(neighbours):
     return(get_image(2 + neighbours[0] * 2 + neighbours[3], neighbours[2] * 2 + neighbours[1]), (0, 0))
 
 def get_wire_box_image(data):
-    return(get_image(0 + data["activated1"], 3 + data["activated2"]))
+    return(get_image(data["activated1"], 3 + data["activated2"]))
+
+def get_AND_image(data):
+    return(get_image(14 + data["activated1"] + data["activated2"] * 2, data["rotate"]))
 
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
-        return(get_wire_image(neighbours, data))
+        return(get_wire_image(data, neighbours))
     elif sftype == "activator":
         return(get_activator_image(data))
     elif sftype == "block":
@@ -39,6 +42,8 @@ def get_block_image(sftype, neighbours, data):
         return(get_NOT_image(data, neighbours))
     elif sftype == "wire box":
         return(get_wire_box_image(data))
+    elif sftype == "AND":
+        return(get_AND_image(data))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))

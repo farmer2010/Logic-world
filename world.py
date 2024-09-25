@@ -26,7 +26,7 @@ class World:
         self.mousetag = 0
         self.timer = 0
         self.select_rotate = 0
-        self.r_tag = 0
+        self.r_tag = 0#нажата ли клафиша r
 
     def update(self):
         keys = pygame.key.get_pressed()#проверка нажатий кнопок
@@ -41,14 +41,18 @@ class World:
             self.select_block = "NOT"
         elif keys[pygame.K_5]:
             self.select_block = "wire box"
-        if keys[pygame.K_r]:#поворот блока
+        #elif keys[pygame.K_6]:
+        #    self.select_block = "AND"
+        # поворот блока
+        if keys[pygame.K_r]:
             if self.r_tag == 0:
                 self.select_rotate += 1
                 self.select_rotate %= 4
                 self.r_tag = 1
         else:
             self.r_tag = 0
-        if keys[pygame.K_q]:#пипетка
+        #пипетка
+        if keys[pygame.K_q]:
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
@@ -66,7 +70,7 @@ class World:
                     if self.field[blockpos[0]][blockpos[1]].glassed == 0:
                         self.timer = 0
                         self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, self.select_block)
-                        if self.select_block == "NOT":
+                        if self.select_block == "NOT" or self.select_block == "AND":
                             self.field[blockpos[0]][blockpos[1]].data["rotate"] = self.select_rotate
                         self.change_image()
                         self.mousetag = 1
@@ -105,7 +109,7 @@ class World:
                             self.field[x][y].update()
             for x in range(self.w):#активация логических вентилей
                 for y in range(self.h):
-                    if self.field[x][y].type == "NOT":
+                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND":
                         self.field[x][y].update(self.field[x][y].data, enr=0)
             #gates = 1
             #while gates > 0:#активация логических вентилей
@@ -126,10 +130,11 @@ class World:
     def draw(self, screen):
         font = pygame.font.SysFont(None, 25)
         screen.fill((90, 90, 90))
-        screen.blit(self.floor_img, [0, 0])
-        for x in range(self.w):
+        screen.blit(self.floor_img, [0, 0])#пол
+        for x in range(self.w):#блоки
             for y in range(self.h):
                 self.field[x][y].draw(screen, self.pos)
+        #"тень" от блока в "руке"
         mousepos = pygame.mouse.get_pos()
         mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
         blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
