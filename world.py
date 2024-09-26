@@ -43,6 +43,8 @@ class World:
             self.select_block = "wire box"
         elif keys[pygame.K_6]:
             self.select_block = "AND"
+        elif keys[pygame.K_7]:
+            self.select_block = "XOR"
         # поворот блока
         if keys[pygame.K_r]:
             if self.r_tag == 0:
@@ -70,7 +72,7 @@ class World:
                     if self.field[blockpos[0]][blockpos[1]].glassed == 0:
                         self.timer = 0
                         self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, self.select_block)
-                        if self.select_block == "NOT" or self.select_block == "AND":
+                        if self.select_block == "NOT" or self.select_block == "AND" or self.select_block == "XOR":
                             self.field[blockpos[0]][blockpos[1]].data["rotate"] = self.select_rotate
                         self.change_image()
                         self.mousetag = 1
@@ -92,11 +94,9 @@ class World:
                     self.change_image()
 
         if self.timer == 0:
-            for x in range(self.w):#стираем active
+            for x in range(self.w):#стираем active и электричество
                 for y in range(self.h):
                     self.field[x][y].active = 0
-            for x in range(self.w):#стираем электричество
-                for y in range(self.h):
                     if self.field[x][y].type == "wire":
                         self.field[x][y].data["activated"] = 0
                     elif self.field[x][y].type == "wire box":
@@ -104,12 +104,12 @@ class World:
                         self.field[x][y].data["activated2"] = 0
             for x in range(self.w):#распространение электричества
                 for y in range(self.h):
-                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT" or self.field[x][y].type == "AND":
+                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR":
                         if self.field[x][y].data["activated"] == 1:
                             self.field[x][y].update()
             for x in range(self.w):#активация логических вентилей
                 for y in range(self.h):
-                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND":
+                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR":
                         self.field[x][y].update(self.field[x][y].data, enr=0)
             #gates = 1
             #while gates > 0:#активация логических вентилей

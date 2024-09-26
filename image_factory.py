@@ -31,6 +31,9 @@ def get_wire_box_image(data):
 def get_AND_image(data):
     return(get_image(14 + data["activated1"] + data["activated2"] * 2, data["rotate"]))
 
+def get_XOR_image(data):
+    return(get_image(14 + data["activated1"] + data["activated2"] * 2, 4 + data["rotate"]))
+
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
         return(get_wire_image(data, neighbours))
@@ -44,6 +47,8 @@ def get_block_image(sftype, neighbours, data):
         return(get_wire_box_image(data))
     elif sftype == "AND":
         return(get_AND_image(data))
+    elif sftype == "XOR":
+        return(get_XOR_image(data))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))

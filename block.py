@@ -4,15 +4,13 @@ import pygame
 pygame.init()
 
 def get_data(type_):
-    if type_ == "wire":
-        return({"activated" : 0})
-    elif type_ == "activator":
+    if type_ == "wire" or type_ == "activator":
         return({"activated" : 0})
     elif type_ == "NOT":
         return({"activated" : 0, "rotate" : 0})
     elif type_ == "wire box":
         return({"activated1" : 0, "activated2" : 0})#горизонтальный, вертикальный
-    elif type_ == "AND":
+    elif type_ == "AND" or type_ == "XOR":
         return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})#левый относительно выхода, правый относительно выхода
     else:
         return({})
@@ -47,20 +45,22 @@ class Block():
                 if self.border(pos):
                     see[i] = self.is_block_connect_with_wire(i)
             self.image = get_wire_image(self.data, see)
-        elif self.type == "activator":
+        elif self.type == "activator":#активатор
             self.image = get_activator_image(self.data)
-        elif self.type == "block":
+        elif self.type == "block":#кирпич
             self.image = get_image(0, 1)
-        elif self.type == "NOT":
+        elif self.type == "NOT":#логический вентиль NOT
             i = 0
             front_pos = self.get_rotate_position(self.data["rotate"])
             if self.border(front_pos):
                 i = self.is_block_connect_with_wire(self.data["rotate"])
             self.image = get_NOT_image(self.data, [i, 0, 0, 0])
-        elif self.type == "wire box":
+        elif self.type == "wire box":#распределительная коробка
             self.image = get_wire_box_image(self.data)
-        elif self.type == "AND":
+        elif self.type == "AND":#логический вентиль AND
             self.image = get_AND_image(self.data)
+        elif self.type == "XOR":#логический вентиль XOR
+            self.image = get_XOR_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
             for i in range(4):
@@ -88,7 +88,7 @@ class Block():
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
                 if behind_block.type == "wire" or behind_block.type == "activator":#считываем сигнал с провода или активатора
                     i = behind_block.data["activated"]
-                elif (behind_block.type == "NOT" or behind_block.type == "AND") and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с логических вентилей
+                elif (behind_block.type == "NOT" or behind_block.type == "AND" or behind_block.type == "XOR") and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с логических вентилей
                     i = behind_block.data["activated"]
                 elif behind_block.type == "wire box":#считываем сигнал с распределительной коробки
                     if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверху - внизу
@@ -97,8 +97,7 @@ class Block():
                         i = behind_block.data["activated1"]
             #активация
             self.data["activated"] = not i
-            if not i == 1:
-                self.active = 1
+            self.active = not i
             #распространение сигнала
             if self.border(front_pos):
                 front_block = self.world.field[front_pos[0]][front_pos[1]]
@@ -113,7 +112,7 @@ class Block():
                         elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
                             front_block.data["activated1"] = self.data["activated"]
                             front_block.update({"rotate" : self.data["rotate"]})
-        elif self.type == "AND":#и
+        elif self.type == "AND" or self.type == "XOR":#и, или
             if not enr:
                 left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
                 right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
@@ -130,7 +129,7 @@ class Block():
                             in1 = left_block.data["activated2"]
                         elif r == 3 or r == 1:#влево - вправо
                             in1 = left_block.data["activated1"]
-                    elif (left_block.type == "NOT" or left_block.type == "AND") and left_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
+                    elif (left_block.type == "NOT" or left_block.type == "AND" or left_block.type == "XOR") and left_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
                         in1 = left_block.data["activated"]
                 #правый вход
                 if self.border(right_pos):
@@ -143,12 +142,15 @@ class Block():
                             in2 = right_block.data["activated2"]
                         elif r == 3 or r == 1:#влево - вправо
                             in2 = right_block.data["activated1"]
-                    elif (right_block.type == "NOT" or right_block.type == "AND") and right_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
+                    elif (right_block.type == "NOT" or right_block.type == "AND" or right_block.type == "XOR") and right_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
                         in2 = right_block.data["activated"]
                 #активация
-                self.data["activated"] = in1 and in2
-                if (in1 and in2) == 1:
-                    self.active = 1
+                if self.type == "AND":
+                    self.data["activated"] = in1 and in2
+                    self.active = in1 and in2
+                elif self.type == "XOR":
+                    self.data["activated"] = in1 ^ in2
+                    self.active = in1 ^ in2
                 self.data["activated1"] = in1
                 self.data["activated2"] = in2
             #распространение сигнала
@@ -195,4 +197,4 @@ class Block():
     def is_block_connect_with_wire(self, rotate):
         pos = self.get_rotate_position(rotate)
         b = self.world.field[pos[0]][pos[1]]
-        return(b.type == "wire" or b.type == "activator" or (b.type == "NOT" and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or (b.type == "AND" and b.data["rotate"] != rotate))
+        return(b.type == "wire" or b.type == "activator" or (b.type == "NOT" and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate))
