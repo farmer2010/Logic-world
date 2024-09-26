@@ -86,17 +86,15 @@ class Block():
             #вход
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                if behind_block.type == "wire" or behind_block.type == "activator":
+                if behind_block.type == "wire" or behind_block.type == "activator":#считываем сигнал с провода или активатора
                     i = behind_block.data["activated"]
-                elif behind_block.type == "NOT" and behind_block.data["rotate"] == self.data["rotate"]:
+                elif (behind_block.type == "NOT" or behind_block.type == "AND") and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с логических вентилей
                     i = behind_block.data["activated"]
-                elif behind_block.type == "wire box":
-                    if self.data["rotate"] == 0 or self.data["rotate"] == 2:
+                elif behind_block.type == "wire box":#считываем сигнал с распределительной коробки
+                    if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверху - внизу
                         i = behind_block.data["activated2"]
-                    elif self.data["rotate"] == 3 or self.data["rotate"] == 1:
+                    elif self.data["rotate"] == 3 or self.data["rotate"] == 1:#влево - вправо
                         i = behind_block.data["activated1"]
-                elif behind_block.type == "AND" and behind_block.data["rotate"] == self.data["rotate"]:
-                    i = behind_block.data["activated"]
             #активация
             self.data["activated"] = not i
             if not i == 1:
@@ -123,13 +121,29 @@ class Block():
                 in2 = 0
                 #левый вход
                 if self.border(left_pos):
+                    r = (self.data["rotate"] - 1) % 4
                     left_block = self.world.field[left_pos[0]][left_pos[1]]
-                    if left_block.type == "wire" or left_block.type == "activator":
+                    if left_block.type == "wire" or left_block.type == "activator":#считываем сигнал с провода или активатора
+                        in1 = left_block.data["activated"]
+                    elif left_block.type == "wire box":#считываем сигнал с распределительной коробки
+                        if r == 0 or r == 2:#вверху - внизу
+                            in1 = left_block.data["activated2"]
+                        elif r == 3 or r == 1:#влево - вправо
+                            in1 = left_block.data["activated1"]
+                    elif (left_block.type == "NOT" or left_block.type == "AND") and left_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
                         in1 = left_block.data["activated"]
                 #правый вход
                 if self.border(right_pos):
+                    r = (self.data["rotate"] + 1) % 4
                     right_block = self.world.field[right_pos[0]][right_pos[1]]
-                    if right_block.type == "wire" or right_block.type == "activator":
+                    if right_block.type == "wire" or right_block.type == "activator":#считываем сигнал с провода или активатора
+                        in2 = right_block.data["activated"]
+                    elif right_block.type == "wire box":#считываем сигнал с распределительной коробки
+                        if r == 0 or r == 2:#вверху - внизу
+                            in2 = right_block.data["activated2"]
+                        elif r == 3 or r == 1:#влево - вправо
+                            in2 = right_block.data["activated1"]
+                    elif (right_block.type == "NOT" or right_block.type == "AND") and right_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
                         in2 = right_block.data["activated"]
                 #активация
                 self.data["activated"] = in1 and in2
