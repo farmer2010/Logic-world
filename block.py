@@ -6,12 +6,14 @@ pygame.init()
 def get_data(type_):
     if type_ == "wire" or type_ == "activator":
         return({"activated" : 0})
-    elif type_ == "NOT":
+    elif type_ == "NOT" or type_ == "output":
         return({"activated" : 0, "rotate" : 0})
     elif type_ == "wire box":
         return({"activated1" : 0, "activated2" : 0})#горизонтальный, вертикальный
-    elif type_ == "AND" or type_ == "XOR":
+    elif type_ == "AND" or type_ == "XOR" or type_ == "memory":
         return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})#левый относительно выхода, правый относительно выхода
+    elif type_ == "diode":
+        return ({"activated1": 0, "activated2": 0, "rotate" : 0})#задний, передний
     else:
         return({})
 
@@ -61,6 +63,10 @@ class Block():
             self.image = get_AND_image(self.data)
         elif self.type == "XOR":#логический вентиль XOR
             self.image = get_XOR_image(self.data)
+        elif self.type == "diode":
+            self.image = get_diode_image(self.data)
+        elif self.type == "output":
+            self.image = get_output_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
             for i in range(4):
@@ -95,6 +101,8 @@ class Block():
                         i = behind_block.data["activated2"]
                     elif self.data["rotate"] == 3 or self.data["rotate"] == 1:#влево - вправо
                         i = behind_block.data["activated1"]
+                elif behind_block.type == "diode" and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с диода
+                        i = behind_block.data["activated2"]
             #активация
             self.data["activated"] = not i
             self.active = not i
@@ -112,6 +120,8 @@ class Block():
                         elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
                             front_block.data["activated1"] = self.data["activated"]
                             front_block.update({"rotate" : self.data["rotate"]})
+                    elif front_block.type == "output":#если передаем сигнал в лампу выхода
+                        front_block.update({"rotate": self.data["rotate"]})
         elif self.type == "AND" or self.type == "XOR":#и, или
             if not enr:
                 left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
@@ -131,6 +141,8 @@ class Block():
                             in1 = left_block.data["activated1"]
                     elif (left_block.type == "NOT" or left_block.type == "AND" or left_block.type == "XOR") and left_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
                         in1 = left_block.data["activated"]
+                    elif left_block.type == "diode" and left_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с диода
+                        in1 = left_block.data["activated2"]
                 #правый вход
                 if self.border(right_pos):
                     r = (self.data["rotate"] + 1) % 4
@@ -144,6 +156,8 @@ class Block():
                             in2 = right_block.data["activated1"]
                     elif (right_block.type == "NOT" or right_block.type == "AND" or right_block.type == "XOR") and right_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с логических вентилей
                         in2 = right_block.data["activated"]
+                    elif right_block.type == "diode" and right_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с диода
+                        in2 = right_block.data["activated2"]
                 #активация
                 if self.type == "AND":
                     self.data["activated"] = in1 and in2
@@ -168,6 +182,8 @@ class Block():
                         elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
                             front_block.data["activated1"] = 1
                             front_block.update({"rotate" : self.data["rotate"]})
+                    elif front_block.type == "output":#если передаем сигнал в лампу выхода
+                        front_block.update({"rotate": self.data["rotate"]})
         elif self.type == "wire box":#распределительная коробка
             if data["rotate"] == 1 or data["rotate"] == 3:#горизонтальный провод
                 self.data["activated1"] = 1
@@ -176,8 +192,24 @@ class Block():
             pos = self.get_rotate_position(data["rotate"])
             if self.border(pos):#распространение сигнала
                 b = self.world.field[pos[0]][pos[1]]
-                if (b.type == "wire" or b.type == "wire box") and b.active == 0:
-                    b.update({"rotate" : data["rotate"]})  
+                if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output") and b.active == 0:
+                    b.update({"rotate" : data["rotate"]})
+        elif self.type == "diode":#диод
+            if data["rotate"] == self.data["rotate"]:
+                self.active = 1
+                self.data["activated1"] = 1
+                self.data["activated2"] = 1
+                pos = self.get_rotate_position(self.data["rotate"])
+                if self.border(pos):
+                    b = self.world.field[pos[0]][pos[1]]
+                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output") and b.active == 0:
+                        b.update({"rotate": self.data["rotate"]})
+            elif self.data["rotate"] == (data["rotate"] + 2) % 4:
+                self.data["activated2"] = 1
+        elif self.type == "output":
+            if data["rotate"] == self.data["rotate"]:
+                self.active = 1
+                self.data["activated"] = 1
         else:#провод или активатор
             self.active = 1
             self.data["activated"] = 1
@@ -185,7 +217,7 @@ class Block():
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     b = self.world.field[pos[0]][pos[1]]
-                    if (b.type == "wire" or b.type == "wire box") and b.active == 0:
+                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output") and b.active == 0:
                         b.update({"rotate" : i})
 
     def get_rotate_position(self, rotate):
@@ -197,4 +229,4 @@ class Block():
     def is_block_connect_with_wire(self, rotate):
         pos = self.get_rotate_position(rotate)
         b = self.world.field[pos[0]][pos[1]]
-        return(b.type == "wire" or b.type == "activator" or (b.type == "NOT" and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate))
+        return(b.type == "wire" or b.type == "activator" or ((b.type == "NOT" or b.type == "diode") and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate) or (b.type == "output" and b.data["rotate"] == rotate))
