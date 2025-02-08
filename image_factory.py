@@ -40,6 +40,9 @@ def get_diode_image(data):
 def get_output_image(data):
     return(get_image(3 + data["activated"], 8 + data["rotate"]))
 
+def get_armored_wire_image(data, neighbours):
+    return(get_image(2 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], 4 + neighbours[0] * 2 + neighbours[1]))
+
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
         return(get_wire_image(data, neighbours))
@@ -61,6 +64,8 @@ def get_block_image(sftype, neighbours, data):
         return(get_diode_image(data))
     elif sftype == "output":
         return(get_output_image(data))
+    elif sftype == "armored wire":
+        return(get_armored_wire_image(data, neighbours))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))

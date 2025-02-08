@@ -14,6 +14,8 @@ def get_data(type_):
         return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})#левый относительно выхода, правый относительно выхода
     elif type_ == "diode":
         return ({"activated1": 0, "activated2": 0, "rotate" : 0})#задний, передний
+    elif type_ == "armored wire":
+        return ({"activated": 0, "connections" : [0, 0, 0, 0]})
     else:
         return({})
 
@@ -35,6 +37,22 @@ class Block():
             [-1, 0]
         ]
         self.active = 0
+        #---------------------------------------------------------------------------------------------------------------
+        if self.type == "armored wire":
+            see = [0, 0, 0, 0]
+            for i in range(4):
+                pos = self.get_rotate_position(i)
+                if self.border(pos):
+                    see[i] = self.is_block_connect_with_wire(i)
+        if self.type == "wire" or self.type == "armored wire" or self.type == "activator" or self.type == "NOT" or self.type == "AND" or self.type == "XOR" or self.type == "wire box" or self.type == "diode":
+            for i in range(4):
+                pos = self.get_rotate_position(i)
+                if self.border(pos):
+                    if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.is_block_connect_with_wire(i):
+                        self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+        if self.type == "armored wire":
+            if sum(see) <= 2:
+                self.data["connections"] = see
 
     def change_image(self):#сменить картинку
         if self.type == "air":#воздух
@@ -63,10 +81,12 @@ class Block():
             self.image = get_AND_image(self.data)
         elif self.type == "XOR":#логический вентиль XOR
             self.image = get_XOR_image(self.data)
-        elif self.type == "diode":
+        elif self.type == "diode":#диод
             self.image = get_diode_image(self.data)
-        elif self.type == "output":
+        elif self.type == "output":#лампа выхода
             self.image = get_output_image(self.data)
+        elif self.type == "armored wire":#защищенный провод
+            self.image = get_armored_wire_image(self.data, self.data["connections"])
         if self.glassed:
             see = [0, 0, 0, 0]
             for i in range(4):
@@ -210,6 +230,15 @@ class Block():
             if data["rotate"] == self.data["rotate"]:
                 self.active = 1
                 self.data["activated"] = 1
+        elif self.type == "armored wire":#защищенный провод
+            self.active = 1
+            self.data["activated"] = 1
+            for i in range(4):
+                pos = self.get_rotate_position(i)
+                if self.border(pos) and self.data["connections"][i]:
+                    b = self.world.field[pos[0]][pos[1]]
+                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or (b.type == "armored wire" and b.data["connections"][(i + 2) % 4])) and b.active == 0:
+                        b.update({"rotate" : i})
         else:#провод или активатор
             self.active = 1
             self.data["activated"] = 1
@@ -217,7 +246,7 @@ class Block():
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     b = self.world.field[pos[0]][pos[1]]
-                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output") and b.active == 0:
+                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or (b.type == "armored wire" and b.data["connections"][(i + 2) % 4])) and b.active == 0:
                         b.update({"rotate" : i})
 
     def get_rotate_position(self, rotate):
@@ -229,4 +258,4 @@ class Block():
     def is_block_connect_with_wire(self, rotate):
         pos = self.get_rotate_position(rotate)
         b = self.world.field[pos[0]][pos[1]]
-        return(b.type == "wire" or b.type == "activator" or ((b.type == "NOT" or b.type == "diode") and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate) or (b.type == "output" and b.data["rotate"] == rotate))
+        return(b.type == "wire" or b.type == "activator" or (b.type == "armored wire" and sum(b.data["connections"]) < 2) or ((b.type == "NOT" or b.type == "diode") and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate) or (b.type == "output" and b.data["rotate"] == rotate))

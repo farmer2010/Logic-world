@@ -19,17 +19,21 @@ def dec_to_bin(dec):
         dec //= 2
     return(b)
 
-def render_text(text, pos, screen, color=(0, 0, 0), centerx=False, centery=False, font=pygame.font.SysFont(None, 40)):#отрисовка текста на экране
+def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up", font=pygame.font.SysFont(None, 40)):#отрисовка текста на экране
     text_img = font.render(text, True, color)
     text_rect = text_img.get_rect()
-    if centerx:
-        text_rect.centerx = pos[0]
-    else:
+    if centerx == "left":
         text_rect.x = pos[0]
-    if centery:
-        text_rect.centery = pos[1]
-    else:
+    elif centerx == "center":
+        text_rect.centerx = pos[0]
+    elif centerx == "right":
+        text_rect.x = pos[0] - text_img.get_width()
+    if centery == "up":
         text_rect.y = pos[1]
+    elif centery == "center":
+        text_rect.centery = pos[1]
+    elif centery == "down":
+        text_rect.y = pos[1] - text_img.get_height()
     screen.blit(text_img, text_rect)
 
 class World:
@@ -58,11 +62,11 @@ class World:
         self.buttons = pygame.sprite.Group()
         self.is_creative = 0
         self.can_break = 1
-        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9}
-        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass"]
+        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10}
+        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored_wire"]
         self.inventory_index = 0
-        self.inventory = {"wire" : 100, "activator" : 100, "block" : 100, "NOT" : 100, "wire box" : 100, "AND" : 100, "XOR" : 100, "diode" : 100, "output" : 100, "glass" : 100, "air" : 0}
-        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "air"]
+        self.inventory = {"wire" : 1000, "activator" : 1000, "block" : 1000, "NOT" : 1000, "wire box" : 1000, "AND" : 1000, "XOR" : 1000, "diode" : 1000, "armored wire" : 1000, "output" : 1000, "glass" : 1000, "air" : 0}
+        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "output", "glass", "air"]
         #self.load_level("level")
 
     def update(self, events):
@@ -137,6 +141,7 @@ class World:
                             self.mousetag = 1
                             if self.is_creative == 0:
                                 self.inventory[self.inventory_names[self.inventory_index]] -= 1
+                            #------------------------------------
                     elif self.mousetag == 0:#нажатие на блок
                         self.timer = 0
                         self.mousetag = 1
@@ -144,6 +149,7 @@ class World:
                         self.change_image()
         else:
            self.mousetag = 0
+        #---------------------------------------------------------------------------------------------------------------
         if pygame.mouse.get_pressed()[2]:#ломание
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
@@ -159,12 +165,19 @@ class World:
                             self.inventory[self.field[blockpos[0]][blockpos[1]].type] += 1
                         self.timer = 0
                         self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, "air")
+                        #------------------------------------------------
+                        for i in range(4):
+                            pos = self.field[blockpos[0]][blockpos[1]].get_rotate_position(i)
+                            if self.field[blockpos[0]][blockpos[1]].border(pos):
+                                if self.field[pos[0]][pos[1]].type == "armored wire":
+                                    self.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 0
                         self.change_image()
-        if self.timer == 0:
+        #---------------------------------------------------------------------------------------------------------------
+        if self.timer == 0:#обновление карты
             for x in range(self.w):#стираем active и электричество
                 for y in range(self.h):
                     self.field[x][y].active = 0
-                    if self.field[x][y].type == "wire" or self.field[x][y].type == "output":
+                    if self.field[x][y].type == "wire" or self.field[x][y].type == "output" or self.field[x][y].type == "armored wire":
                         self.field[x][y].data["activated"] = 0
                     elif self.field[x][y].type == "wire box" or self.field[x][y].type == "diode":
                         self.field[x][y].data["activated1"] = 0
@@ -215,7 +228,7 @@ class World:
             pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
             img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
             screen.blit(img, (self.display_w - 60, i * 80 + 20))
-            render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 40, i * 80 + 45), screen, font=pygame.font.Font("files/font.ttf", 16))
+            render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
 
     def change_image(self):
         for x in range(self.w):
