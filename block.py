@@ -44,7 +44,7 @@ class Block():
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     see[i] = self.is_block_connect_with_wire(i)
-        if self.type == "wire" or self.type == "armored wire" or self.type == "activator" or self.type == "NOT" or self.type == "AND" or self.type == "XOR" or self.type == "wire box" or self.type == "diode":
+        if self.type == "wire" or self.type == "armored wire" or self.type == "activator" or self.type == "NOT" or self.type == "AND" or self.type == "XOR" or self.type == "wire box" or self.type == "diode" or self.type == "output":
             for i in range(4):
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
@@ -123,6 +123,8 @@ class Block():
                         i = behind_block.data["activated1"]
                 elif behind_block.type == "diode" and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с диода
                         i = behind_block.data["activated2"]
+                elif behind_block.type == "armored wire" and behind_block.data["connections"][self.data["rotate"]]:#считываем сигнал с защищенного провода
+                    i = behind_block.data["activated"]
             #активация
             self.data["activated"] = not i
             self.active = not i
@@ -130,8 +132,7 @@ class Block():
             if self.border(front_pos):
                 front_block = self.world.field[front_pos[0]][front_pos[1]]
                 if enr and front_block.active == 0 and self.data["activated"]:#если можно передать сигнал вперед
-                    if front_block.type == "wire":#если передаем сигнал в провод
-                        front_block.data["activated"] = self.data["activated"]
+                    if front_block.type == "wire" or front_block.type == "armored wire" or front_block.type == "output":#если передаем сигнал в провод
                         front_block.update({"rotate" : self.data["rotate"]})
                     elif front_block.type == "wire box":#если передаем сигнал в распределитель
                         if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверх - вниз
@@ -140,8 +141,6 @@ class Block():
                         elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
                             front_block.data["activated1"] = self.data["activated"]
                             front_block.update({"rotate" : self.data["rotate"]})
-                    elif front_block.type == "output":#если передаем сигнал в лампу выхода
-                        front_block.update({"rotate": self.data["rotate"]})
         elif self.type == "AND" or self.type == "XOR":#и, или
             if not enr:
                 left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
@@ -163,6 +162,8 @@ class Block():
                         in1 = left_block.data["activated"]
                     elif left_block.type == "diode" and left_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с диода
                         in1 = left_block.data["activated2"]
+                    elif left_block.type == "armored wire" and left_block.data["connections"][(r + 2) % 4]:#считываем сигнал с защищенного провода
+                        in1 = left_block.data["activated"]
                 #правый вход
                 if self.border(right_pos):
                     r = (self.data["rotate"] + 1) % 4
@@ -178,6 +179,8 @@ class Block():
                         in2 = right_block.data["activated"]
                     elif right_block.type == "diode" and right_block.data["rotate"] == (r + 2) % 4:#считываем сигнал с диода
                         in2 = right_block.data["activated2"]
+                    elif right_block.type == "armored wire" and right_block.data["connections"][(r + 2) % 4]:#считываем сигнал с защищенного провода
+                        in2 = right_block.data["activated"]
                 #активация
                 if self.type == "AND":
                     self.data["activated"] = in1 and in2
@@ -192,8 +195,7 @@ class Block():
             if self.border(front_pos):
                 front_block = self.world.field[front_pos[0]][front_pos[1]]
                 if enr and front_block.active == 0 and self.data["activated"]:#если можно передать сигнал вперед
-                    if front_block.type == "wire":#если передаем сигнал в провод
-                        front_block.data["activated"] = 1
+                    if front_block.type == "wire" or  front_block.type == "armored wire" or  front_block.type == "output":#если передаем сигнал в провод
                         front_block.update({"rotate" : self.data["rotate"]})
                     elif front_block.type == "wire box":#если передаем сигнал в распределитель
                         if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверх - вниз
@@ -202,8 +204,6 @@ class Block():
                         elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
                             front_block.data["activated1"] = 1
                             front_block.update({"rotate" : self.data["rotate"]})
-                    elif front_block.type == "output":#если передаем сигнал в лампу выхода
-                        front_block.update({"rotate": self.data["rotate"]})
         elif self.type == "wire box":#распределительная коробка
             if data["rotate"] == 1 or data["rotate"] == 3:#горизонтальный провод
                 self.data["activated1"] = 1
@@ -212,7 +212,7 @@ class Block():
             pos = self.get_rotate_position(data["rotate"])
             if self.border(pos):#распространение сигнала
                 b = self.world.field[pos[0]][pos[1]]
-                if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output") and b.active == 0:
+                if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or b.type == "armored wire") and b.active == 0:
                     b.update({"rotate" : data["rotate"]})
         elif self.type == "diode":#диод
             if data["rotate"] == self.data["rotate"]:
@@ -222,7 +222,7 @@ class Block():
                 pos = self.get_rotate_position(self.data["rotate"])
                 if self.border(pos):
                     b = self.world.field[pos[0]][pos[1]]
-                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output") and b.active == 0:
+                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or b.type == "armored wire") and b.active == 0:
                         b.update({"rotate": self.data["rotate"]})
             elif self.data["rotate"] == (data["rotate"] + 2) % 4:
                 self.data["activated2"] = 1
@@ -231,14 +231,15 @@ class Block():
                 self.active = 1
                 self.data["activated"] = 1
         elif self.type == "armored wire":#защищенный провод
-            self.active = 1
-            self.data["activated"] = 1
-            for i in range(4):
-                pos = self.get_rotate_position(i)
-                if self.border(pos) and self.data["connections"][i]:
-                    b = self.world.field[pos[0]][pos[1]]
-                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or (b.type == "armored wire" and b.data["connections"][(i + 2) % 4])) and b.active == 0:
-                        b.update({"rotate" : i})
+            if self.data["connections"][(data["rotate"] + 2) % 4]:
+                self.active = 1
+                self.data["activated"] = 1
+                for i in range(4):
+                    pos = self.get_rotate_position(i)
+                    if self.border(pos) and self.data["connections"][i]:
+                        b = self.world.field[pos[0]][pos[1]]
+                        if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or (b.type == "armored wire" and b.data["connections"][(i + 2) % 4])) and b.active == 0:
+                            b.update({"rotate" : i})
         else:#провод или активатор
             self.active = 1
             self.data["activated"] = 1
