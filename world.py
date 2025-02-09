@@ -63,7 +63,7 @@ class World:
         self.is_creative = 0
         self.can_break = 1
         self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10}
-        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored_wire"]
+        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire"]
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "output", "glass", "air"]
@@ -264,6 +264,10 @@ class World:
                     if self.field[x][y].type == "wire box" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "diode":
                         txt += str(int(self.field[x][y].data["activated1"])) + ","
                         txt += str(int(self.field[x][y].data["activated2"])) + ","
+                    if self.field[x][y].type == "armored wire":
+                        for i in range(4):
+                            txt += str(int(self.field[x][y].data["connections"][i]))
+                        txt += ","
                     txt += ":"
         txt += ";"
         file.write(txt)
@@ -312,6 +316,8 @@ class World:
                 if int(bl[0]) == 4:
                     new_block.data["activated1"] = int(bl[3])
                     new_block.data["activated2"] = int(bl[4])
+                if int(bl[0]) == 10:
+                    new_block.data["connections"] = [bl[4][i] == "1" for i in range(4)]
                 self.field[int(bl[1])][int(bl[2])] = new_block
         #
         glass = dec_to_bin(int(txt.split(";")[4]))

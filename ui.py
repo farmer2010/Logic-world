@@ -29,8 +29,7 @@ class UI:
         #    for y in range(int(H / 40)):
         #            self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.index = 0
-        #self.data = [str(int(W / 40)), str(int(H / 40)), "0", "0", "1"]
-        self.data = ["11", "11", "18", "8", "1"]
+        self.data = data
         self.ret_data = data
 
     def update(self, events):

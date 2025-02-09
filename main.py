@@ -20,7 +20,8 @@ menu = ["ui"]
 last_menu = "ui"
 #game_world = World(int(W / 40), int(H / 40))
 #
-data = [11, 11, 18, 8, "1"]
+#data = [11, 11, 18, 8, "1"]
+data = [str(int(W / 40)), str(int(H / 40)), "0", "0", "1"]
 game_world = UI(menu, data)
 #
 #data = ["1"]

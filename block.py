@@ -259,4 +259,4 @@ class Block():
     def is_block_connect_with_wire(self, rotate):
         pos = self.get_rotate_position(rotate)
         b = self.world.field[pos[0]][pos[1]]
-        return(b.type == "wire" or b.type == "activator" or (b.type == "armored wire" and sum(b.data["connections"]) < 2) or ((b.type == "NOT" or b.type == "diode") and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate) or (b.type == "output" and b.data["rotate"] == rotate))
+        return(b.type == "wire" or b.type == "activator" or (b.type == "armored wire" and sum(b.data["connections"]) - b.data["connections"][(rotate + 2) % 4] < 2) or ((b.type == "NOT" or b.type == "diode") and (b.data["rotate"] == rotate or (b.data["rotate"] + 2) % 4 == rotate)) or b.type == "wire box" or ((b.type == "AND" or b.type == "XOR") and b.data["rotate"] != rotate) or (b.type == "output" and b.data["rotate"] == rotate))

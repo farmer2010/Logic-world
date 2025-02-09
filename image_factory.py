@@ -70,3 +70,5 @@ def get_block_image(sftype, neighbours, data):
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))
         return(img)
+    else:
+        print(sftype)
