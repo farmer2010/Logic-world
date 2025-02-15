@@ -84,11 +84,12 @@ class World:
                         self.inventory_index = len(self.inventory_names) - 2
         #смена активного блока посредством курсора
         mousepos = pygame.mouse.get_pos()
+        block_index = mousepos[1] // 80
         xborder = mousepos[0] >= self.display_w - 70
-        yborder = mousepos[1] < 80 * len(self.inventory_names) - 1
+        yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
         if xborder and yborder:
             if pygame.mouse.get_pressed()[0]:
-                self.inventory_index = mousepos[1] // 80
+                self.inventory_index = block_index
         #поворот блока
         if keys[pygame.K_r]:
             if self.r_tag == 0:
@@ -121,7 +122,7 @@ class World:
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break:
+            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
                 if self.inventory_names[self.inventory_index] == "glass":
                     if self.is_creative:
                         self.field[blockpos[0]][blockpos[1]].glassed = 1
@@ -154,7 +155,7 @@ class World:
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break:
+            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
                 if self.inventory_names[self.inventory_index] == "glass":
                     if self.is_creative:
                         self.field[blockpos[0]][blockpos[1]].glassed = 0
