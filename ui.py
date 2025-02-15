@@ -41,36 +41,36 @@ class UI:
                 if event.key == pygame.K_DOWN:
                     if self.index < 4:
                         self.index += 1
-                if event.key == pygame.K_BACKSPACE:
-                    self.data[self.index] = self.data[self.index][:len(self.data[self.index]) - 1]
                 if event.key == pygame.K_RETURN:
                     for i in range(4):
                         self.ret_data[i] = int(self.data[i])
                     self.ret_data[4] = "level" + self.data[4]
                     self.menu[0] = "game"
-                if event.key == pygame.K_0:
-                    self.data[self.index] = self.data[self.index] + "0"
-                if event.key == pygame.K_1:
-                    self.data[self.index] = self.data[self.index] + "1"
-                if event.key == pygame.K_2:
-                    self.data[self.index] = self.data[self.index] + "2"
-                if event.key == pygame.K_3:
-                    self.data[self.index] = self.data[self.index] + "3"
-                if event.key == pygame.K_4:
-                    self.data[self.index] = self.data[self.index] + "4"
-                if event.key == pygame.K_5:
-                    self.data[self.index] = self.data[self.index] + "5"
-                if event.key == pygame.K_6:
-                    self.data[self.index] = self.data[self.index] + "6"
-                if event.key == pygame.K_7:
-                    self.data[self.index] = self.data[self.index] + "7"
-                if event.key == pygame.K_8:
-                    self.data[self.index] = self.data[self.index] + "8"
-                if event.key == pygame.K_9:
-                    self.data[self.index] = self.data[self.index] + "9"
-                if event.key == pygame.K_PERIOD:
-                    if self.index == 4:
-                        self.data[self.index] = self.data[self.index] + "."
+                elif event.key == pygame.K_BACKSPACE:
+                    self.data[self.index] = self.data[self.index][:len(self.data[self.index]) - 1]
+                elif self.index == 4:
+                    self.data[self.index] = self.data[self.index] + event.unicode
+                else:
+                    if event.key == pygame.K_0:
+                        self.data[self.index] = self.data[self.index] + "0"
+                    if event.key == pygame.K_1:
+                        self.data[self.index] = self.data[self.index] + "1"
+                    if event.key == pygame.K_2:
+                        self.data[self.index] = self.data[self.index] + "2"
+                    if event.key == pygame.K_3:
+                        self.data[self.index] = self.data[self.index] + "3"
+                    if event.key == pygame.K_4:
+                        self.data[self.index] = self.data[self.index] + "4"
+                    if event.key == pygame.K_5:
+                        self.data[self.index] = self.data[self.index] + "5"
+                    if event.key == pygame.K_6:
+                        self.data[self.index] = self.data[self.index] + "6"
+                    if event.key == pygame.K_7:
+                        self.data[self.index] = self.data[self.index] + "7"
+                    if event.key == pygame.K_8:
+                        self.data[self.index] = self.data[self.index] + "8"
+                    if event.key == pygame.K_9:
+                        self.data[self.index] = self.data[self.index] + "9"
 
     def draw(self, screen):
         screen.blit(self.floor_img, (0, 0))

@@ -211,7 +211,7 @@ class World:
         mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
         blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
-            if self.field[blockpos[0]][blockpos[1]].type == "air":
+            if self.field[blockpos[0]][blockpos[1]].type == "air" or self.inventory_names[self.inventory_index] == "glass":
                 if self.inventory_names[self.inventory_index] != "air":
                     select_image = image_factory.get_block_image(self.inventory_names[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
                     select_image.convert_alpha()
@@ -291,6 +291,7 @@ class World:
                     self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
+        self.field = [[Block(self, (x, y), "air") for y in range(self.h)] for x in range(self.w)]
         #
         inv = txt.split(";")[5].split(":")
         self.inventory = {"air" : 0}
