@@ -1,6 +1,5 @@
 #настройка
 import pygame
-from random import randint as rand
 from world import World
 from ui import UI
 from select_level import SelectLevel as SL
@@ -41,7 +40,7 @@ while keep_going:
         if menu[0] == "game":
             if last_menu == "ui":
                 game_world = World(data[0], data[1], pos=[data[2], data[3]], level_name=data[4])
-            elif lest_menu == "select_level":
+            elif last_menu == "select_level":
                 game_world = World(10, 10, pos=[0, 0], level_name=data[0])
                 game_world.load_level("level" + data[0])
                 game_world.is_creative = 0

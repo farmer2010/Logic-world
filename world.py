@@ -1,7 +1,7 @@
-import copy
 from image_factory import get_image
 import image_factory
 from block import Block
+import block
 import pygame
 pygame.init()
 
@@ -41,6 +41,7 @@ class World:
         self.level_name = level_name
         self.w = w
         self.h = h
+        self.field = [[None for y in range(h)] for x in range(w)]
         self.field = [[Block(self, (x, y), "air") for y in range(h)] for x in range(w)]
         self.pos = [pos[0] * 40, pos[1] * 40]
         W = pygame.display.Info().current_w
@@ -60,7 +61,7 @@ class World:
         self.select_rotate = 0
         self.r_tag = 0#нажата ли клафиша r
         self.buttons = pygame.sprite.Group()
-        self.is_creative = 0
+        self.is_creative = 1
         self.can_break = 1
         self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10}
         self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire"]
@@ -134,7 +135,7 @@ class World:
                             do_set = 0
                         if self.field[blockpos[0]][blockpos[1]].glassed == 0 and do_set:
                             self.timer = 0
-                            self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, self.inventory_names[self.inventory_index])
+                            block.get_block(self, blockpos, self.inventory_names[self.inventory_index])
                             sl = self.inventory_names[self.inventory_index]
                             if sl == "NOT" or sl == "AND" or sl == "XOR" or sl == "diode" or sl == "output":
                                 self.field[blockpos[0]][blockpos[1]].data["rotate"] = self.select_rotate
@@ -307,7 +308,7 @@ class World:
         for i in range(len(blocks)):
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
-                new_block = Block(self, (int(bl[1]), int(bl[2])), self.block_indexes2[int(bl[0])])
+                new_block = block.get_block(self, (int(bl[1]), int(bl[2])), self.block_indexes2[int(bl[0])])
                 if int(bl[0]) != 4 and int(bl[0]) != 7:
                     new_block.data["activated"] = int(bl[3])
                 if int(bl[0]) == 3 or int(bl[0]) == 5 or int(bl[0]) == 6 or int(bl[0]) == 7 or int(bl[0]) == 8:
@@ -320,7 +321,6 @@ class World:
                     new_block.data["activated2"] = int(bl[4])
                 if int(bl[0]) == 10:
                     new_block.data["connections"] = [bl[4][i] == "1" for i in range(4)]
-                self.field[int(bl[1])][int(bl[2])] = new_block
         #
         glass = dec_to_bin(int(txt.split(";")[4]))
         glass = ("0" * (self.w * self.h - len(glass))) + glass
