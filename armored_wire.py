@@ -3,6 +3,19 @@ from block import Block
 class ArmoredWire(Block):
     def __init__(self, world, pos, glassed=0, data=None):
         Block.__init__(self, world, pos, "armored wire", glassed, data)
+        #---------------------------------------------------------------------------------------------------------------
+        see = [0, 0, 0, 0]
+        for i in range(4):
+            pos = self.get_rotate_position(i)
+            if self.border(pos):
+                see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
+        for i in range(4):
+            pos = self.get_rotate_position(i)
+            if self.border(pos):
+                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
+                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+        if sum(see) <= 2:
+            self.data["connections"] = see.copy()
 
     def update(self, data={}):
         if self.data["connections"][(data["rotate"] + 2) % 4]:

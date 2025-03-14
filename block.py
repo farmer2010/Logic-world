@@ -8,11 +8,11 @@ class Block():
         self.pos = pos
         self.world.field[self.pos[0]][self.pos[1]] = self
         self.type = sftype
+        self.glassed = glassed
         if data == None:
             self.data = get_data(self.type)
         else:
             self.data = data
-        self.glassed = glassed
         self.image = pygame.Surface((40, 40))
         self.movelist = [
             [0, -1],
@@ -22,21 +22,12 @@ class Block():
         ]
         self.active = 0
         #---------------------------------------------------------------------------------------------------------------
-        if self.type == "armored wire":
-            see = [0, 0, 0, 0]
-            for i in range(4):
-                pos = self.get_rotate_position(i)
-                if self.border(pos):
-                    see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
-        if self.type == "wire" or self.type == "armored wire" or self.type == "activator" or self.type == "NOT" or self.type == "AND" or self.type == "XOR" or self.type == "wire box" or self.type == "diode" or self.type == "output":
+        if self.type == "wire" or self.type == "activator" or self.type == "NOT" or self.type == "wire box" or self.type == "diode" or self.type == "output":
             for i in range(4):
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
                         self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
-        if self.type == "armored wire":
-            if sum(see) <= 2:
-                self.data["connections"] = see.copy()
 
     def change_image(self):#сменить картинку
         if self.type == "air":#воздух

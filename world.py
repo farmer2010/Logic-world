@@ -135,10 +135,10 @@ class World:
                             do_set = 0
                         if self.field[blockpos[0]][blockpos[1]].glassed == 0 and do_set:
                             self.timer = 0
-                            block.get_block(self, blockpos, self.inventory_names[self.inventory_index])
+                            bl = block.get_block(self, blockpos, self.inventory_names[self.inventory_index])
                             sl = self.inventory_names[self.inventory_index]
                             if sl == "NOT" or sl == "AND" or sl == "XOR" or sl == "diode" or sl == "output":
-                                self.field[blockpos[0]][blockpos[1]].data["rotate"] = self.select_rotate
+                                bl.data["rotate"] = self.select_rotate
                             self.change_image()
                             self.mousetag = 1
                             if self.is_creative == 0:
