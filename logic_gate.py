@@ -3,11 +3,6 @@ from block import Block
 class LogicGate(Block):
     def __init__(self, world, pos, type, glassed=0, data=None):
         Block.__init__(self, world, pos, type, glassed, data)
-        for i in range(4):
-            pos = self.get_rotate_position(i)
-            if self.border(pos):
-                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
-                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
 
     def update(self, data={}, enr=1):
         if not enr:
@@ -76,3 +71,10 @@ class LogicGate(Block):
     def is_block_connect_with_wire(self, rotate):
         print(self.data)
         return(self.data["rotate"] != rotate)
+
+    def connect_with_armored_wire(self):
+        for i in range(4):
+            pos = self.get_rotate_position(i)
+            if self.border(pos):
+                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
+                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1

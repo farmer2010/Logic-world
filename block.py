@@ -21,13 +21,6 @@ class Block():
             [-1, 0]
         ]
         self.active = 0
-        #---------------------------------------------------------------------------------------------------------------
-        if self.type == "wire" or self.type == "activator" or self.type == "NOT" or self.type == "wire box" or self.type == "diode" or self.type == "output":
-            for i in range(4):
-                pos = self.get_rotate_position(i)
-                if self.border(pos):
-                    if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
-                        self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
 
     def change_image(self):#сменить картинку
         if self.type == "air":#воздух
@@ -87,8 +80,11 @@ class Block():
     def border(self, pos):
         return(pos[0] >= 0 and pos[0] < self.world.w and pos[1] >= 0 and pos[1] < self.world.h)
 
-    def is_block_connect_with_wire(self, rotate):
+    def is_block_connect_with_wire(self, rotate):#используется направление, ПРОТИВОПОЛОЖНОЕ направлению к блоку, с которым проверяем соединение(если блок сверху(0), в функции должно быть "вниз"(2))
          return(0)
+
+    def connect_with_armored_wire(self):
+        pass
 
 from wire import Wire
 from activator import Activator
@@ -115,6 +111,7 @@ def get_block(world, pos, type, glassed=0, data=None):
         return(Output(world, pos, glassed, data))
     elif type == "wire box":
         return(WireBox(world, pos, glassed, data))
+    return(Block(world, pos, type, glassed, data))
 
 def get_data(type_):
     if type_ == "wire" or type_ == "activator":

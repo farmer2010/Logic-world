@@ -139,6 +139,7 @@ class World:
                             sl = self.inventory_names[self.inventory_index]
                             if sl == "NOT" or sl == "AND" or sl == "XOR" or sl == "diode" or sl == "output":
                                 bl.data["rotate"] = self.select_rotate
+                            bl.connect_with_armored_wire()
                             self.change_image()
                             self.mousetag = 1
                             if self.is_creative == 0:
