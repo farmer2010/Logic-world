@@ -2,7 +2,8 @@ from block import Block
 
 class Diode(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "diode", glassed, data)
+        preset_data = {"activated1": 0, "activated2": 0, "rotate" : 0}
+        Block.__init__(self, world, pos, "diode", glassed, preset_data)
 
     def update(self, data={}):
         if data["rotate"] == self.data["rotate"]:

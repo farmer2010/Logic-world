@@ -2,7 +2,8 @@ from block import Block
 
 class ArmoredWire(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "armored wire", glassed, data)
+        preset_data = {"activated": 0, "connections" : [0, 0, 0, 0]}
+        Block.__init__(self, world, pos, "armored wire", glassed, data, preset_data)
 
     def update(self, data={}):
         if self.data["connections"][(data["rotate"] + 2) % 4]:

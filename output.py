@@ -2,7 +2,8 @@ from block import Block
 
 class Output(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "output", glassed, data)
+        preset_data = {"activated" : 0, "rotate" : 0}
+        Block.__init__(self, world, pos, "output", glassed, data, preset_data)
 
     def update(self, data={}):
         if data["rotate"] == self.data["rotate"]:

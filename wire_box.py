@@ -2,7 +2,8 @@ from block import Block
 
 class WireBox(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "wire box", glassed, data)
+        preset_data = {"activated1" : 0, "activated2" : 0}
+        Block.__init__(self, world, pos, "wire box", glassed, data, preset_data)
 
     def update(self, data={}):
         if data["rotate"] == 1 or data["rotate"] == 3:#горизонтальный провод

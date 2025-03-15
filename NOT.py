@@ -2,7 +2,8 @@ from block import Block
 
 class NOT(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "NOT", glassed, data)
+        preset_data = {"activated" : 0, "rotate" : 0}
+        Block.__init__(self, world, pos, "NOT", glassed, data, preset_data)
 
     def update(self, data={}, enr=1):
         front_pos = self.get_rotate_position(self.data["rotate"])

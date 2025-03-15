@@ -3,14 +3,14 @@ import pygame
 pygame.init()
 
 class Block():
-    def __init__(self, world, pos, sftype, glassed=0, data=None):
+    def __init__(self, world, pos, sftype, glassed=0, data=None, preset_data={}):
         self.world = world
         self.pos = pos
         self.world.field[self.pos[0]][self.pos[1]] = self
         self.type = sftype
         self.glassed = glassed
         if data == None:
-            self.data = get_data(self.type)
+            self.data = preset_data
         else:
             self.data = data
         self.image = pygame.Surface((40, 40))
@@ -121,19 +121,3 @@ def get_block(world, pos, type, glassed=0, data=None):
     elif type == "wire box":
         return(WireBox(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))
-
-def get_data(type_):
-    if type_ == "wire" or type_ == "activator":
-        return({"activated" : 0})
-    elif type_ == "NOT" or type_ == "output":
-        return({"activated" : 0, "rotate" : 0})
-    elif type_ == "wire box":
-        return({"activated1" : 0, "activated2" : 0})#горизонтальный, вертикальный
-    elif type_ == "AND" or type_ == "XOR" or type_ == "memory":
-        return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})#левый относительно выхода, правый относительно выхода
-    elif type_ == "diode":
-        return ({"activated1": 0, "activated2": 0, "rotate" : 0})#задний, передний
-    elif type_ == "armored wire":
-        return ({"activated": 0, "connections" : [0, 0, 0, 0]})
-    else:
-        return({})

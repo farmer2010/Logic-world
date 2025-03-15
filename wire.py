@@ -3,7 +3,8 @@ from block import Block
 
 class Wire(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "wire", glassed, data)
+        preset_data = {"activated" : 0}
+        Block.__init__(self, world, pos, "wire", glassed, data, preset_data)
 
     def update(self, data={}):
         self.active = 1

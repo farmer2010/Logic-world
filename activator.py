@@ -3,7 +3,8 @@ from block import Block
 
 class Activator(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        Block.__init__(self, world, pos, "activator", glassed, data)
+        preset_data = {"activated" : 0}
+        Block.__init__(self, world, pos, "activator", glassed, data, preset_data)
 
     def update(self):
         self.active = 1

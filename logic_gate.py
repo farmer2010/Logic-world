@@ -2,7 +2,8 @@ from block import Block
 
 class LogicGate(Block):
     def __init__(self, world, pos, type, glassed=0, data=None):
-        Block.__init__(self, world, pos, type, glassed, data)
+        preset_data = {"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0}
+        Block.__init__(self, world, pos, type, glassed, data, preset_data)
 
     def update(self, data={}, enr=1):
         if not enr:
