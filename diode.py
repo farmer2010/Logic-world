@@ -20,6 +20,15 @@ class Diode(Block):
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] == rotate or (self.data["rotate"] + 2) % 4 == rotate)
 
+    def is_block_connect_output(self, rotate):
+        return((self.data["rotate"] + 2) % 4 == rotate)
+
+    def is_block_connect_input(self, rotate):
+        return(self.data["rotate"] == rotate)
+
+    def get_activated_key(self, rotate):
+        return("activated2")
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)

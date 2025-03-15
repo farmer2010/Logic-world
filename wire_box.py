@@ -19,6 +19,17 @@ class WireBox(Block):
     def is_block_connect_with_wire(self, rotate):
         return(1)
 
+    def is_block_connect_output(self, rotate):
+        return(1)
+
+    def is_block_connect_input(self, rotate):
+        return(1)
+
+    def get_activated_key(self, rotate):
+        if rotate == 0 or rotate == 2:
+            return("activated2")
+        return("activated1")
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)

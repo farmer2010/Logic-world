@@ -7,26 +7,15 @@ class NOT(Block):
     def update(self, data={}, enr=1):
         front_pos = self.get_rotate_position(self.data["rotate"])
         behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
-        i = 0
+        inp = 0
         #вход
         if self.border(behind_pos):
             behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-            if behind_block.type == "wire" or behind_block.type == "activator":#считываем сигнал с провода или активатора
-                i = behind_block.data["activated"]
-            elif (behind_block.type == "NOT" or behind_block.type == "AND" or behind_block.type == "XOR") and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с логических вентилей
-                i = behind_block.data["activated"]
-            elif behind_block.type == "wire box":#считываем сигнал с распределительной коробки
-                if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверху - внизу
-                    i = behind_block.data["activated2"]
-                elif self.data["rotate"] == 3 or self.data["rotate"] == 1:#влево - вправо
-                    i = behind_block.data["activated1"]
-            elif behind_block.type == "diode" and behind_block.data["rotate"] == self.data["rotate"]:#считываем сигнал с диода
-                i = behind_block.data["activated2"]
-            elif behind_block.type == "armored wire" and behind_block.data["connections"][self.data["rotate"]]:#считываем сигнал с защищенного провода
-                i = behind_block.data["activated"]
+            if behind_block.is_block_connect_output((self.data["rotate"] + 2) % 4):
+                inp = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
         #активация
-        self.data["activated"] = not i
-        self.active = not i
+        self.data["activated"] = not inp
+        self.active = not inp
         #распространение сигнала
         if self.border(front_pos):
             front_block = self.world.field[front_pos[0]][front_pos[1]]
@@ -43,6 +32,12 @@ class NOT(Block):
 
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] == rotate or (self.data["rotate"] + 2) % 4 == rotate)
+
+    def is_block_connect_output(self, rotate):
+        return((self.data["rotate"] + 2) % 4 == rotate)
+
+    def is_block_connect_input(self, rotate):
+        return(self.data["rotate"] == rotate)
 
     def connect_with_armored_wire(self):
         for i in range(4):

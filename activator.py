@@ -21,6 +21,9 @@ class Activator(Block):
     def is_block_connect_with_wire(self, rotate):
         return(1)
 
+    def is_block_connect_output(self, rotate):
+        return(1)
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)

@@ -12,6 +12,9 @@ class Output(Block):
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] == rotate)
 
+    def is_block_connect_input(self, rotate):
+        return (self.data["rotate"] == rotate)
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)
