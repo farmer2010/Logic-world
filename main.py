@@ -31,9 +31,6 @@ while keep_going:
     for event in events:
         if event.type == pygame.QUIT:#проверка выхода
             keep_going = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:#-|-
-                keep_going = False
     last_menu = menu[0]
     game_world.update(events)
     if last_menu != menu[0]:

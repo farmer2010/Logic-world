@@ -75,13 +75,13 @@ class World:
         #смена блока "в руке"
         for event in events:
             if event.type == pygame.MOUSEWHEEL:
-                if event.y == 1:
-                    self.inventory_index -= 1
+                if self.inventory_index > len(self.inventory_names) - 2:
+                    self.inventory_index = (self.inventory_index - event.y) % len(self.inventory_names)
+                else:
+                    self.inventory_index -= event.y
                     if self.inventory_index < 0:
                         self.inventory_index = 0
-                if event.y == -1 and self.inventory_index < len(self.inventory_names) - 1:
-                    self.inventory_index += 1
-                    if self.inventory_index > len(self.inventory_names) - 2:
+                    elif self.inventory_index > len(self.inventory_names) - 2:
                         self.inventory_index = len(self.inventory_names) - 2
         #смена активного блока посредством курсора
         mousepos = pygame.mouse.get_pos()
