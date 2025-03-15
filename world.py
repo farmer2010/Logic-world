@@ -310,17 +310,30 @@ class World:
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
                 new_block = block.get_block(self, (int(bl[1]), int(bl[2])), self.block_indexes2[int(bl[0])])
-                if int(bl[0]) != 4 and int(bl[0]) != 7:
+                if int(bl[0]) == 0:
                     new_block.data["activated"] = int(bl[3])
-                if int(bl[0]) == 3 or int(bl[0]) == 5 or int(bl[0]) == 6 or int(bl[0]) == 7 or int(bl[0]) == 8:
+                elif int(bl[0]) == 1:
+                    new_block.data["activated"] = int(bl[3])
+                elif int(bl[0]) == 3:
+                    new_block.data["activated"] = int(bl[3])
                     new_block.data["rotate"] = int(bl[4])
-                    if int(bl[0]) != 3 and int(bl[0]) != 8:
-                        new_block.data["activated1"] = int(bl[5])
-                        new_block.data["activated2"] = int(bl[6])
-                if int(bl[0]) == 4:
+                elif int(bl[0]) == 4:
                     new_block.data["activated1"] = int(bl[3])
                     new_block.data["activated2"] = int(bl[4])
-                if int(bl[0]) == 10:
+                elif int(bl[0]) == 5 or int(bl[0]) == 6:
+                    new_block.data["activated"] = int(bl[3])
+                    new_block.data["rotate"] = int(bl[4])
+                    new_block.data["activated1"] = int(bl[5])
+                    new_block.data["activated2"] = int(bl[6])
+                elif int(bl[0]) == 7:
+                    new_block.data["rotate"] = int(bl[3])
+                    new_block.data["activated1"] = int(bl[4])
+                    new_block.data["activated2"] = int(bl[5])
+                elif int(bl[0]) == 8:
+                    new_block.data["activated"] = int(bl[3])
+                    new_block.data["rotate"] = int(bl[4])
+                elif int(bl[0]) == 10:
+                    new_block.data["activated"] = int(bl[3])
                     new_block.data["connections"] = [bl[4][i] == "1" for i in range(4)]
         #
         glass = dec_to_bin(int(txt.split(";")[4]))
