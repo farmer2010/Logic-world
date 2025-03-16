@@ -63,8 +63,8 @@ class World:
         self.buttons = pygame.sprite.Group()
         self.is_creative = 1
         self.can_break = 1
-        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10}
-        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire"]
+        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11}
+        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory"]
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
@@ -260,18 +260,14 @@ class World:
                     txt += str(self.block_indexes[self.field[x][y].type]) + ","
                     txt += str(self.field[x][y].pos[0]) + ","
                     txt += str(self.field[x][y].pos[1]) + ","
-                    if self.field[x][y].type != "wire box" and self.field[x][y].type != "diode":
-                        txt += str(int(self.field[x][y].data["activated"])) + ","
-                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "diode" or self.field[x][y].type == "output":
-                        txt += str(self.field[x][y].data["rotate"]) + ","
-                    if self.field[x][y].type == "wire box" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "diode" or self.field[x][y].type == "memory":
-                        txt += str(int(self.field[x][y].data["activated1"])) + ","
-                        txt += str(int(self.field[x][y].data["activated2"])) + ","
-                    if self.field[x][y].type == "armored wire":
-                        for i in range(4):
-                            txt += str(int(self.field[x][y].data["connections"][i]))
-                        txt += ","
-                    if 
+                    #
+                    for key in self.field[x][y].data:
+                        if key != "connections":
+                            txt += str(int(self.field[x][y].data[key])) + ","
+                        else:
+                            for i in range(4):
+                                txt += str(int(self.field[x][y].data["connections"][i]))
+                            txt += ","
                     txt += ":"
         txt += ";"
         file.write(txt)
@@ -311,9 +307,7 @@ class World:
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
                 new_block = block.get_block(self, (int(bl[1]), int(bl[2])), self.block_indexes2[int(bl[0])])
-                if int(bl[0]) == 0:
-                    new_block.data["activated"] = int(bl[3])
-                elif int(bl[0]) == 1:
+                if int(bl[0]) == 0 or int(bl[0]) == 1:
                     new_block.data["activated"] = int(bl[3])
                 elif int(bl[0]) == 3:
                     new_block.data["activated"] = int(bl[3])
@@ -322,20 +316,26 @@ class World:
                     new_block.data["activated1"] = int(bl[3])
                     new_block.data["activated2"] = int(bl[4])
                 elif int(bl[0]) == 5 or int(bl[0]) == 6:
-                    new_block.data["activated"] = int(bl[3])
-                    new_block.data["rotate"] = int(bl[4])
-                    new_block.data["activated1"] = int(bl[5])
-                    new_block.data["activated2"] = int(bl[6])
+                    new_block.data["activated1"] = int(bl[3])
+                    new_block.data["activated2"] = int(bl[4])
+                    new_block.data["activated"] = int(bl[5])
+                    new_block.data["rotate"] = int(bl[6])
                 elif int(bl[0]) == 7:
-                    new_block.data["rotate"] = int(bl[3])
-                    new_block.data["activated1"] = int(bl[4])
-                    new_block.data["activated2"] = int(bl[5])
+                    new_block.data["activated1"] = int(bl[3])
+                    new_block.data["activated2"] = int(bl[4])
+                    new_block.data["rotate"] = int(bl[5])
                 elif int(bl[0]) == 8:
                     new_block.data["activated"] = int(bl[3])
                     new_block.data["rotate"] = int(bl[4])
                 elif int(bl[0]) == 10:
                     new_block.data["activated"] = int(bl[3])
                     new_block.data["connections"] = [bl[4][i] == "1" for i in range(4)]
+                elif int(bl[0]) == 11:
+                    new_block.data["activated1"] = int(bl[3])
+                    new_block.data["activated2"] = int(bl[4])
+                    new_block.data["activated"] = int(bl[5])
+                    new_block.data["rotate"] = int(bl[6])
+                    new_block.data["inverted"] = int(bl[7])
         #
         glass = dec_to_bin(int(txt.split(";")[4]))
         glass = ("0" * (self.w * self.h - len(glass))) + glass
