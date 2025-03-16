@@ -55,6 +55,8 @@ class Block():
             self.image = get_output_image(self.data)
         elif self.type == "armored wire":#защищенный провод
             self.image = get_armored_wire_image(self.data, self.data["connections"])
+        elif self.type == "memory":#ячейка памяти
+            self.image = get_memory_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
             for i in range(4):
@@ -103,6 +105,8 @@ from armored_wire import ArmoredWire
 from diode import Diode
 from output import Output
 from wire_box import WireBox
+from memory import Memory
+
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "wire":
         return(Wire(world, pos, glassed, data))
@@ -120,4 +124,6 @@ def get_block(world, pos, type, glassed=0, data=None):
         return(Output(world, pos, glassed, data))
     elif type == "wire box":
         return(WireBox(world, pos, glassed, data))
+    elif type == "memory":
+        return(Memory(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))

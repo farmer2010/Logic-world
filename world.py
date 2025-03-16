@@ -66,8 +66,8 @@ class World:
         self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10}
         self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire"]
         self.inventory_index = 0
-        self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
-        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "output", "glass", "air"]
+        self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
+        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         #self.load_level("level")
 
     def update(self, events):
@@ -187,12 +187,12 @@ class World:
                         self.field[x][y].data["activated2"] = 0
             for x in range(self.w):#распространение электричества
                 for y in range(self.h):
-                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR":
+                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "memory":
                         if self.field[x][y].data["activated"] == 1:
                             self.field[x][y].update()
             for x in range(self.w):#активация логических вентилей
                 for y in range(self.h):
-                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR":
+                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "memory":
                         self.field[x][y].update(self.field[x][y].data, enr=0)
             self.change_image()
         self.timer = 0
@@ -264,13 +264,14 @@ class World:
                         txt += str(int(self.field[x][y].data["activated"])) + ","
                     if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "diode" or self.field[x][y].type == "output":
                         txt += str(self.field[x][y].data["rotate"]) + ","
-                    if self.field[x][y].type == "wire box" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "diode":
+                    if self.field[x][y].type == "wire box" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "diode" or self.field[x][y].type == "memory":
                         txt += str(int(self.field[x][y].data["activated1"])) + ","
                         txt += str(int(self.field[x][y].data["activated2"])) + ","
                     if self.field[x][y].type == "armored wire":
                         for i in range(4):
                             txt += str(int(self.field[x][y].data["connections"][i]))
                         txt += ","
+                    if 
                     txt += ":"
         txt += ";"
         file.write(txt)

@@ -26,7 +26,7 @@ def get_glass_image(neighbours):
     return(get_image(2 + neighbours[0] * 2 + neighbours[3], neighbours[2] * 2 + neighbours[1]))
 
 def get_wire_box_image(data):
-    return(get_image(data["activated1"], 3 + data["activated2"]))
+    return(get_image(5, data["activated1"] + data["activated2"] * 2 + 8))
 
 def get_AND_image(data):
     return(get_image(14 + data["activated1"] + data["activated2"] * 2, data["rotate"]))
@@ -35,13 +35,16 @@ def get_XOR_image(data):
     return(get_image(14 + data["activated1"] + data["activated2"] * 2, 4 + data["rotate"]))
 
 def get_diode_image(data):
-    return(get_image(data["activated1"] + data["activated2"], 8 + data["rotate"]))
+    return(get_image(data["activated1"] + data["activated2"] + 2, 8 + data["rotate"]))
 
 def get_output_image(data):
-    return(get_image(3 + data["activated"], 8 + data["rotate"]))
+    return(get_image(data["activated"], 8 + data["rotate"]))
 
 def get_armored_wire_image(data, neighbours):
     return(get_image(2 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], 4 + neighbours[0] * 2 + neighbours[1]))
+
+def get_memory_image(data):
+    return(get_image(data["activated1"] + data["activated2"] * 2 + data["activated"] * 4 + 6, data["rotate"] + 8))
 
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
@@ -66,6 +69,8 @@ def get_block_image(sftype, neighbours, data):
         return(get_output_image(data))
     elif sftype == "armored wire":
         return(get_armored_wire_image(data, neighbours))
+    elif sftype == "memory":
+        return(get_memory_image(data))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))
