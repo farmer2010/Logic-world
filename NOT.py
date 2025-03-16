@@ -17,21 +17,13 @@ class NOT(Block):
             #активация
             self.data["activated"] = not inp
             self.active = not inp
-        else:
+        if enr:
             #распространение сигнала
             front_pos = self.get_rotate_position(self.data["rotate"])
             if self.border(front_pos):
                 front_block = self.world.field[front_pos[0]][front_pos[1]]
-                if front_block.active == 0 and self.data["activated"]:#если можно передать сигнал вперед
-                    if front_block.type == "wire" or front_block.type == "armored wire" or front_block.type == "output":#если передаем сигнал в провод
-                        front_block.update({"rotate": self.data["rotate"]})
-                    elif front_block.type == "wire box":#если передаем сигнал в распределитель
-                        if self.data["rotate"] == 0 or self.data["rotate"] == 2:#вверх - вниз
-                            front_block.data["activated2"] = self.data["activated"]
-                            front_block.update({"rotate": self.data["rotate"]})
-                        elif self.data["rotate"] == 1 or self.data["rotate"] == 3:#влево - вправо
-                            front_block.data["activated1"] = self.data["activated"]
-                            front_block.update({"rotate": self.data["rotate"]})
+                if front_block.active == 0 and self.data["activated"] and front_block.is_block_connect_input(self.data["rotate"]):#если можно передать сигнал вперед
+                    front_block.update({"rotate": self.data["rotate"]})
 
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] == rotate or (self.data["rotate"] + 2) % 4 == rotate)

@@ -197,8 +197,8 @@ class World:
             self.change_image()
         self.timer = 0
         #self.timer += 1
-        if self.timer >= 60:
-            self.timer = 0
+        #if self.timer >= 60:
+        #    self.timer = 0
         #
         self.calculate_win()
 
