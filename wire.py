@@ -25,6 +25,9 @@ class Wire(Block):
     def is_block_connect_input(self, rotate):
         return(1)
 
+    def get_activated_key(self, rotate):#-|-
+        return("activated")
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)

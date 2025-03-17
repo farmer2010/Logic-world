@@ -49,6 +49,9 @@ class LogicGate(Block):
     def is_block_connect_input(self, rotate):
         return((self.data["rotate"] + 1) % 4 == (rotate + 2) % 4 or (self.data["rotate"] - 1) % 4 == (rotate + 2) % 4)
 
+    def get_activated_key(self, rotate):#-|-
+        return("activated")
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)

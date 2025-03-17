@@ -25,6 +25,9 @@ class ArmoredWire(Block):
     def is_block_connect_input(self, rotate):
         return (sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
 
+    def get_activated_key(self, rotate):#-|-
+        return("activated")
+
     def connect_with_armored_wire(self):
         see = [0, 0, 0, 0]
         for i in range(4):

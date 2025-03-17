@@ -46,6 +46,10 @@ def get_armored_wire_image(data, neighbours):
 def get_memory_image(data):
     return(get_image(data["activated1"] + data["activated2"] * 2 + data["activated"] * 4 + 6, data["rotate"] + 8))
 
+def get_sensor_image(data):
+    print(data)
+    return(get_image(data["activated"], data["rotate"] + 4))
+
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
         return(get_wire_image(data, neighbours))
@@ -71,6 +75,8 @@ def get_block_image(sftype, neighbours, data):
         return(get_armored_wire_image(data, neighbours))
     elif sftype == "memory":
         return(get_memory_image(data))
+    elif sftype == "sensor":
+        return(get_sensor_image(data))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))

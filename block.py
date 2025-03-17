@@ -57,6 +57,8 @@ class Block():
             self.image = get_armored_wire_image(self.data, self.data["connections"])
         elif self.type == "memory":#ячейка памяти
             self.image = get_memory_image(self.data)
+        elif self.type == "sensor":#сенсор
+            self.image = get_sensor_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
             for i in range(4):
@@ -92,7 +94,7 @@ class Block():
         return(0)
 
     def get_activated_key(self, rotate):#-|-
-        return("activated")
+        return(None)
 
     def connect_with_armored_wire(self):
         pass
@@ -106,6 +108,7 @@ from diode import Diode
 from output import Output
 from wire_box import WireBox
 from memory import Memory
+from sensor import Sensor
 
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "wire":
@@ -126,4 +129,6 @@ def get_block(world, pos, type, glassed=0, data=None):
         return(WireBox(world, pos, glassed, data))
     elif type == "memory":
         return(Memory(world, pos, glassed, data))
+    elif type == "sensor":
+        return (Sensor(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))

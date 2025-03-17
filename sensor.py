@@ -1,22 +1,20 @@
 from block import Block
 
-class NOT(Block):
+class Sensor(Block):
     def __init__(self, world, pos, glassed=0, data=None):
         preset_data = {"activated" : 0, "rotate" : 0}
-        Block.__init__(self, world, pos, "NOT", glassed, data, preset_data)
+        Block.__init__(self, world, pos, "sensor", glassed, data, preset_data)
 
     def update(self, data={}, enr=1):
         if not enr:
             behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
-            inp = 0
             #вход
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                if behind_block.is_block_connect_output((self.data["rotate"] + 2) % 4):
-                    inp = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
-            #активация
-            self.data["activated"] = not inp
-            self.active = not inp
+                if behind_block.get_activated_key((self.data["rotate"] + 2) % 4) != None:
+                    self.data["activated"] = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
+                else:
+                    self.data["activated"] = 0
         if enr:
             #распространение сигнала
             front_pos = self.get_rotate_position(self.data["rotate"])
@@ -26,16 +24,10 @@ class NOT(Block):
                     front_block.update({"rotate": self.data["rotate"]})
 
     def is_block_connect_with_wire(self, rotate):
-        return(self.data["rotate"] == rotate or (self.data["rotate"] + 2) % 4 == rotate)
+        return(self.data["rotate"] == (rotate + 2) % 4)
 
     def is_block_connect_output(self, rotate):
         return((self.data["rotate"] + 2) % 4 == rotate)
-
-    def is_block_connect_input(self, rotate):
-        return(self.data["rotate"] == rotate)
-
-    def get_activated_key(self, rotate):#-|-
-        return("activated")
 
     def connect_with_armored_wire(self):
         for i in range(4):
