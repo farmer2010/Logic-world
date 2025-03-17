@@ -20,6 +20,12 @@ class Block():
             [0, 1],
             [-1, 0]
         ]
+        self.diag_movelist = [
+            [-1, -1],
+            [1, -1],
+            [1, 1],
+            [-1, 1]
+        ]
         self.active = 0
 
     def change_image(self):#сменить картинку
@@ -61,13 +67,29 @@ class Block():
             self.image = get_sensor_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
+            see2 = [0, 0, 0, 0]
             for i in range(4):
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     b = self.world.field[pos[0]][pos[1]]
                     if b.glassed:
                         see[i] = 1
-            self.image.blit(get_image(2 + see[2] * 2 + see[3], see[0] * 2 + see[1]), (0, 0))
+            for i in range(4):
+                pos = [self.pos[0] + self.diag_movelist[i][0], self.pos[1] + self.diag_movelist[i][1]]
+                if self.border(pos):
+                    b = self.world.field[pos[0]][pos[1]]
+                    if b.glassed:
+                        see2[i] = 1
+            img = get_image(2 + see[2] * 2 + see[3], see[0] * 2 + see[1], size=10)
+            if see[0] and see[1] and not see2[1]:
+                img.set_at((9, 0), (170, 181, 193))
+            if see[1] and see[2] and not see2[2]:
+                img.set_at((9, 9), (170, 181, 193))
+            if see[2] and see[3] and not see2[3]:
+                img.set_at((0, 9), (170, 181, 193))
+            if see[3] and see[0] and not see2[0]:
+                img.set_at((0, 0), (170, 181, 193))
+            self.image.blit(pygame.transform.scale(img, (40, 40)), (0, 0))
 
     def draw(self, screen, world_pos):
         screen.blit(self.image, (world_pos[0] + self.pos[0] * 40, world_pos[1] + self.pos[1] * 40))
