@@ -1,5 +1,6 @@
 from image_factory import get_image
 import image_factory
+from input_manager import InputManager as IM
 from block import Block
 import block
 import pygame
@@ -56,8 +57,10 @@ class World:
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
         self.change_image()
+        self.IM = IM()
         self.mousetag = 0
         self.timer = 0
+        self.menu = "game"
         self.select_rotate = 0
         self.r_tag = 0#нажата ли клафиша r
         self.buttons = pygame.sprite.Group()
@@ -123,33 +126,7 @@ class World:
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
-                if self.inventory_names[self.inventory_index] == "glass":
-                    if self.is_creative:
-                        self.field[blockpos[0]][blockpos[1]].glassed = 1
-                        self.change_image()
-                else:
-                    if self.field[blockpos[0]][blockpos[1]].type == "air":
-                        do_set = 1
-                        if self.is_creative == 0 and self.inventory[self.inventory_names[self.inventory_index]] == 0:
-                            do_set = 0
-                        if self.field[blockpos[0]][blockpos[1]].glassed == 0 and do_set:
-                            self.timer = 0
-                            bl = block.get_block(self, blockpos, self.inventory_names[self.inventory_index])
-                            sl = self.inventory_names[self.inventory_index]
-                            if sl == "NOT" or sl == "AND" or sl == "XOR" or sl == "diode" or sl == "output" or sl == "memory" or sl == "sensor":
-                                bl.data["rotate"] = self.select_rotate
-                            bl.connect_with_armored_wire()
-                            self.change_image()
-                            self.mousetag = 1
-                            if self.is_creative == 0:
-                                self.inventory[self.inventory_names[self.inventory_index]] -= 1
-                            #------------------------------------
-                    elif self.mousetag == 0:#нажатие на блок
-                        self.timer = 0
-                        self.mousetag = 1
-                        self.field[blockpos[0]][blockpos[1]].action()
-                        self.change_image()
+            self.set_block(blockpos, xborder)
         else:
            self.mousetag = 0
         #---------------------------------------------------------------------------------------------------------------
@@ -157,25 +134,11 @@ class World:
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
-                if self.inventory_names[self.inventory_index] == "glass":
-                    if self.is_creative:
-                        self.field[blockpos[0]][blockpos[1]].glassed = 0
-                        self.change_image()
-                else:
-                    if self.field[blockpos[0]][blockpos[1]].glassed == 0:
-                        if self.is_creative == 0:
-                            self.inventory[self.field[blockpos[0]][blockpos[1]].type] += 1
-                        self.timer = 0
-                        self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, "air")
-                        #------------------------------------------------
-                        for i in range(4):
-                            pos = self.field[blockpos[0]][blockpos[1]].get_rotate_position(i)
-                            if self.field[blockpos[0]][blockpos[1]].border(pos):
-                                if self.field[pos[0]][pos[1]].type == "armored wire":
-                                    self.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 0
-                        self.change_image()
+            self.remove_block(blockpos, xborder)
         #---------------------------------------------------------------------------------------------------------------
+        self.update_map()
+
+    def update_map(self):
         if self.timer == 0:#обновление карты
             for x in range(self.w):#стираем active и электричество
                 for y in range(self.h):
@@ -201,6 +164,55 @@ class World:
         #    self.timer = 0
         #
         self.calculate_win()
+
+    def set_block(self, blockpos, xborder):
+        if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
+            if self.inventory_names[self.inventory_index] == "glass":
+                if self.is_creative:
+                    self.field[blockpos[0]][blockpos[1]].glassed = 1
+                    self.change_image()
+            else:
+                if self.field[blockpos[0]][blockpos[1]].type == "air":
+                    do_set = 1
+                    if self.is_creative == 0 and self.inventory[self.inventory_names[self.inventory_index]] == 0:
+                        do_set = 0
+                    if self.field[blockpos[0]][blockpos[1]].glassed == 0 and do_set:
+                        self.timer = 0
+                        bl = block.get_block(self, blockpos, self.inventory_names[self.inventory_index])
+                        sl = self.inventory_names[self.inventory_index]
+                        if sl == "NOT" or sl == "AND" or sl == "XOR" or sl == "diode" or sl == "output" or sl == "memory" or sl == "sensor":
+                            bl.data["rotate"] = self.select_rotate
+                        bl.connect_with_armored_wire()
+                        self.change_image()
+                        self.mousetag = 1
+                        if self.is_creative == 0:
+                            self.inventory[self.inventory_names[self.inventory_index]] -= 1
+                        # ------------------------------------
+                elif self.mousetag == 0:  # нажатие на блок
+                    self.timer = 0
+                    self.mousetag = 1
+                    self.field[blockpos[0]][blockpos[1]].action()
+                    self.change_image()
+
+    def remove_block(self, blockpos, xborder):
+        if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
+            if self.inventory_names[self.inventory_index] == "glass":
+                if self.is_creative:
+                    self.field[blockpos[0]][blockpos[1]].glassed = 0
+                    self.change_image()
+            else:
+                if self.field[blockpos[0]][blockpos[1]].glassed == 0:
+                    if self.is_creative == 0:
+                        self.inventory[self.field[blockpos[0]][blockpos[1]].type] += 1
+                    self.timer = 0
+                    self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, "air")
+                    # ------------------------------------------------
+                    for i in range(4):
+                        pos = self.field[blockpos[0]][blockpos[1]].get_rotate_position(i)
+                        if self.field[blockpos[0]][blockpos[1]].border(pos):
+                            if self.field[pos[0]][pos[1]].type == "armored wire":
+                                self.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 0
+                    self.change_image()
 
     def draw(self, screen):
         font = pygame.font.SysFont(None, 25)
@@ -232,6 +244,7 @@ class World:
             img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
             screen.blit(img, (self.display_w - 60, i * 80 + 20))
             render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+
 
     def change_image(self):
         for x in range(self.w):
