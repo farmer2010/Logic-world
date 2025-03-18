@@ -57,85 +57,92 @@ class World:
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
         self.change_image()
-        self.mousetag = 0
         self.timer = 0
         self.menu = "game"
         self.select_rotate = 0
-        self.r_tag = 0#нажата ли клафиша r
         self.buttons = pygame.sprite.Group()
         self.is_creative = 1
         self.can_break = 1
         self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11, "sensor" : 12}
         self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory", "sensor"]
         self.inventory_index = 0
-        self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "sensor" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
-        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "sensor", "output", "glass", "air"]
+        self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
+        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.IM = IM()
 
     def update(self, events):
         self.IM.update(events)
-        keys = pygame.key.get_pressed()
-        #смена блока "в руке"
-        y = self.IM.get_mousewheel()
-        if self.inventory_index > len(self.inventory_names) - 2:
-            self.inventory_index = (self.inventory_index - y) % len(self.inventory_names)
-        else:
-            self.inventory_index -= y
-            if self.inventory_index < 0:
-                self.inventory_index = 0
-            elif self.inventory_index > len(self.inventory_names) - 2:
-                self.inventory_index = len(self.inventory_names) - 2
-        #смена активного блока посредством курсора
-        mousepos = pygame.mouse.get_pos()
-        block_index = mousepos[1] // 80
-        xborder = mousepos[0] >= self.display_w - 70
-        yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
-        if xborder and yborder:
-            if pygame.mouse.get_pressed()[0]:
-                self.inventory_index = block_index
-        #поворот блока
-        if self.IM.get_key("R"):
-            if self.r_tag == 0:
+        if self.menu == "game":
+            #смена блока "в руке"
+            y = self.IM.get_mousewheel()
+            if self.inventory_index > len(self.inventory_names) - 2:
+                self.inventory_index = (self.inventory_index - y) % len(self.inventory_names)
+            else:
+                self.inventory_index -= y
+                if self.inventory_index < 0:
+                    self.inventory_index = 0
+                elif self.inventory_index > len(self.inventory_names) - 2:
+                    self.inventory_index = len(self.inventory_names) - 2
+            #смена активного блока посредством курсора
+            mousepos = pygame.mouse.get_pos()
+            block_index = mousepos[1] // 80
+            xborder = mousepos[0] >= self.display_w - 70
+            yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
+            if self.IM.get_mouse(0):
+                if xborder and yborder:
+                    self.inventory_index = block_index
+            #поворот блока
+            if self.IM.get_key("R"):
                 self.select_rotate += 1
                 self.select_rotate %= 4
-                self.r_tag = 1
-        else:
-            self.r_tag = 0
-        #пипетка
-        if self.IM.get_key("Q"):
+            #пипетка
+            if self.IM.get_key("Q"):
+                mousepos = pygame.mouse.get_pos()
+                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
+                    i = 0
+                    while self.inventory_names[i] != self.field[blockpos[0]][blockpos[1]].type:
+                        i += 1
+                    if i != None:
+                        self.inventory_index = i
+                else:
+                    self.select_block = "air"
+            #сохранение уровня
+            if self.IM.get_key("F1"):
+                self.save_level(self.level_name)
+            #загрузка уровня
+            if self.IM.get_key("F2"):
+                self.load_level(self.level_name)
+            #установка и ломание
+            if pygame.mouse.get_pressed()[0]:#установка
+                mousepos = pygame.mouse.get_pos()
+                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                self.set_block(blockpos, xborder)
+            #---------------------------------------------------------------------------------------------------------------
+            if pygame.mouse.get_pressed()[2]:#ломание
+                mousepos = pygame.mouse.get_pos()
+                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                self.remove_block(blockpos, xborder)
+            #---------------------------------------------------------------------------------------------------------------
+            self.update_map()
+            #
+            if self.IM.get_key("T"):
+                self.menu = "select blocks"
+                self.inventory_index = 0
+        elif self.menu == "select blocks":
+            if self.IM.get_key("T") or self.IM.get_key("ESC"):
+                self.menu = "game"
+            #
             mousepos = pygame.mouse.get_pos()
-            mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
-                i = 0
-                while self.inventory_names[i] != self.field[blockpos[0]][blockpos[1]].type:
-                    i += 1
-                if i != None:
-                    self.inventory_index = i
-            else:
-                self.select_block = "air"
-        #сохранение уровня
-        if self.IM.get_key("F1"):
-            self.save_level(self.level_name)
-        #загрузка уровня
-        if self.IM.get_key("F2"):
-            self.load_level(self.level_name)
-        #установка и ломание
-        if pygame.mouse.get_pressed()[0]:#установка
-            mousepos = pygame.mouse.get_pos()
-            mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            self.set_block(blockpos, xborder)
-        else:
-           self.mousetag = 0
-        #---------------------------------------------------------------------------------------------------------------
-        if pygame.mouse.get_pressed()[2]:#ломание
-            mousepos = pygame.mouse.get_pos()
-            mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-            self.remove_block(blockpos, xborder)
-        #---------------------------------------------------------------------------------------------------------------
-        self.update_map()
+            block_index = mousepos[1] // 80
+            xborder = mousepos[0] >= self.display_w - 70
+            yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
+            if self.IM.get_mouse(0):
+                if xborder and yborder:
+                    self.inventory_index = block_index
 
     def update_map(self):
         if self.timer == 0:#обновление карты
@@ -220,29 +227,39 @@ class World:
         for x in range(self.w):#блоки
             for y in range(self.h):
                 self.field[x][y].draw(screen, self.pos)
-        #"тень" от блока в "руке"
-        mousepos = pygame.mouse.get_pos()
-        mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-        blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-        if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
-            if self.field[blockpos[0]][blockpos[1]].type == "air" or self.inventory_names[self.inventory_index] == "glass":
-                if self.inventory_names[self.inventory_index] != "air":
-                    select_image = image_factory.get_block_image(self.inventory_names[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
-                    select_image.convert_alpha()
-                    select_image.set_alpha(90)
-                else:
-                    select_image = image_factory.get_block_image("air", [], {})
-                screen.blit(select_image, (blockpos[0] * 40 + self.pos[0], blockpos[1] * 40 + self.pos[1]))
-        #
-        if self.inventory_index != len(self.inventory_names) - 1:
-            pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
-        #
-        for i in range(len(self.inventory_names) - 1):
-            pygame.draw.rect(screen, (30, 30, 30), (self.display_w - 70, i * 80 + 10, 60, 60))
-            pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
-            img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
-            screen.blit(img, (self.display_w - 60, i * 80 + 20))
-            render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+        if self.menu == "game":
+            #"тень" от блока в "руке"
+            mousepos = pygame.mouse.get_pos()
+            mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
+                if self.field[blockpos[0]][blockpos[1]].type == "air" or self.inventory_names[self.inventory_index] == "glass":
+                    if self.inventory_names[self.inventory_index] != "air":
+                        select_image = image_factory.get_block_image(self.inventory_names[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
+                        select_image.convert_alpha()
+                        select_image.set_alpha(90)
+                    else:
+                        select_image = image_factory.get_block_image("air", [], {})
+                    screen.blit(select_image, (blockpos[0] * 40 + self.pos[0], blockpos[1] * 40 + self.pos[1]))
+            #
+            if self.inventory_index != len(self.inventory_names) - 1:
+                pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
+            #
+            for i in range(len(self.inventory_names) - 1):
+                pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
+                pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
+                img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
+                screen.blit(img, (self.display_w - 60, i * 80 + 20))
+                render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+        elif self.menu == "select blocks":
+            if self.inventory_index != len(self.inventory_names) - 1:
+                pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
+            for i in range(len(self.inventory_names) - 1):
+                pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
+                pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
+                img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                screen.blit(img, (self.display_w - 60, i * 80 + 20))
+                render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
 
 
     def change_image(self):
