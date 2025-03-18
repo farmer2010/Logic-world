@@ -57,7 +57,6 @@ class World:
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
         self.change_image()
-        self.IM = IM()
         self.mousetag = 0
         self.timer = 0
         self.menu = "game"
@@ -71,21 +70,21 @@ class World:
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "sensor" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "sensor", "output", "glass", "air"]
-        #self.load_level("level")
+        self.IM = IM()
 
     def update(self, events):
-        keys = pygame.key.get_pressed()#проверка нажатий кнопок
+        self.IM.update(events)
+        keys = pygame.key.get_pressed()
         #смена блока "в руке"
-        for event in events:
-            if event.type == pygame.MOUSEWHEEL:
-                if self.inventory_index > len(self.inventory_names) - 2:
-                    self.inventory_index = (self.inventory_index - event.y) % len(self.inventory_names)
-                else:
-                    self.inventory_index -= event.y
-                    if self.inventory_index < 0:
-                        self.inventory_index = 0
-                    elif self.inventory_index > len(self.inventory_names) - 2:
-                        self.inventory_index = len(self.inventory_names) - 2
+        y = self.IM.get_mousewheel()
+        if self.inventory_index > len(self.inventory_names) - 2:
+            self.inventory_index = (self.inventory_index - y) % len(self.inventory_names)
+        else:
+            self.inventory_index -= y
+            if self.inventory_index < 0:
+                self.inventory_index = 0
+            elif self.inventory_index > len(self.inventory_names) - 2:
+                self.inventory_index = len(self.inventory_names) - 2
         #смена активного блока посредством курсора
         mousepos = pygame.mouse.get_pos()
         block_index = mousepos[1] // 80
@@ -95,7 +94,7 @@ class World:
             if pygame.mouse.get_pressed()[0]:
                 self.inventory_index = block_index
         #поворот блока
-        if keys[pygame.K_r]:
+        if self.IM.get_key("R"):
             if self.r_tag == 0:
                 self.select_rotate += 1
                 self.select_rotate %= 4
@@ -103,7 +102,7 @@ class World:
         else:
             self.r_tag = 0
         #пипетка
-        if keys[pygame.K_q]:
+        if self.IM.get_key("Q"):
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
@@ -116,10 +115,10 @@ class World:
             else:
                 self.select_block = "air"
         #сохранение уровня
-        if keys[pygame.K_F1]:
+        if self.IM.get_key("F1"):
             self.save_level(self.level_name)
         #загрузка уровня
-        if keys[pygame.K_F2]:
+        if self.IM.get_key("F2"):
             self.load_level(self.level_name)
         #установка и ломание
         if pygame.mouse.get_pressed()[0]:#установка

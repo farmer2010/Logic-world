@@ -47,7 +47,6 @@ def get_memory_image(data):
     return(get_image(data["activated1"] + data["activated2"] * 2 + data["activated"] * 4 + 6, data["rotate"] + 8))
 
 def get_sensor_image(data):
-    print(data)
     return(get_image(data["activated"], data["rotate"] + 4))
 
 def get_block_image(sftype, neighbours, data):
