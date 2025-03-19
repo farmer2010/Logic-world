@@ -153,6 +153,12 @@ class World:
             if self.IM.get_mouse(0):
                 if xborder and yborder:
                     self.inventory_index = block_index
+            #
+            blockpos = [(mousepos[0] - (self.display_w - 1040)) // 80, mousepos[1] // 80]
+            i = blockpos[1] * 12 + blockpos[0]
+            if blockpos[0] >= 0 and blockpos[1] < 12 and self.IM.get_mouse(0) and i < len(self.block_indexes2) and not self.block_indexes2[i] in self.inventory_names:
+                self.inventory_names[self.inventory_index] = self.block_indexes2[i]
+                self.inventory[self.block_indexes2[i]] = 9999
 
     def update_map(self):
         if self.timer == 0:#обновление карты
@@ -270,14 +276,22 @@ class World:
                 img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+            mousepos = pygame.mouse.get_pos()
             for x in range(12):
                 for y in range(12):
                     i = y * 12 + x
                     if i < len(self.block_indexes2):
-                        pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
+                        if (mousepos[0] - (self.display_w - 1040)) // 80 == x and mousepos[1] // 80 == y:
+                            pygame.draw.rect(screen, (40, 40, 40), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
+                        else:
+                            pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
                         pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 1025 + x * 80, y * 80 + 15, 50, 50))
                         img = image_factory.get_block_image(self.block_indexes2[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                         screen.blit(img, (self.display_w - 1020 + x * 80, y * 80 + 20))
+                        if self.block_indexes2[i] in self.inventory_names:
+                            img2 = pygame.Surface((50, 50))
+                            img2.set_alpha(128)
+                            screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
 
     def change_image(self):
         for x in range(self.w):
