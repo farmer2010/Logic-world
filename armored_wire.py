@@ -34,10 +34,10 @@ class ArmoredWire(Block):
             pos = self.get_rotate_position(i)
             if self.border(pos):
                 see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
+        if sum(see) <= 2:
+            self.data["connections"] = see.copy()
         for i in range(4):
             pos = self.get_rotate_position(i)
             if self.border(pos):
                 if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
                     self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
-        if sum(see) <= 2:
-            self.data["connections"] = see.copy()
