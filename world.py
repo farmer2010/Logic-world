@@ -63,8 +63,8 @@ class World:
         self.buttons = pygame.sprite.Group()
         self.is_creative = 1
         self.can_break = 1
-        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11, "sensor" : 12}
-        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory", "sensor"]
+        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11, "sensor" : 12, "energy block" : 13}
+        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory", "sensor", "energy block"]
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
@@ -172,12 +172,11 @@ class World:
                         self.field[x][y].data["activated2"] = 0
             for x in range(self.w):#распространение электричества
                 for y in range(self.h):
-                    if self.field[x][y].type == "activator" or self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "memory" or self.field[x][y].type == "sensor":
-                        if self.field[x][y].data["activated"] == 1:
-                            self.field[x][y].update()
+                    if self.field[x][y].is_logic_gate:
+                        self.field[x][y].update()
             for x in range(self.w):#активация логических вентилей
                 for y in range(self.h):
-                    if self.field[x][y].type == "NOT" or self.field[x][y].type == "AND" or self.field[x][y].type == "XOR" or self.field[x][y].type == "memory" or self.field[x][y].type == "sensor":
+                    if self.field[x][y].has_output:
                         self.field[x][y].update(self.field[x][y].data, enr=0)
             self.change_image()
         self.timer = 0
@@ -367,7 +366,7 @@ class World:
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
                 new_block = block.get_block(self, (int(bl[1]), int(bl[2])), self.block_indexes2[int(bl[0])])
-                if int(bl[0]) == 0 or int(bl[0]) == 1:
+                if int(bl[0]) == 0 or int(bl[0]) == 1 or int(bl[0]) == 13:
                     new_block.data["activated"] = int(bl[3])
                 elif int(bl[0]) == 3:
                     new_block.data["activated"] = int(bl[3])

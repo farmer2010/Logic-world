@@ -27,6 +27,8 @@ class Block():
             [-1, 1]
         ]
         self.active = 0
+        self.is_logic_gate = 0
+        self.has_output = 0
 
     def change_image(self):#сменить картинку
         if self.type == "air":#воздух
@@ -65,6 +67,8 @@ class Block():
             self.image = get_memory_image(self.data)
         elif self.type == "sensor":#сенсор
             self.image = get_sensor_image(self.data)
+        elif self.type == "energy block":#блок сигнала
+            self.image = get_image(0, 12)
         if self.glassed:
             see = [0, 0, 0, 0]
             see2 = [0, 0, 0, 0]
@@ -131,6 +135,7 @@ from output import Output
 from wire_box import WireBox
 from memory import Memory
 from sensor import Sensor
+from energy_block import EnergyBlock
 
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "wire":
@@ -152,5 +157,7 @@ def get_block(world, pos, type, glassed=0, data=None):
     elif type == "memory":
         return(Memory(world, pos, glassed, data))
     elif type == "sensor":
-        return (Sensor(world, pos, glassed, data))
+        return(Sensor(world, pos, glassed, data))
+    elif type == "energy block":
+        return(EnergyBlock(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))

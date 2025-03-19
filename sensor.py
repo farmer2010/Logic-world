@@ -4,6 +4,8 @@ class Sensor(Block):
     def __init__(self, world, pos, glassed=0, data=None):
         preset_data = {"activated" : 0, "rotate" : 0}
         Block.__init__(self, world, pos, "sensor", glassed, data, preset_data)
+        self.is_logic_gate = 1
+        self.has_output = 1
 
     def update(self, data={}, enr=1):
         if not enr:

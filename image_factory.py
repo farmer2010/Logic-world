@@ -76,6 +76,8 @@ def get_block_image(sftype, neighbours, data):
         return(get_memory_image(data))
     elif sftype == "sensor":
         return(get_sensor_image(data))
+    elif sftype == "energy block":
+        return(get_image(0, 12))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))
