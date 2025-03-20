@@ -68,9 +68,9 @@ class Block():
         elif self.type == "sensor":#сенсор
             self.image = get_sensor_image(self.data)
         elif self.type == "energy block":#блок сигнала
-            self.image = get_image(0, 12)
+            self.image = get_image(1, 3)
         elif self.type == "button":
-            self.image = get_button_block_image(self.data)
+            self.image = get_image(0, 3)
         if self.glassed:
             see = [0, 0, 0, 0]
             see2 = [0, 0, 0, 0]

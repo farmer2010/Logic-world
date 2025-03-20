@@ -49,9 +49,6 @@ def get_memory_image(data):
 def get_sensor_image(data):
     return(get_image(data["activated"], data["rotate"] + 4))
 
-def get_button_block_image(data):
-    return(get_image(data["activated"], 3))
-
 def get_block_image(sftype, neighbours, data):
     if sftype == "wire":
         return(get_wire_image(data, neighbours))
@@ -80,9 +77,9 @@ def get_block_image(sftype, neighbours, data):
     elif sftype == "sensor":
         return(get_sensor_image(data))
     elif sftype == "energy block":
-        return(get_image(0, 12))
+        return(get_image(1, 3))
     elif sftype == "button":
-        return(get_button_block_image(data))
+        return(get_image(0, 3))
     elif sftype == "air":
         img = pygame.Surface((40, 40))
         img.set_colorkey((0, 0, 0))
