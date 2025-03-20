@@ -92,7 +92,7 @@ class Block():
             if see[1] and see[2] and not see2[2]:
                 img.set_at((9, 9), (170, 181, 193))
             if see[2] and see[3] and not see2[3]:
-                img.set_at((0, 9), (170, 181, 193))
+               img.set_at((0, 9), (170, 181, 193))
             if see[3] and see[0] and not see2[0]:
                 img.set_at((0, 0), (170, 181, 193))
             self.image.blit(pygame.transform.scale(img, (40, 40)), (0, 0))
