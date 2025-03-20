@@ -69,6 +69,8 @@ class Block():
             self.image = get_sensor_image(self.data)
         elif self.type == "energy block":#блок сигнала
             self.image = get_image(0, 12)
+        elif self.type == "button":
+            self.image = get_button_block_image(self.data)
         if self.glassed:
             see = [0, 0, 0, 0]
             see2 = [0, 0, 0, 0]
@@ -136,6 +138,7 @@ from wire_box import WireBox
 from memory import Memory
 from sensor import Sensor
 from energy_block import EnergyBlock
+from button_block import ButtonBlock
 
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "wire":
@@ -160,4 +163,6 @@ def get_block(world, pos, type, glassed=0, data=None):
         return(Sensor(world, pos, glassed, data))
     elif type == "energy block":
         return(EnergyBlock(world, pos, glassed, data))
+    elif type == "button":
+        return (ButtonBlock(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))
