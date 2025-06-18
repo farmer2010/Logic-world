@@ -86,7 +86,7 @@ class Block():
                     b = self.world.field[pos[0]][pos[1]]
                     if b.glassed:
                         see2[i] = 1
-            img = get_image(2 + see[2] * 2 + see[3], see[0] * 2 + see[1], size=10)
+            img = get_image(6 + see[2] * 2 + see[3], 12 + see[0] * 2 + see[1], size=10)
             if see[0] and see[1] and not see2[1]:
                 img.set_at((9, 0), (170, 181, 193))
             if see[1] and see[2] and not see2[2]:

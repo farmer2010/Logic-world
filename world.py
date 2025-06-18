@@ -86,7 +86,7 @@ class World:
             #смена активного блока посредством курсора
             mousepos = pygame.mouse.get_pos()
             block_index = mousepos[1] // 80
-            xborder = mousepos[0] >= self.display_w - 70
+            xborder = mousepos[0] >= self.display_w - 80
             yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
             if self.IM.get_mouse(0):
                 if xborder and yborder:
@@ -263,6 +263,10 @@ class World:
             for i in range(len(self.inventory_names) - 1):
                 pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
+                #screen.blit(image_factory.get_image(8 + 4 * (i == self.inventory_index), 13), (self.display_w - 80, i * 80))
+                #screen.blit(image_factory.get_image(9 + 4 * (i == self.inventory_index), 12), (self.display_w - 40, i * 80))
+                #screen.blit(image_factory.get_image(6 + 4 * (i == self.inventory_index), 15), (self.display_w - 80, i * 80 + 40))
+                #screen.blit(image_factory.get_image(7 + 4 * (i == self.inventory_index), 14), (self.display_w - 40, i * 80 + 40))
                 img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
