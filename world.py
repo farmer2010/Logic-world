@@ -38,7 +38,8 @@ def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up"
     screen.blit(text_img, text_rect)
 
 class World:
-    def __init__(self, w=10, h=10, pos=[0, 0], level_name="level"):
+    def __init__(self, main, w=10, h=10, pos=[0, 0], level_name="level"):
+        self.main = main
         self.level_name = level_name
         self.w = w
         self.h = h
@@ -68,7 +69,7 @@ class World:
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
-        self.IM = IM()
+        self.IM = IM()#input manager
 
     def update(self, events):
         self.IM.update(events)
@@ -116,18 +117,26 @@ class World:
                 self.load_level(self.level_name)
             #нажатие на блок
             if self.IM.get_mouse(0):
-                mousepos = pygame.mouse.get_pos()
-                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-                if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
-                    if self.field[blockpos[0]][blockpos[1]].type != "air":
-                        self.field[blockpos[0]][blockpos[1]].action()
-            #установка и ломание
+                if (self.IM.mousetag_object[0] == None or self.IM.mousetag_object[0] == "action"):
+                    mousepos = pygame.mouse.get_pos()
+                    mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                    blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                    if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
+                        if self.field[blockpos[0]][blockpos[1]].type != "air":
+                            self.field[blockpos[0]][blockpos[1]].action()
+                            self.IM.mousetag_object[0] = "action"
+            if not pygame.mouse.get_pressed()[0]:
+                self.IM.mousetag_object[0] = None
+            #
             if pygame.mouse.get_pressed()[0]:#установка
-                mousepos = pygame.mouse.get_pos()
-                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-                self.set_block(blockpos, xborder)
+                if (self.IM.mousetag_object[0] == None or self.IM.mousetag_object[0] == "set"):
+                    self.IM.mousetag_object[0] = "set"
+                    mousepos = pygame.mouse.get_pos()
+                    mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                    blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                    self.set_block(blockpos, xborder)
+            else:
+                self.IM.mousetag_object[0] = None
             #---------------------------------------------------------------------------------------------------------------
             if pygame.mouse.get_pressed()[2]:#ломание
                 mousepos = pygame.mouse.get_pos()
@@ -205,15 +214,8 @@ class World:
                             bl.data["rotate"] = self.select_rotate
                         bl.connect_with_armored_wire()
                         self.change_image()
-                        self.mousetag = 1
                         if self.is_creative == 0:
                             self.inventory[self.inventory_names[self.inventory_index]] -= 1
-                        # ------------------------------------
-                elif self.mousetag == 0:#нажатие на блок
-                    self.timer = 0
-                    self.mousetag = 1
-                    self.field[blockpos[0]][blockpos[1]].action()
-                    self.change_image()
 
     def remove_block(self, blockpos, xborder):
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
@@ -263,10 +265,6 @@ class World:
             for i in range(len(self.inventory_names) - 1):
                 pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
-                #screen.blit(image_factory.get_image(8 + 4 * (i == self.inventory_index), 13), (self.display_w - 80, i * 80))
-                #screen.blit(image_factory.get_image(9 + 4 * (i == self.inventory_index), 12), (self.display_w - 40, i * 80))
-                #screen.blit(image_factory.get_image(6 + 4 * (i == self.inventory_index), 15), (self.display_w - 80, i * 80 + 40))
-                #screen.blit(image_factory.get_image(7 + 4 * (i == self.inventory_index), 14), (self.display_w - 40, i * 80 + 40))
                 img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))

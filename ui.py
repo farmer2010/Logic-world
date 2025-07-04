@@ -1,6 +1,7 @@
 from image_factory import get_image
 from button import Button
 import image_factory
+from world import World
 import pygame
 pygame.init()
 
@@ -19,8 +20,8 @@ def render_text(text, pos, screen, color=(0, 0, 0), size=24, centerx=False, cent
     screen.blit(text_img, text_rect)
 
 class UI:
-    def __init__(self, menu, data):
-        self.menu = menu
+    def __init__(self, main, data):
+        self.main = main
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
         self.floor_img = pygame.Surface((W, H))
@@ -30,7 +31,6 @@ class UI:
         #            self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.index = 0
         self.data = data
-        self.ret_data = data
 
     def update(self, events):
         for event in events:
@@ -42,10 +42,7 @@ class UI:
                     if self.index < 4:
                         self.index += 1
                 if event.key == pygame.K_RETURN:
-                    for i in range(4):
-                        self.ret_data[i] = int(self.data[i])
-                    self.ret_data[4] = "level" + self.data[4]
-                    self.menu[0] = "game"
+                    self.main.menu = World(self.main, w=int(self.data[0]), h=int(self.data[1]), pos=[int(self.data[2]), int(self.data[3])], level_name=self.data[4])
                 elif event.key == pygame.K_BACKSPACE:
                     self.data[self.index] = self.data[self.index][:len(self.data[self.index]) - 1]
                 elif self.index == 4:

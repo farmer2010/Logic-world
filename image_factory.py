@@ -85,4 +85,5 @@ def get_block_image(sftype, neighbours, data):
         img.set_colorkey((0, 0, 0))
         return(img)
     else:
+        return(get_image(0, 0))
         print(sftype)

@@ -14,7 +14,7 @@ class Button(pygame.sprite.Sprite):
 
     def update(self):
         if pygame.MOUSEBUTTONDOWN and self.collide_point(pygame.mouse.get_pos()):
-            onclick(self.param)
+            self.onclick(self.param)
 
     def collide_point(self, pos):
         return((pos[0] >= self.pos[0] and pos[1] >= self.pos[1]) and (pos[0] <= self.pos[0] + self.image.get_width() and pos[1] <= self.pos[1] + self.image.get_height()))
