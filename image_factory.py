@@ -2,15 +2,50 @@ import pygame
 pygame.init()
 
 texture = pygame.image.load("files/images/blocks.png")
+texture_ui = pygame.image.load("files/images/ui.png")
 
-def get_image(x, y, size=40):
+def render_text(text, pos, w, h, color=(0, 0, 0), centerx="left", centery="up", font=pygame.font.SysFont(None, 40), alpha=True):#отрисовка текста на экране
+    screen = pygame.Surface((w, h))
+    screen.fill((0, 1, 255))
+    screen.set_colorkey((0, 1, 255))
+    text_img = font.render(text, alpha, color)
+    text_rect = text_img.get_rect()
+    if centerx == "left":
+        text_rect.x = pos[0]
+    elif centerx == "center":
+        text_rect.centerx = pos[0]
+    elif centerx == "right":
+        text_rect.x = pos[0] - text_img.get_width()
+    if centery == "up":
+        text_rect.y = pos[1]
+    elif centery == "center":
+        text_rect.centery = pos[1]
+    elif centery == "down":
+        text_rect.y = pos[1] - text_img.get_height()
+    screen.blit(text_img, text_rect)
+    return(screen)
+
+def get_image(x, y, size=40, txtr=texture):
     x2 = x * 10
     y2 = y * 10
     img = pygame.Surface((10, 10))
     img.fill((255, 0, 128))
     img.set_colorkey((255, 0, 128))
-    img.blit(texture, (-x2, -y2))
+    img.blit(txtr, (-x2, -y2))
     img = pygame.transform.scale(img, (size, size))
+    return(img)
+
+def get_button_image(w, h, type, text=None, size=40):
+    img = pygame.Surface((w * size, h * size))
+    img.fill((255, 0, 128))
+    img.set_colorkey((255, 0, 128))
+    for x in range(w):
+        for y in range(h):
+            n = [y < h - 1, x < w - 1, y > 0, x > 0]
+            st = get_image(n[0] * 2 + n[3] + type * 4, n[2] * 2 + n[1], size=size, txtr=texture_ui)
+            img.blit(st, (x * size, y * size))
+    if (text != None):
+        img.blit(text, (0, 0))
     return(img)
 
 def get_wire_image(data, neighbours):
@@ -85,5 +120,4 @@ def get_block_image(sftype, neighbours, data):
         img.set_colorkey((0, 0, 0))
         return(img)
     else:
-        return(get_image(0, 0))
         print(sftype)

@@ -1,6 +1,7 @@
 #настройка
 import pygame
 from ui import UI
+from main_menu import MainMenu
 
 pygame.init()
 keep_going = True
@@ -19,7 +20,8 @@ black = (0, 0, 0)
 
 class Main():
     def __init__(self):
-       self.menu = UI(self, [str(int(W / 40)), str(int(H / 40)), "0", "0", "1"])
+        self.menu = MainMenu(self)
+        #self.menu = UI(self, [str(int(W / 40)), str(int(H / 40)), "0", "0", "1"])
 game_world = Main()
 
 while keep_going:
