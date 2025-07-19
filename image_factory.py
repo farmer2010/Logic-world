@@ -28,17 +28,13 @@ def render_text(text, pos, w, h, color=(0, 0, 0), centerx="left", centery="up", 
 def get_image(x, y, size=40, txtr=texture):
     x2 = x * 10
     y2 = y * 10
-    img = pygame.Surface((10, 10))
-    img.fill((255, 0, 128))
-    img.set_colorkey((255, 0, 128))
+    img = pygame.Surface((10, 10), flags=pygame.SRCALPHA)
     img.blit(txtr, (-x2, -y2))
     img = pygame.transform.scale(img, (size, size))
     return(img)
 
 def get_button_image(w, h, type, text=None, size=40):
-    img = pygame.Surface((w * size, h * size))
-    img.fill((255, 0, 128))
-    img.set_colorkey((255, 0, 128))
+    img = pygame.Surface((w * size, h * size), flags=pygame.SRCALPHA)
     for x in range(w):
         for y in range(h):
             n = [y < h - 1, x < w - 1, y > 0, x > 0]

@@ -2,6 +2,7 @@ from image_factory import get_image
 import image_factory
 from input_manager import InputManager as IM
 from block import Block
+from button import *
 import block
 import pygame
 pygame.init()
@@ -37,6 +38,9 @@ def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up"
         text_rect.y = pos[1] - text_img.get_height()
     screen.blit(text_img, text_rect)
 
+def change_menu(self, menu):
+    self.menu = menu
+
 class World:
     def __init__(self, main, w=10, h=10, pos=[0, 0], level_name="level"):
         self.main = main
@@ -70,6 +74,8 @@ class World:
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.IM = IM()#input manager
+        self.buttons = []
+        self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=()))
 
     def update(self, events):
         self.IM.update(events)
@@ -151,6 +157,10 @@ class World:
                 self.menu = "select blocks"
                 if self.inventory_index > len(self.inventory_names) - 2:
                     self.inventory_index = 0
+            if self.IM.get_key("ESC"):
+                self.menu = "ESC"
+                #self.IM.mousetag_object = [None, None, None]
+                #self.IM.mousetag = [0, 0, 0]
         elif self.menu == "select blocks":
             if self.IM.get_key("T") or self.IM.get_key("ESC"):
                 self.menu = "game"
@@ -168,6 +178,11 @@ class World:
             if blockpos[0] >= 0 and blockpos[1] < 12 and self.IM.get_mouse(0) and i < len(self.block_indexes2) and not self.block_indexes2[i] in self.inventory_names:
                 self.inventory_names[self.inventory_index] = self.block_indexes2[i]
                 self.inventory[self.block_indexes2[i]] = 9999
+        elif self.menu == "ESC":
+            if self.IM.get_key("ESC"):
+                self.menu = "game"
+            for b in self.buttons:
+                b.update(events)
 
     def update_map(self):
         if self.timer == 0:#обновление карты
@@ -293,6 +308,9 @@ class World:
                             img2 = pygame.Surface((50, 50))
                             img2.set_alpha(128)
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
+        elif self.menu == "ESC":
+            for b in self.buttons:
+                b.draw(screen)
 
     def change_image(self):
         for x in range(self.w):

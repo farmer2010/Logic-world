@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
 from input_manager import InputManager
-from button import Button
+from button import *
 from image_factory import *
 from ui import UI
 
@@ -23,12 +23,9 @@ class MainMenu():
             for y in range(int(H / 40)):
                     self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.buttons = []
-        text = render_text("PLAY", (240, 60), 480, 120, centerx="center", centery="center", font=pygame.font.Font("files/font.ttf", 70), alpha=False)
-        self.buttons.append(Button((720, 450), self.input_manager, get_button_image(12, 3, 0, text=text), get_button_image(12, 3, 2, text=text), get_button_image(12, 3, 1, text=text), onclick=lambda: print(1)))
-        text = render_text("EDITOR", (240, 60), 480, 120, centerx="center", centery="center", font=pygame.font.Font("files/font.ttf", 70), alpha=False)
-        self.buttons.append(Button((720, 600), self.input_manager, get_button_image(12, 3, 0, text=text), get_button_image(12, 3, 2, text=text), get_button_image(12, 3, 1, text=text), onclick=editor, onclick_params=(self.main)))
-        text = render_text("OPTIONS", (240, 60), 480, 120, centerx="center", centery="center", font=pygame.font.Font("files/font.ttf", 70), alpha=False)
-        self.buttons.append(Button((720, 750), self.input_manager, get_button_image(12, 3, 0, text=text), get_button_image(12, 3, 2, text=text), get_button_image(12, 3, 1, text=text), onclick=lambda: print(1)))
+        self.buttons.append(get_button(720, 450, 12, 3, "PLAY", self.input_manager))
+        self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", self.input_manager, onrelease=editor, onrelease_params=(self.main)))
+        self.buttons.append(get_button(720, 750, 12, 3, "OPTIONS", self.input_manager))
 
     def update(self, events):
         #self.input_manager.update(events)

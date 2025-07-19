@@ -166,3 +166,29 @@ def get_block(world, pos, type, glassed=0, data=None):
     elif type == "button":
         return (ButtonBlock(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))
+
+def get_block_params(type):
+    if type == "wire":
+        return({"activated" : 0})
+    elif type == "activator":
+        return({"activated" : 0})
+    elif type == "NOT":
+        return({"activated" : 0, "rotate" : 0})
+    elif type == "XOR" or type == "AND":
+        return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})
+    elif type == "armored wire":
+        return({"activated": 0, "connections" : [0, 0, 0, 0]})
+    elif type == "diode":
+        return({"activated1": 0, "activated2": 0, "rotate" : 0})
+    elif type == "output":
+        return({"activated" : 0, "rotate" : 0})
+    elif type == "wire box":
+        return({"activated1" : 0, "activated2" : 0})
+    elif type == "memory":
+        return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0, "inverted" : 0})
+    elif type == "sensor":
+        return()
+    elif type == "energy block":
+        return()
+    elif type == "button":
+        return ()
