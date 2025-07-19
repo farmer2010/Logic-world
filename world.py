@@ -234,7 +234,7 @@ class World:
                         self.timer = 0
                         bl = block.get_block(self, blockpos, self.inventory_names[self.inventory_index])
                         sl = self.inventory_names[self.inventory_index]
-                        if sl == "NOT" or sl == "AND" or sl == "XOR" or sl == "diode" or sl == "output" or sl == "memory" or sl == "sensor":
+                        if "rotate" in get_block_params(sl):
                             bl.data["rotate"] = self.select_rotate
                         bl.connect_with_armored_wire()
                         self.change_image()
