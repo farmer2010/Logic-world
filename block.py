@@ -187,8 +187,10 @@ def get_block_params(type):
     elif type == "memory":
         return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0, "inverted" : 0})
     elif type == "sensor":
-        return()
+        return({"activated" : 0, "rotate" : 0})
     elif type == "energy block":
-        return()
+        return({"activated" : 1})
     elif type == "button":
-        return ()
+        return ({"activated" : 0})
+    else:
+        return({})
