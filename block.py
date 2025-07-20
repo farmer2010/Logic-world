@@ -40,6 +40,8 @@ class Block():
                 pos = self.get_rotate_position(i)
                 if self.border(pos):
                     see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
+                    if self.world.field[pos[0]][pos[1]].type == "armored wire":
+                        see[i] = self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4]
             self.image = get_wire_image(self.data, see)
         elif self.type == "activator":#активатор
             self.image = get_activator_image(self.data)
@@ -50,6 +52,8 @@ class Block():
             front_pos = self.get_rotate_position(self.data["rotate"])
             if self.border(front_pos):
                 i = self.world.field[front_pos[0]][front_pos[1]].is_block_connect_with_wire(self.data["rotate"])
+                if self.world.field[front_pos[0]][front_pos[1]].type == "armored wire":
+                    i = self.world.field[front_pos[0]][front_pos[1]].data["connections"][(self.data["rotate"] + 2) % 4]
             self.image = get_NOT_image(self.data, [i, 0, 0, 0])
         elif self.type == "wire box":#распределительная коробка
             self.image = get_wire_box_image(self.data)

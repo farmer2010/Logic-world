@@ -124,6 +124,22 @@ class World:
                         self.inventory_index = i
                 else:
                     self.select_block = "air"
+            #изменение подключений защищенного провода
+            con = [self.IM.get_key("W"), self.IM.get_key("D"), self.IM.get_key("S"), self.IM.get_key("A")]
+            mousepos = pygame.mouse.get_pos()
+            mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+            if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
+                bl = self.field[blockpos[0]][blockpos[1]]
+                if bl.type == "armored wire":
+                    for i in range(4):
+                        if con[i]:
+                            pos = bl.get_rotate_position(i)
+                            if bl.data["connections"][i] == 1:
+                                bl.data["connections"][i] = 0
+                            elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][pos[1]].is_block_connect_with_wire(1):
+                                bl.data["connections"][i] = 1
+                            bl.connect_armored_wires()
             #сохранение уровня
             if self.IM.get_key("F1"):
                 self.save_level(self.level_name)

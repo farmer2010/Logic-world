@@ -20,10 +20,10 @@ class ArmoredWire(Block):
         return(sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
 
     def is_block_connect_output(self, rotate):
-        return (sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
+        return(sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
 
     def is_block_connect_input(self, rotate):
-        return (sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
+        return(sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
 
     def get_activated_key(self, rotate):#-|-
         return("activated")
@@ -41,3 +41,12 @@ class ArmoredWire(Block):
                 if self.border(pos):
                     if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
                         self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+
+    def connect_armored_wires(self):
+        for i in range(4):
+            pos = self.get_rotate_position(i)
+            if self.border(pos):
+                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_wire((i + 2) % 4) and self.data["connections"][i]:
+                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+                elif self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].data["connections"] and self.data["connections"][i] == 0:
+                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 0
