@@ -3,40 +3,11 @@ import image_factory
 from input_manager import InputManager as IM
 from block import *
 from button import *
+from utils import *
+from text_box import *
 import block
 import pygame
 pygame.init()
-
-def bin_to_dec(bin):
-    bin = bin[::-1]
-    num = 0
-    for i in range(len(bin)):
-        num += 2 ** i * int(bin[i])
-    return (num)
-
-def dec_to_bin(dec):
-    b = ""
-    while dec > 0:
-        b = str(dec % 2) + b
-        dec //= 2
-    return(b)
-
-def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up", font=pygame.font.SysFont(None, 40)):#отрисовка текста на экране
-    text_img = font.render(text, True, color)
-    text_rect = text_img.get_rect()
-    if centerx == "left":
-        text_rect.x = pos[0]
-    elif centerx == "center":
-        text_rect.centerx = pos[0]
-    elif centerx == "right":
-        text_rect.x = pos[0] - text_img.get_width()
-    if centery == "up":
-        text_rect.y = pos[1]
-    elif centery == "center":
-        text_rect.centery = pos[1]
-    elif centery == "down":
-        text_rect.y = pos[1] - text_img.get_height()
-    screen.blit(text_img, text_rect)
 
 def change_menu(self, menu):
     self.menu = menu
@@ -80,6 +51,7 @@ class World:
         self.buttons = []
         self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
         self.buttons.append(get_button(720, 420, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(TextBox((20, 20), self.IM, get_button_image(12, 2, 2), get_button_image(12, 2, 3), font=pygame.font.Font("files/faithful.ttf", 50)))
 
     def update(self, events):
         self.IM.update(events)
