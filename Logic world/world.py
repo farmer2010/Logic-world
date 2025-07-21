@@ -51,7 +51,7 @@ class World:
         self.buttons = []
         self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
         self.buttons.append(get_button(720, 420, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
-        self.buttons.append(TextBox((20, 20), self.IM, get_button_image(12, 2, 2), get_button_image(12, 2, 3), font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.buttons.append(get_text_box(20, 20, 12, 2, "", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
 
     def update(self, events):
         self.IM.update(events)

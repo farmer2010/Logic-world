@@ -25,7 +25,7 @@ class MainMenu():
         self.buttons = []
         self.buttons.append(get_button(720, 450, 12, 3, "PLAY", self.input_manager, font_size=90))
         self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", self.input_manager, font_size=90, onrelease=editor, onrelease_params=[self.main]))
-        self.buttons.append(get_button(720, 750, 12, 3, "OPTIONS", self.input_manager, font_size=90))
+        self.buttons.append(get_button(720, 750, 12, 3, "SETTINGS", self.input_manager, font_size=90))
 
     def update(self, events):
         #self.input_manager.update(events)

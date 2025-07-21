@@ -1,4 +1,5 @@
 import pygame
+pygame.init()
 
 def bin_to_dec(bin):
     bin = bin[::-1]

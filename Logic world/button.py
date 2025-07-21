@@ -1,4 +1,5 @@
 from image_factory import *
+from utils import *
 import pygame
 pygame.init()
 
@@ -59,6 +60,6 @@ def get_button(x, y, w, h, text, input_manager, font_size=70, text_color=(0, 0, 
     alpha = kwargs.get("alpha")
     if alpha == None:
         alpha = 0
-    t = render_text(text, (w * 40 / 2, h * 40 / 2), w * 40, h * 40, centerx="center", centery="center", font=pygame.font.Font("files/faithful.ttf", font_size), alpha=alpha, color=text_color)
+    t = render_text_image(text, (w * 40 / 2, h * 40 / 2), w * 40, h * 40, centerx="center", centery="center", font=pygame.font.Font("files/faithful.ttf", font_size), alpha=alpha, color=text_color)
     b = Button((x, y), input_manager, get_button_image(w, h, 0, text=t), get_button_image(w, h, 2, text=t), get_button_image(w, h, 1, text=t), onclick=kwargs.get("onclick"), onclick_params=kwargs.get("onclick_params"), onrelease=kwargs.get("onrelease"), onrelease_params=kwargs.get("onrelease_params"))
     return(b)

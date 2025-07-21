@@ -1,4 +1,5 @@
 from utils import *
+from image_factory import *
 import pygame
 pygame.init()
 
@@ -24,8 +25,11 @@ class TextBox():
         self.text_x = kwargs.get("text_x")
         if self.text_x == None:
             self.text_x = 10
+        self.timer = 0
 
     def update(self, events):
+        self.timer += 1
+        self.timer %= 60
         mousedown = pygame.mouse.get_pressed()[0]
         mousepos = pygame.mouse.get_pos()
         mouse_collide = (mousepos[0] >= self.pos[0] and mousepos[0] <= self.pos[0] + self.rect.w) and (mousepos[1] >= self.pos[1] and mousepos[1] <= self.pos[1] + self.rect.h)
@@ -60,4 +64,11 @@ class TextBox():
     def draw(self, screen):
         screen.blit(self.image, self.pos)
         render_text(self.text, (self.pos[0] + self.text_x, self.pos[1] + self.rect.h / 2), screen, centery="center", font=self.font, color=self.color)
+        if self.timer < 30 and self.input_manager.mouse_connect_object[0] == self:
+            text_img = self.font.render(self.text, True, self.color)
+            pygame.draw.rect(screen, self.color, (self.pos[0] + self.text_x + text_img.get_width(), self.pos[1] + self.rect.h / 2 - text_img.get_height() / 2, 4, text_img.get_height()))
 
+def get_text_box(x, y, w, h, text, input_manager, **kwargs):
+    text_box = TextBox((x, y), input_manager, get_button_image(w, h, 4), get_button_image(w, h, 5), font=kwargs.get("font"), size=kwargs.get("size"), color=kwargs.get("color"), text_x=kwargs.get("text_x"))
+    text_box.text = text
+    return(text_box)

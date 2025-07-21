@@ -15,10 +15,10 @@ class ButtonBlock(Block):
                     b = self.world.field[pos[0]][pos[1]]
                     if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or (b.type == "armored wire" and b.data["connections"][(i + 2) % 4])) and b.active == 0:
                         b.update({"rotate": i})
-            self.data["activated"] = 0
+            self.data["activated"] -= 1
 
     def action(self):
-        self.data["activated"] = 1
+        self.data["activated"] = 2
 
     def is_block_connect_with_wire(self, rotate):
         return(1)
