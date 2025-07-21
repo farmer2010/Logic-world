@@ -40,6 +40,9 @@ def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up"
 
 def change_menu(self, menu):
     self.menu = menu
+def mainmenu(main):
+    from main_menu import MainMenu
+    main.menu = MainMenu(main)
 
 class World:
     def __init__(self, main, w=10, h=10, pos=[0, 0], level_name="level"):
@@ -75,7 +78,8 @@ class World:
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.IM = IM()#input manager
         self.buttons = []
-        self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=()))
+        self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 420, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
 
     def update(self, events):
         self.IM.update(events)
