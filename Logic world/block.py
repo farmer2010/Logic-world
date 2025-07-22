@@ -27,6 +27,7 @@ class Block():
             [-1, 1]
         ]
         self.active = 0
+        self.logic_gate_active = 0
         self.is_logic_gate = 0
         self.has_output = 0
 

@@ -38,7 +38,8 @@ class TextBox():
                 if self.input_manager.mousetag_object[0] == None:
                     self.input_manager.mousetag_object[0] = self
             else:
-                self.input_manager.mousetag_object[0] = None
+                if self.input_manager.mousetag_object[0] == self:
+                    self.input_manager.mousetag_object[0] = None
                 self.image = self.hover_image
                 if self.mouselast:
                     self.input_manager.mouse_connect_object[0] = self
@@ -46,8 +47,9 @@ class TextBox():
         else:
             if self.input_manager.mousetag_object[0] == self:
                 self.input_manager.mouse_connect_object[0] = self
+                if not mousedown:
+                    self.input_manager.mousetag_object[0] = None
             if not mousedown:
-                self.input_manager.mousetag_object[0] = None
                 self.image = self.inactive_image
             if mousedown and self.input_manager.mouse_connect_object[0] == self:
                 self.input_manager.mouse_connect_object[0] = None

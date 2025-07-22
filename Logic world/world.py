@@ -16,9 +16,8 @@ def mainmenu(main):
     main.menu = MainMenu(main)
 
 class World:
-    def __init__(self, main, w=10, h=10, pos=[0, 0], level_name="level"):
+    def __init__(self, main, w=10, h=10, pos=[0, 0]):
         self.main = main
-        self.level_name = level_name
         self.w = w
         self.h = h
         self.field = [[None for y in range(h)] for x in range(w)]
@@ -50,8 +49,13 @@ class World:
         self.IM = IM()#input manager
         self.buttons = []
         self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 420, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
-        self.buttons.append(get_text_box(20, 20, 12, 2, "", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.buttons.append(get_button(720, 420, 12, 2, "EDIT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 540, 12, 2, "", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.buttons.append(get_button(720, 660, 5, 2, "SAVE", self.IM, font_size=50, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(1000, 660, 5, 2, "LOAD", self.IM, font_size=50, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 780, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.edit_buttons = []
+        self.edit_buttons.append(get_button(720, 180, 12, 2, "BACK TO MENU", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
 
     def update(self, events):
         self.IM.update(events)
@@ -116,12 +120,6 @@ class World:
                             elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][pos[1]].is_block_connect_with_wire(1):
                                 bl.data["connections"][i] = 1
                             bl.connect_armored_wires()
-            #сохранение уровня
-            if self.IM.get_key("F1"):
-                self.save_level(self.level_name)
-            #загрузка уровня
-            if self.IM.get_key("F2"):
-                self.load_level(self.level_name)
             #нажатие на блок
             if self.IM.get_mouse(0):
                 if (self.IM.mousetag_object[0] == None or self.IM.mousetag_object[0] == "action"):
@@ -184,12 +182,18 @@ class World:
                 self.menu = "game"
             for b in self.buttons:
                 b.update(events)
+        elif self.menu == "edit":
+            if self.IM.get_key("ESC"):
+                self.menu = "ESC"
+            for b in self.edit_buttons:
+                b.update(events)
 
     def update_map(self):
         if self.timer == 0:#обновление карты
             for x in range(self.w):#стираем active и электричество
                 for y in range(self.h):
                     self.field[x][y].active = 0
+                    self.field[x][y].logic_gate_active = 0
                     if self.field[x][y].type == "wire" or self.field[x][y].type == "output" or self.field[x][y].type == "armored wire":
                         self.field[x][y].data["activated"] = 0
                     elif self.field[x][y].type == "wire box" or self.field[x][y].type == "diode":
@@ -311,6 +315,9 @@ class World:
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
         elif self.menu == "ESC":
             for b in self.buttons:
+                b.draw(screen)
+        elif self.menu == "edit":
+            for b in self.edit_buttons:
                 b.draw(screen)
 
     def change_image(self):

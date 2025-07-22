@@ -3,13 +3,14 @@ pygame.init()
 from input_manager import InputManager
 from button import *
 from image_factory import *
+from world import World
 from ui import UI
 
 
 def editor(main):
     W = pygame.display.Info().current_w
     H = pygame.display.Info().current_h
-    main.menu = UI(main, [str(int(W / 40)), str(int(H / 40)), "0", "0", "1"])
+    main.menu = World(main, w=int(W / 40), h=int(H / 40), pos=[0, 0])
 
 class MainMenu():
     def __init__(self, main):

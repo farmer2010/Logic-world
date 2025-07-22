@@ -11,15 +11,18 @@ class Sensor(Block):
         if not enr:
             behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
             #вход
+            s = self.data["activated"]
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                s = self.data["activated"]
-                if behind_block.get_activated_key((self.data["rotate"] + 2) % 4) != None:
+                #print(behind_block)
+                if behind_block.get_activated_key((self.data["rotate"] + 2) % 4) != None and behind_block.logic_gate_active == 0:
                     self.data["activated"] = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
                 else:
                     self.data["activated"] = 0
-                if self.data["activated"] != s:
-                    self.active = 1
+            else:
+                self.data["activated"] = 0
+            if self.data["activated"] != s:
+                self.logic_gate_active = 1
         if enr:
             #распространение сигнала
             front_pos = self.get_rotate_position(self.data["rotate"])
