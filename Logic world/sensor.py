@@ -13,10 +13,13 @@ class Sensor(Block):
             #вход
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
+                s = self.data["activated"]
                 if behind_block.get_activated_key((self.data["rotate"] + 2) % 4) != None:
                     self.data["activated"] = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
                 else:
                     self.data["activated"] = 0
+                if self.data["activated"] != s:
+                    self.active = 1
         if enr:
             #распространение сигнала
             front_pos = self.get_rotate_position(self.data["rotate"])

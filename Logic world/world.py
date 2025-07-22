@@ -197,11 +197,11 @@ class World:
                         self.field[x][y].data["activated2"] = 0
             for x in range(self.w):#распространение электричества
                 for y in range(self.h):
-                    if self.field[x][y].is_logic_gate:
+                    if self.field[x][y].has_output:
                         self.field[x][y].update()
             for x in range(self.w):#активация логических вентилей
                 for y in range(self.h):
-                    if self.field[x][y].has_output:
+                    if self.field[x][y].is_logic_gate:
                         self.field[x][y].update(self.field[x][y].data, enr=0)
             self.change_image()
         self.timer = 0

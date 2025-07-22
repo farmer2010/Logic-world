@@ -30,6 +30,14 @@ class Block():
         self.is_logic_gate = 0
         self.has_output = 0
 
+    def __str__(self):
+        s = f"{self.type} at {str(self.pos)}\n"
+        param = self.data.keys()
+        for p in param:
+            s += f"{p}: {str(self.data[p])}\n"
+        s = s[:len(s) - 1]
+        return(s)
+
     def change_image(self):#сменить картинку
         if self.type == "air":#воздух
             self.image.fill((0, 0, 0))

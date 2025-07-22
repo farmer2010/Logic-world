@@ -10,8 +10,7 @@ steps = 0
 W = pygame.display.Info().current_w
 H = pygame.display.Info().current_h
 screen = pygame.display.set_mode([W, H])
-description = "Logic world"
-pygame.display.set_caption(description)
+pygame.display.set_caption("Logic world")
 timer = pygame.time.Clock()
 black = (0, 0, 0)
 #game_world = World(int(W / 40), int(H / 40))

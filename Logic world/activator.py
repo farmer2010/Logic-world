@@ -8,7 +8,6 @@ class Activator(Block):
         self.has_output = 1
 
     def update(self, data={}, enr=1):
-        self.active = 1
         if self.data["activated"]:
             for i in range(4):
                 pos = self.get_rotate_position(i)
