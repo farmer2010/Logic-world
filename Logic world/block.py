@@ -13,7 +13,7 @@ class Block():
             self.data = preset_data
         else:
             self.data = data
-        self.image = pygame.Surface((40, 40))
+        self.image = pygame.Surface((self.world.block_scale, self.world.block_scale))
         self.movelist = [
             [0, -1],
             [1, 0],
@@ -51,11 +51,11 @@ class Block():
                     see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
                     if self.world.field[pos[0]][pos[1]].type == "armored wire":
                         see[i] = self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4]
-            self.image = get_wire_image(self.data, see)
+            self.image = get_wire_image(self.data, see, size=self.world.block_scale)
         elif self.type == "activator":#активатор
-            self.image = get_activator_image(self.data)
+            self.image = get_activator_image(self.data, size=self.world.block_scale)
         elif self.type == "block":#кирпич
-            self.image = get_image(0, 1)
+            self.image = get_image(0, 1, size=self.world.block_scale)
         elif self.type == "NOT":#логический вентиль NOT
             i = 0
             front_pos = self.get_rotate_position(self.data["rotate"])
@@ -63,27 +63,27 @@ class Block():
                 i = self.world.field[front_pos[0]][front_pos[1]].is_block_connect_with_wire(self.data["rotate"])
                 if self.world.field[front_pos[0]][front_pos[1]].type == "armored wire":
                     i = self.world.field[front_pos[0]][front_pos[1]].data["connections"][(self.data["rotate"] + 2) % 4]
-            self.image = get_NOT_image(self.data, [i, 0, 0, 0])
+            self.image = get_NOT_image(self.data, [i, 0, 0, 0], size=self.world.block_scale)
         elif self.type == "wire box":#распределительная коробка
-            self.image = get_wire_box_image(self.data)
+            self.image = get_wire_box_image(self.data, size=self.world.block_scale)
         elif self.type == "AND":#логический вентиль AND
-            self.image = get_AND_image(self.data)
+            self.image = get_AND_image(self.data, size=self.world.block_scale)
         elif self.type == "XOR":#логический вентиль XOR
-            self.image = get_XOR_image(self.data)
+            self.image = get_XOR_image(self.data, size=self.world.block_scale)
         elif self.type == "diode":#диод
-            self.image = get_diode_image(self.data)
+            self.image = get_diode_image(self.data, size=self.world.block_scale)
         elif self.type == "output":#лампа выхода
-            self.image = get_output_image(self.data)
+            self.image = get_output_image(self.data, size=self.world.block_scale)
         elif self.type == "armored wire":#защищенный провод
-            self.image = get_armored_wire_image(self.data, self.data["connections"])
+            self.image = get_armored_wire_image(self.data, self.data["connections"], size=self.world.block_scale)
         elif self.type == "memory":#ячейка памяти
-            self.image = get_memory_image(self.data)
+            self.image = get_memory_image(self.data, size=self.world.block_scale)
         elif self.type == "sensor":#сенсор
-            self.image = get_sensor_image(self.data)
+            self.image = get_sensor_image(self.data, size=self.world.block_scale)
         elif self.type == "energy block":#блок сигнала
-            self.image = get_image(1, 3)
+            self.image = get_image(1, 3, size=self.world.block_scale)
         elif self.type == "button":
-            self.image = get_image(0, 3)
+            self.image = get_image(0, 3, size=self.world.block_scale)
         if self.glassed:
             see = [0, 0, 0, 0]
             see2 = [0, 0, 0, 0]
@@ -108,10 +108,10 @@ class Block():
                img.set_at((0, 9), (170, 181, 193))
             if see[3] and see[0] and not see2[0]:
                 img.set_at((0, 0), (170, 181, 193))
-            self.image.blit(pygame.transform.scale(img, (40, 40)), (0, 0))
+            self.image.blit(pygame.transform.scale(img, (self.world.block_scale, self.world.block_scale)), (0, 0))
 
     def draw(self, screen, world_pos):
-        screen.blit(self.image, (world_pos[0] + self.pos[0] * 40, world_pos[1] + self.pos[1] * 40))
+        screen.blit(self.image, (world_pos[0] + self.pos[0] * self.world.block_scale, world_pos[1] + self.pos[1] * self.world.block_scale))
 
     def action(self):#нажатие на блок
         pass

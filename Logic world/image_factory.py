@@ -24,75 +24,75 @@ def get_button_image(w, h, type, text=None, size=40):
         img.blit(text, (0, 0))
     return(img)
 
-def get_wire_image(data, neighbours):
-    return(get_image(6 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], neighbours[0] * 2 + neighbours[1]))
+def get_wire_image(data, neighbours, size=40):
+    return(get_image(6 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], neighbours[0] * 2 + neighbours[1], size=size))
 
-def get_activator_image(data):
-    return(get_image(data["activated"], 2))
+def get_activator_image(data, size=40):
+    return(get_image(data["activated"], 2, size=size))
 
-def get_NOT_image(data, neighbours):
-    return(get_image(10 + data["activated"] * 2 + neighbours[0], 4 + data["rotate"]))
+def get_NOT_image(data, neighbours, size=40):
+    return(get_image(10 + data["activated"] * 2 + neighbours[0], 4 + data["rotate"], size=size))
 
-def get_glass_image(neighbours):
-    return(get_image(2 + neighbours[0] * 2 + neighbours[3], neighbours[2] * 2 + neighbours[1]))
+def get_glass_image(neighbours, size=40):
+    return(get_image(2 + neighbours[0] * 2 + neighbours[3], neighbours[2] * 2 + neighbours[1], size=size))
 
-def get_wire_box_image(data):
-    return(get_image(5, data["activated1"] + data["activated2"] * 2 + 8))
+def get_wire_box_image(data, size=40):
+    return(get_image(5, data["activated1"] + data["activated2"] * 2 + 8, size=size))
 
-def get_AND_image(data):
-    return(get_image(14 + data["activated1"] + data["activated2"] * 2, data["rotate"]))
+def get_AND_image(data, size=40):
+    return(get_image(14 + data["activated1"] + data["activated2"] * 2, data["rotate"], size=size))
 
-def get_XOR_image(data):
-    return(get_image(14 + data["activated1"] + data["activated2"] * 2, 4 + data["rotate"]))
+def get_XOR_image(data, size=40):
+    return(get_image(14 + data["activated1"] + data["activated2"] * 2, 4 + data["rotate"], size=size))
 
-def get_diode_image(data):
-    return(get_image(data["activated1"] + data["activated2"] + 2, 8 + data["rotate"]))
+def get_diode_image(data, size=40):
+    return(get_image(data["activated1"] + data["activated2"] + 2, 8 + data["rotate"], size=size))
 
-def get_output_image(data):
-    return(get_image(data["activated"], 8 + data["rotate"]))
+def get_output_image(data, size=40):
+    return(get_image(data["activated"], 8 + data["rotate"], size=size))
 
-def get_armored_wire_image(data, neighbours):
-    return(get_image(2 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], 4 + neighbours[0] * 2 + neighbours[1]))
+def get_armored_wire_image(data, neighbours, size=40):
+    return(get_image(2 + neighbours[2] * 2 + neighbours[3] + 4 * data["activated"], 4 + neighbours[0] * 2 + neighbours[1], size=size))
 
-def get_memory_image(data):
-    return(get_image(data["activated1"] + data["activated2"] * 2 + data["activated"] * 4 + 6, data["rotate"] + 8))
+def get_memory_image(data, size=40):
+    return(get_image(data["activated1"] + data["activated2"] * 2 + data["activated"] * 4 + 6, data["rotate"] + 8, size=size))
 
-def get_sensor_image(data):
-    return(get_image(data["activated"], data["rotate"] + 4))
+def get_sensor_image(data, size=40):
+    return(get_image(data["activated"], data["rotate"] + 4, size=size))
 
-def get_block_image(sftype, neighbours, data):
+def get_block_image(sftype, neighbours, data, size=40):
     if sftype == "wire":
-        return(get_wire_image(data, neighbours))
+        return(get_wire_image(data, neighbours, size=size))
     elif sftype == "activator":
-        return(get_activator_image(data))
+        return(get_activator_image(data, size=size))
     elif sftype == "block":
-        return(get_image(0, 1))
+        return(get_image(0, 1, size=size))
     elif sftype == "NOT":
-        return(get_NOT_image(data, neighbours))
+        return(get_NOT_image(data, neighbours, size=size))
     elif sftype == "wire box":
-        return(get_wire_box_image(data))
+        return(get_wire_box_image(data, size=size))
     elif sftype == "AND":
-        return(get_AND_image(data))
+        return(get_AND_image(data, size=size))
     elif sftype == "XOR":
-        return(get_XOR_image(data))
+        return(get_XOR_image(data, size=size))
     elif sftype == "glass":
-        return(get_glass_image(neighbours))
+        return(get_glass_image(neighbours, size=size))
     elif sftype == "diode":
-        return(get_diode_image(data))
+        return(get_diode_image(data, size=size))
     elif sftype == "output":
-        return(get_output_image(data))
+        return(get_output_image(data, size=size))
     elif sftype == "armored wire":
-        return(get_armored_wire_image(data, neighbours))
+        return(get_armored_wire_image(data, neighbours, size=size))
     elif sftype == "memory":
-        return(get_memory_image(data))
+        return(get_memory_image(data, size=size))
     elif sftype == "sensor":
-        return(get_sensor_image(data))
+        return(get_sensor_image(data, size=size))
     elif sftype == "energy block":
-        return(get_image(1, 3))
+        return(get_image(1, 3, size=size))
     elif sftype == "button":
-        return(get_image(0, 3))
+        return(get_image(0, 3, size=size))
     elif sftype == "air":
-        img = pygame.Surface((40, 40))
+        img = pygame.Surface((size, size))
         img.set_colorkey((0, 0, 0))
         return(img)
     else:

@@ -10,7 +10,8 @@ from ui import UI
 def editor(main):
     W = pygame.display.Info().current_w
     H = pygame.display.Info().current_h
-    main.menu = World(main, w=int(W / 40), h=int(H / 40), pos=[0, 0])
+    b = 40
+    main.menu = World(main, w=int(W / b), h=int(H / b), pos=[0, 0], block_scale=b)
 
 class MainMenu():
     def __init__(self, main):

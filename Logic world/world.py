@@ -14,26 +14,42 @@ def change_menu(self, menu):
 def mainmenu(main):
     from main_menu import MainMenu
     main.menu = MainMenu(main)
+def setpos(self, x, y):
+    try:
+        self.pos[0] = int(x.text) * self.block_scale
+        self.pos[1] = int(y.text) * self.block_scale
+        for x in range(int(self.display_w / self.block_scale)):
+            for y in range(int(self.display_h / self.block_scale)):
+                if x >= int(x.text) and x < int(x.text) + self.w and y >= int(y.text) and y < int(y.text) + self.h:
+                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+                else:
+                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+    except:
+        print(x.text, y.text)
+
 
 class World:
-    def __init__(self, main, w=10, h=10, pos=[0, 0]):
+    def __init__(self, main, w=10, h=10, pos=[0, 0], block_scale=20):
         self.main = main
         self.w = w
         self.h = h
+        self.block_scale = block_scale
         self.field = [[None for y in range(h)] for x in range(w)]
         self.field = [[Block(self, (x, y), "air") for y in range(h)] for x in range(w)]
-        self.pos = [pos[0] * 40, pos[1] * 40]
+        self.pos = [pos[0] * self.block_scale, pos[1] * self.block_scale]
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
+        if -1 in self.pos:
+            self.pos = []
         self.display_w = W
         self.display_h = H
         self.floor_img = pygame.Surface((W, H))
-        for x in range(int(W / 40)):
-            for y in range(int(H / 40)):
+        for x in range(int(W / self.block_scale)):
+            for y in range(int(H / self.block_scale)):
                 if x >= pos[0] and x < pos[0] + self.w and y >= pos[1] and y < pos[1] + self.h:
-                    self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
+                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
                 else:
-                    self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
+                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
         self.change_image()
         self.timer = 0
         self.menu = "game"
@@ -48,14 +64,18 @@ class World:
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.IM = IM()#input manager
         self.buttons = []
-        self.buttons.append(get_button(720, 300, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 420, 12, 2, "EDIT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 540, 12, 2, "", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
-        self.buttons.append(get_button(720, 660, 5, 2, "SAVE", self.IM, font_size=50, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(1000, 660, 5, 2, "LOAD", self.IM, font_size=50, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 780, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 300, 12, 2, "EDIT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.buttons.append(get_button(720, 500, 5, 2, "SAVE", self.IM, font_size=50, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", self.IM, font_size=50, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 600, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
         self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 180, 12, 2, "BACK TO MENU", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=50, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
 
     def update(self, events):
         self.IM.update(events)
@@ -95,7 +115,7 @@ class World:
             if self.IM.get_key("Q"):
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                 if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
                     i = 0
                     while self.inventory_names[i] != self.field[blockpos[0]][blockpos[1]].type:
@@ -108,7 +128,7 @@ class World:
             con = [self.IM.get_key("W"), self.IM.get_key("D"), self.IM.get_key("S"), self.IM.get_key("A")]
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+            blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
             if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
                 bl = self.field[blockpos[0]][blockpos[1]]
                 if bl.type == "armored wire":
@@ -125,7 +145,7 @@ class World:
                 if (self.IM.mousetag_object[0] == None or self.IM.mousetag_object[0] == "action"):
                     mousepos = pygame.mouse.get_pos()
                     mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                    blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                    blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                     if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
                         if self.field[blockpos[0]][blockpos[1]].type != "air":
                             self.field[blockpos[0]][blockpos[1]].action()
@@ -138,7 +158,7 @@ class World:
                     self.IM.mousetag_object[0] = "set"
                     mousepos = pygame.mouse.get_pos()
                     mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                    blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                    blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                     self.set_block(blockpos, xborder)
             else:
                 self.IM.mousetag_object[0] = None
@@ -146,7 +166,7 @@ class World:
             if pygame.mouse.get_pressed()[2]:#ломание
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                 self.remove_block(blockpos, xborder)
             #---------------------------------------------------------------------------------------------------------------
             #обновление карты
@@ -268,16 +288,16 @@ class World:
             #"тень" от блока в "руке"
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-            blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+            blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
             if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
                 if self.field[blockpos[0]][blockpos[1]].type == "air" or self.inventory_names[self.inventory_index] == "glass":
                     if self.inventory_names[self.inventory_index] != "air":
-                        select_image = image_factory.get_block_image(self.inventory_names[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0})
+                        select_image = image_factory.get_block_image(self.inventory_names[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0}, size=self.block_scale)
                         select_image.convert_alpha()
                         select_image.set_alpha(90)
                     else:
-                        select_image = image_factory.get_block_image("air", [], {})
-                    screen.blit(select_image, (blockpos[0] * 40 + self.pos[0], blockpos[1] * 40 + self.pos[1]))
+                        select_image = image_factory.get_block_image("air", [], {}, size=self.block_scale)
+                    screen.blit(select_image, (blockpos[0] * self.block_scale + self.pos[0], blockpos[1] * self.block_scale + self.pos[1]))
             #
             if self.inventory_index != len(self.inventory_names) - 1:
                 pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
@@ -319,6 +339,8 @@ class World:
         elif self.menu == "edit":
             for b in self.edit_buttons:
                 b.draw(screen)
+            render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
+            render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
 
     def change_image(self):
         for x in range(self.w):
@@ -330,8 +352,8 @@ class World:
         txt = ""
         txt += str(self.w) + ";"
         txt += str(self.h) + ";"
-        txt += str(int(self.pos[0] / 40)) + ";"
-        txt += str(int(self.pos[1] / 40)) + ";"
+        txt += str(int(self.pos[0] / self.block_scale)) + ";"
+        txt += str(int(self.pos[1] / self.block_scale)) + ";"
         glassed = ""
         for x in range(self.w):
             for y in range(self.h):
@@ -365,8 +387,8 @@ class World:
         txt = file.readline()
         self.w = int(txt.split(";")[0])
         self.h = int(txt.split(";")[1])
-        self.pos[0] = int(txt.split(";")[2]) * 40
-        self.pos[1] = int(txt.split(";")[3]) * 40
+        self.pos[0] = int(txt.split(";")[2]) * self.block_scale
+        self.pos[1] = int(txt.split(";")[3]) * self.block_scale
         pos = [int(txt.split(";")[2]) , int(txt.split(";")[3])]
         file.close()
         W = pygame.display.Info().current_w
@@ -375,9 +397,9 @@ class World:
         for x in range(int(W / 40)):
             for y in range(int(H / 40)):
                 if x >= pos[0] and x < pos[0] + self.w and y >= pos[1] and y < pos[1] + self.h:
-                    self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
+                    self.floor_img.blit(get_image(1, 0), (x * self.block_scale, y * self.block_scale))
                 else:
-                    self.floor_img.blit(get_image(0, 0), (x * 40, y * 40))
+                    self.floor_img.blit(get_image(0, 0), (x * self.block_scale, y * self.block_scale))
         self.field = [[Block(self, (x, y), "air") for y in range(self.h)] for x in range(self.w)]
         #
         inv = txt.split(";")[5].split(":")
@@ -436,3 +458,4 @@ class World:
                     win_list.append(self.field[x][y].data["activated"])
         if sum(win_list) == len(win_list) and len(win_list) > 0:
             pass
+            #win
