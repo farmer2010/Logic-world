@@ -148,11 +148,17 @@ class World:
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                 blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                 if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
-                    i = 0
-                    while self.inventory_names[i] != self.field[blockpos[0]][blockpos[1]].type:
-                        i += 1
-                    if i != None:
-                        self.inventory_index = i
+                    if self.field[blockpos[0]][blockpos[1]].type in self.inventory_names:
+                        i = 0
+                        while self.inventory_names[i] != self.field[blockpos[0]][blockpos[1]].type:
+                            i += 1
+                        if i != None:
+                            self.inventory_index = i
+                    else:
+                        if self.inventory_index == len(self.inventory_names) - 1:
+                            self.inventory_index = 0
+                        self.inventory_names[self.inventory_index] = self.field[blockpos[0]][blockpos[1]].type
+                        self.inventory[self.inventory_index] = 9999
                 else:
                     self.select_block = "air"
             #изменение подключений защищенного провода
