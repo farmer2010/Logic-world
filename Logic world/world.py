@@ -26,6 +26,29 @@ def setpos(self, x, y):
                     self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
     except:
         print(x.text, y.text)
+def resise(self, w, h):
+    #try:
+    if 1:
+        self.w = int(w.text)
+        self.h = int(h.text)
+        for x in range(int(self.display_w / self.block_scale)):
+            for y in range(int(self.display_h / self.block_scale)):
+                if x >= self.pos[0] / 40 and x < self.pos[0] / 40 + self.w and y >= self.pos[1] / 40 and y < self.pos[1] / 40 + self.h:
+                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+                else:
+                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+        f = [[None for y in range(self.h)] for x in range(self.w)]
+        for x in range(self.w):
+            for y in range(self.h):
+                if x < len(self.field) and y < len(self.field[0]):
+                    f[x][y] = self.field[x][y]
+        self.field = f
+        for x in range(self.w):
+            for y in range(self.h):
+                if self.field[x][y] == None:
+                    self.field[x][y] = Block(self, (x, y), "air")
+    #except:
+    #    print("error", w.text, h.text)
 
 
 class World:
@@ -76,6 +99,11 @@ class World:
         self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
         self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=50, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
         self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
+        self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", self.IM, font_size=50, onrelease=resise, onrelease_params=[self, self.edit_buttons[5], self.edit_buttons[6]]))
 
     def update(self, events):
         self.IM.update(events)
@@ -147,7 +175,7 @@ class World:
                     mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                     blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                     if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
-                        if self.field[blockpos[0]][blockpos[1]].type != "air":
+                        if self.field[blockpos[0]][blockpos[1]].has_action:
                             self.field[blockpos[0]][blockpos[1]].action()
                             self.IM.mousetag_object[0] = "action"
             if not pygame.mouse.get_pressed()[0]:
@@ -281,6 +309,7 @@ class World:
         font = pygame.font.SysFont(None, 25)
         screen.fill((90, 90, 90))
         screen.blit(self.floor_img, [0, 0])#пол
+        #print(self.w, self.h, len(self.field), len(self.field[0]))
         for x in range(self.w):#блоки
             for y in range(self.h):
                 self.field[x][y].draw(screen, self.pos)
@@ -334,6 +363,7 @@ class World:
                             img2.set_alpha(128)
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
         elif self.menu == "ESC":
+            screen.blit(get_button_image(14, 14, 6), (680, 160))
             for b in self.buttons:
                 b.draw(screen)
         elif self.menu == "edit":
@@ -341,6 +371,8 @@ class World:
                 b.draw(screen)
             render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
             render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
+            render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
+            render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
 
     def change_image(self):
         for x in range(self.w):

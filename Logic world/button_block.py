@@ -5,6 +5,7 @@ class ButtonBlock(Block):
         preset_data = {"activated" : 0}
         Block.__init__(self, world, pos, "button", glassed, data, preset_data)
         self.has_output = 1
+        self.has_action = 1
 
     def update(self, data={}, enr=1):
         self.active = 1

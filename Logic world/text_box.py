@@ -71,6 +71,6 @@ class TextBox():
             pygame.draw.rect(screen, self.color, (self.pos[0] + self.text_x + text_img.get_width(), self.pos[1] + self.rect.h / 2 - text_img.get_height() / 2, 4, text_img.get_height()))
 
 def get_text_box(x, y, w, h, text, input_manager, **kwargs):
-    text_box = TextBox((x, y), input_manager, get_button_image(w, h, 4), get_button_image(w, h, 5), font=kwargs.get("font"), size=kwargs.get("size"), color=kwargs.get("color"), text_x=kwargs.get("text_x"))
+    text_box = TextBox((x, y), input_manager, get_button_image(w, h, 2), get_button_image(w, h, 3), font=kwargs.get("font"), size=kwargs.get("size"), color=kwargs.get("color"), text_x=kwargs.get("text_x"))
     text_box.text = text
     return(text_box)

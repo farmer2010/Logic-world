@@ -30,6 +30,7 @@ class Block():
         self.logic_gate_active = 0
         self.is_logic_gate = 0
         self.has_output = 0
+        self.has_action = 0
 
     def __str__(self):
         s = f"{self.type} at {str(self.pos)}\n"

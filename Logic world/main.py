@@ -1,4 +1,5 @@
 #настройка
+import shutil
 import pygame
 from ui import UI
 from main_menu import MainMenu
@@ -6,6 +7,8 @@ from main_menu import MainMenu
 pygame.init()
 keep_going = True
 steps = 0
+
+shutil.rmtree("__pycache__")
 
 W = pygame.display.Info().current_w
 H = pygame.display.Info().current_h
