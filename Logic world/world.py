@@ -165,7 +165,7 @@ class World:
                             pos = bl.get_rotate_position(i)
                             if bl.data["connections"][i] == 1:
                                 bl.data["connections"][i] = 0
-                            elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][pos[1]].is_block_connect_with_wire(1):
+                            elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i):
                                 bl.data["connections"][i] = 1
                             bl.connect_armored_wires()
             #нажатие на блок

@@ -129,6 +129,9 @@ class Block():
     def is_block_connect_with_wire(self, rotate):#используется направление, ПРОТИВОПОЛОЖНОЕ направлению к блоку, с которым проверяем соединение(если блок сверху(0), в функции должно быть "вниз"(2))
          return(0)
 
+    def is_block_connect_with_armored_wire(self, rotate):
+        return(self.is_block_connect_with_wire(rotate))
+
     def is_block_connect_output(self, rotate):#-|-
         return(0)
 
