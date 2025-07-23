@@ -128,17 +128,20 @@ class World:
                     self.inventory_index = block_index
             #поворот блока
             if self.IM.get_key("R"):
-                if "rotate" in get_block_params(self.inventory_names[self.inventory_index]):
-                    self.select_rotate += 1
-                    self.select_rotate %= 4
-                elif self.inventory_names[self.inventory_index] == "air":
-                    mousepos = pygame.mouse.get_pos()
-                    mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                    blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
-                    if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
-                        if "rotate" in self.field[blockpos[0]][blockpos[1]].data:
-                            self.field[blockpos[0]][blockpos[1]].data["rotate"] += 1
-                            self.field[blockpos[0]][blockpos[1]].data["rotate"] %= 4
+                mousepos = pygame.mouse.get_pos()
+                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
+                    if "rotate" in self.field[blockpos[0]][blockpos[1]].data:
+                        self.field[blockpos[0]][blockpos[1]].data["rotate"] += 1
+                        self.field[blockpos[0]][blockpos[1]].data["rotate"] %= 4
+                    elif "rotate" in get_block_params(self.inventory_names[self.inventory_index]):
+                        self.select_rotate += 1
+                        self.select_rotate %= 4
+                else:
+                    if "rotate" in get_block_params(self.inventory_names[self.inventory_index]):
+                        self.select_rotate += 1
+                        self.select_rotate %= 4
             #пипетка
             if self.IM.get_key("Q"):
                 mousepos = pygame.mouse.get_pos()
