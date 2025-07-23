@@ -13,17 +13,18 @@ class LogicGate(Block):
             right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
             in1 = 0
             in2 = 0
+            s = self.data["activated"]
             #левый вход
             if self.border(left_pos):
                 r = (self.data["rotate"] - 1) % 4
                 left_block = self.world.field[left_pos[0]][left_pos[1]]
-                if left_block.is_block_connect_output(r):
+                if left_block.is_block_connect_output(r) and left_block.logic_gate_active == 0:
                     in1 = left_block.data[left_block.get_activated_key(r)]
             #правый вход
             if self.border(right_pos):
                 r = (self.data["rotate"] + 1) % 4
                 right_block = self.world.field[right_pos[0]][right_pos[1]]
-                if right_block.is_block_connect_output(r):
+                if right_block.is_block_connect_output(r) and right_block.logic_gate_active == 0:
                     in2 = right_block.data[right_block.get_activated_key(r)]
             #активация
             if self.type == "AND":
@@ -32,6 +33,8 @@ class LogicGate(Block):
             elif self.type == "XOR":
                 self.data["activated"] = in1 ^ in2
                 self.active = in1 ^ in2
+            if self.data["activated"]:
+                self.logic_gate_active = 1
             self.data["activated1"] = in1
             self.data["activated2"] = in2
         #распространение сигнала

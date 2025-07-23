@@ -12,13 +12,16 @@ class NOT(Block):
             behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
             inp = 0
             #вход
+            s = self.data["activated"]
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                if behind_block.is_block_connect_output((self.data["rotate"] + 2) % 4):
+                if behind_block.is_block_connect_output((self.data["rotate"] + 2) % 4) and behind_block.logic_gate_active == 0:
                     inp = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
             #активация
             self.data["activated"] = not inp
             self.active = not inp
+            if self.data["activated"] != s:
+                self.logic_gate_active = 1
         if enr:
             #распространение сигнала
             front_pos = self.get_rotate_position(self.data["rotate"])

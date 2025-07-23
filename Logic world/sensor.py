@@ -14,8 +14,6 @@ class Sensor(Block):
             s = self.data["activated"]
             if self.border(behind_pos):
                 behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                #print(behind_block)
-                #print(behind_block.logic_gate_active)
                 if behind_block.get_activated_key((self.data["rotate"] + 2) % 4) != None:
                     if behind_block.logic_gate_active == 0:
                         self.data["activated"] = behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
