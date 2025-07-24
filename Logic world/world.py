@@ -27,10 +27,10 @@ def setpos(self, x, y):
     except:
         print(x.text, y.text)
 def resise(self, w, h):
-    #try:
-    if 1:
+    try:
         self.w = int(w.text)
         self.h = int(h.text)
+        self.floor_img = pygame.Surface((self.display_w, self.display_h))
         for x in range(int(self.display_w / self.block_scale)):
             for y in range(int(self.display_h / self.block_scale)):
                 if x >= self.pos[0] / 40 and x < self.pos[0] / 40 + self.w and y >= self.pos[1] / 40 and y < self.pos[1] / 40 + self.h:
@@ -47,8 +47,9 @@ def resise(self, w, h):
             for y in range(self.h):
                 if self.field[x][y] == None:
                     self.field[x][y] = Block(self, (x, y), "air")
-    #except:
-    #    print("error", w.text, h.text)
+        self.change_image()
+    except Exception as ex:
+        print(ex, w.text, h.text)
 
 
 class World:
