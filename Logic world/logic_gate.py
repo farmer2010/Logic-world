@@ -1,4 +1,5 @@
 from block import Block
+from image_factory import *
 
 class LogicGate(Block):
     def __init__(self, world, pos, type, glassed=0, data=None):
@@ -57,9 +58,8 @@ class LogicGate(Block):
     def get_activated_key(self, rotate):#-|-
         return("activated")
 
-    def connect_with_armored_wire(self):
-        for i in range(4):
-            pos = self.get_rotate_position(i)
-            if self.border(pos):
-                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
-                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+    def get_image(self):
+        if self.type == "AND":
+            return(get_image(16 + self.data["activated1"] + self.data["activated2"] * 2, self.data["rotate"], size=self.world.block_scale))
+        elif self.type == "XOR":
+            return(get_image(16 + self.data["activated1"] + self.data["activated2"] * 2, 4 + self.data["rotate"], size=self.world.block_scale))

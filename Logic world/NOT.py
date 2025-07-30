@@ -1,4 +1,5 @@
 from block import Block
+from image_factory import *
 
 class NOT(Block):
     def __init__(self, world, pos, glassed=0, data=None):
@@ -42,9 +43,11 @@ class NOT(Block):
     def get_activated_key(self, rotate):#-|-
         return("activated")
 
-    def connect_with_armored_wire(self):
-        for i in range(4):
-            pos = self.get_rotate_position(i)
-            if self.border(pos):
-                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
-                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+    def get_image(self):
+        i = 0
+        front_pos = self.get_rotate_position(self.data["rotate"])
+        if self.border(front_pos):
+            i = self.world.field[front_pos[0]][front_pos[1]].is_block_connect_with_wire(self.data["rotate"])
+            if self.world.field[front_pos[0]][front_pos[1]].type == "armored wire":
+                i = self.world.field[front_pos[0]][front_pos[1]].data["connections"][(self.data["rotate"] + 2) % 4]
+        return(get_image(12 + self.data["activated"] * 2 + i, 4 + self.data["rotate"], size=self.world.block_scale))

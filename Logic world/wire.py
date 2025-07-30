@@ -1,5 +1,6 @@
 import pygame
 from block import Block
+from image_factory import *
 
 class Wire(Block):
     def __init__(self, world, pos, glassed=0, data=None):
@@ -28,9 +29,12 @@ class Wire(Block):
     def get_activated_key(self, rotate):#-|-
         return("activated")
 
-    def connect_with_armored_wire(self):
+    def get_image(self):
+        see = [0, 0, 0, 0]
         for i in range(4):
             pos = self.get_rotate_position(i)
             if self.border(pos):
-                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i):
-                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+                see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
+                if self.world.field[pos[0]][pos[1]].type == "armored wire":
+                    see[i] = self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4]
+        return(get_image(8 + see[2] * 2 + see[3] + 4 * self.data["activated"], see[0] * 2 + see[1], size=self.world.block_scale))

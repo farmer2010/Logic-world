@@ -1,4 +1,5 @@
 from block import Block
+from image_factory import *
 
 class ArmoredWire(Block):
     def __init__(self, world, pos, glassed=0, data=None):
@@ -31,6 +32,9 @@ class ArmoredWire(Block):
 
     def get_activated_key(self, rotate):#-|-
         return("activated")
+
+    def get_image(self):
+        return(get_image(4 + self.data["connections"][2] * 2 + self.data["connections"][3] + 4 * self.data["activated"], 4 + self.data["connections"][0] * 2 + self.data["connections"][1], size=self.world.block_scale))
 
     def connect_with_armored_wire(self):
         see = [0, 0, 0, 0]

@@ -1,4 +1,5 @@
 from block import Block
+from image_factory import *
 
 class Sensor(Block):
     def __init__(self, world, pos, glassed=0, data=None):
@@ -40,9 +41,5 @@ class Sensor(Block):
     def get_activated_key(self, rotate):
         return("activated")
 
-    def connect_with_armored_wire(self):
-        for i in range(4):
-            pos = self.get_rotate_position(i)
-            if self.border(pos):
-                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
-                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+    def get_image(self):
+        return(get_image(2 + self.data["activated"], 4 + self.data["rotate"], size=self.world.block_scale))

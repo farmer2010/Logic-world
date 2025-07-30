@@ -2,6 +2,7 @@ from image_factory import get_image
 import image_factory
 from input_manager import InputManager as IM
 from block import *
+from air import *
 from button import *
 from utils import *
 from text_box import *
@@ -16,16 +17,23 @@ def mainmenu(main):
     main.menu = MainMenu(main)
 def setpos(self, x, y):
     try:
-        self.pos[0] = int(x.text) * self.block_scale
-        self.pos[1] = int(y.text) * self.block_scale
-        for x in range(int(self.display_w / self.block_scale)):
-            for y in range(int(self.display_h / self.block_scale)):
-                if x >= int(x.text) and x < int(x.text) + self.w and y >= int(y.text) and y < int(y.text) + self.h:
-                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+        self.fpos = [int(x.text), int(y.text)]
+        if -1 in self.fpos:
+            self.pos = [int(self.display_w / self.block_scale / 2) - int(self.w / 2), int(self.display_h / self.block_scale / 2) - int(self.h / 2)]
+        else:
+            self.pos[0] = int(x.text) * self.block_scale
+            self.pos[1] = int(y.text) * self.block_scale
+        for xm in range(int(self.display_w / self.block_scale)):
+            for ym in range(int(self.display_h / self.block_scale)):
+                if xm >= int(x.text) and xm < int(x.text) + self.w and ym >= int(y.text) and ym < int(y.text) + self.h:
+                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (xm * self.block_scale, ym * self.block_scale))
                 else:
-                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (xm * self.block_scale, ym * self.block_scale))
     except:
         print(x.text, y.text)
+def center(x, y):
+    x.text = "-1"
+    y.text = "-1"
 def resise(self, w, h):
     try:
         self.w = int(w.text)
@@ -46,27 +54,28 @@ def resise(self, w, h):
         for x in range(self.w):
             for y in range(self.h):
                 if self.field[x][y] == None:
-                    self.field[x][y] = Block(self, (x, y), "air")
+                    self.field[x][y] = Air(self, (x, y))
         self.change_image()
     except Exception as ex:
         print(ex, w.text, h.text)
 
-
 class World:
     def __init__(self, main, w=10, h=10, pos=[0, 0], block_scale=20):
+        W = pygame.display.Info().current_w
+        H = pygame.display.Info().current_h
+        self.display_w = W
+        self.display_h = H
         self.main = main
         self.w = w
         self.h = h
         self.block_scale = block_scale
         self.field = [[None for y in range(h)] for x in range(w)]
-        self.field = [[Block(self, (x, y), "air") for y in range(h)] for x in range(w)]
-        self.pos = [pos[0] * self.block_scale, pos[1] * self.block_scale]
-        W = pygame.display.Info().current_w
-        H = pygame.display.Info().current_h
-        if -1 in self.pos:
-            self.pos = []
-        self.display_w = W
-        self.display_h = H
+        self.field = [[Air(self, (x, y)) for y in range(h)] for x in range(w)]
+        self.fpos = pos
+        if -1 in pos:
+            self.pos = [int(W / self.block_scale / 2) - int(self.w / 2), int(H / self.block_scale / 2) - int(self.h / 2)]
+        else:
+            self.pos = [pos[0] * self.block_scale, pos[1] * self.block_scale]
         self.floor_img = pygame.Surface((W, H))
         for x in range(int(W / self.block_scale)):
             for y in range(int(H / self.block_scale)):
@@ -81,8 +90,8 @@ class World:
         self.buttons = pygame.sprite.Group()
         self.is_creative = 1
         self.can_break = 1
-        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11, "sensor" : 12, "energy block" : 13, "button" : 14}
-        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory", "sensor", "energy block", "button"]
+        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11, "sensor" : 12, "energy block" : 13, "button" : 14, "piston" : 15}
+        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory", "sensor", "energy block", "button", "piston"]
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
@@ -99,7 +108,7 @@ class World:
         self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
         self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
         self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=50, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=50, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
         self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
         self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
         self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
@@ -306,7 +315,7 @@ class World:
                     if self.is_creative == 0:
                         self.inventory[self.field[blockpos[0]][blockpos[1]].type] += 1
                     self.timer = 0
-                    self.field[blockpos[0]][blockpos[1]] = Block(self, blockpos, "air")
+                    self.field[blockpos[0]][blockpos[1]] = Air(self, blockpos)
                     # ------------------------------------------------
                     for i in range(4):
                         pos = self.field[blockpos[0]][blockpos[1]].get_rotate_position(i)
@@ -373,7 +382,7 @@ class World:
                             img2.set_alpha(128)
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
         elif self.menu == "ESC":
-            screen.blit(get_button_image(14, 14, 6), (680, 160))
+            #screen.blit(get_button_image(14, 14, 6), (680, 160))
             for b in self.buttons:
                 b.draw(screen)
         elif self.menu == "edit":

@@ -41,50 +41,7 @@ class Block():
         return(s)
 
     def change_image(self):#сменить картинку
-        if self.type == "air":#воздух
-            self.image.fill((0, 0, 0))
-            self.image.set_colorkey((0, 0, 0))
-        elif self.type == "wire":#провод
-            see = [0, 0, 0, 0]
-            for i in range(4):
-                pos = self.get_rotate_position(i)
-                if self.border(pos):
-                    see[i] = self.world.field[pos[0]][pos[1]].is_block_connect_with_wire(i)
-                    if self.world.field[pos[0]][pos[1]].type == "armored wire":
-                        see[i] = self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4]
-            self.image = get_wire_image(self.data, see, size=self.world.block_scale)
-        elif self.type == "activator":#активатор
-            self.image = get_activator_image(self.data, size=self.world.block_scale)
-        elif self.type == "block":#кирпич
-            self.image = get_image(0, 1, size=self.world.block_scale)
-        elif self.type == "NOT":#логический вентиль NOT
-            i = 0
-            front_pos = self.get_rotate_position(self.data["rotate"])
-            if self.border(front_pos):
-                i = self.world.field[front_pos[0]][front_pos[1]].is_block_connect_with_wire(self.data["rotate"])
-                if self.world.field[front_pos[0]][front_pos[1]].type == "armored wire":
-                    i = self.world.field[front_pos[0]][front_pos[1]].data["connections"][(self.data["rotate"] + 2) % 4]
-            self.image = get_NOT_image(self.data, [i, 0, 0, 0], size=self.world.block_scale)
-        elif self.type == "wire box":#распределительная коробка
-            self.image = get_wire_box_image(self.data, size=self.world.block_scale)
-        elif self.type == "AND":#логический вентиль AND
-            self.image = get_AND_image(self.data, size=self.world.block_scale)
-        elif self.type == "XOR":#логический вентиль XOR
-            self.image = get_XOR_image(self.data, size=self.world.block_scale)
-        elif self.type == "diode":#диод
-            self.image = get_diode_image(self.data, size=self.world.block_scale)
-        elif self.type == "output":#лампа выхода
-            self.image = get_output_image(self.data, size=self.world.block_scale)
-        elif self.type == "armored wire":#защищенный провод
-            self.image = get_armored_wire_image(self.data, self.data["connections"], size=self.world.block_scale)
-        elif self.type == "memory":#ячейка памяти
-            self.image = get_memory_image(self.data, size=self.world.block_scale)
-        elif self.type == "sensor":#сенсор
-            self.image = get_sensor_image(self.data, size=self.world.block_scale)
-        elif self.type == "energy block":#блок сигнала
-            self.image = get_image(1, 3, size=self.world.block_scale)
-        elif self.type == "button":
-            self.image = get_image(0, 3, size=self.world.block_scale)
+        self.image = self.get_image()
         if self.glassed:
             see = [0, 0, 0, 0]
             see2 = [0, 0, 0, 0]
@@ -100,7 +57,7 @@ class Block():
                     b = self.world.field[pos[0]][pos[1]]
                     if b.glassed:
                         see2[i] = 1
-            img = get_image(2 + see[2] * 2 + see[3], see[0] * 2 + see[1], size=10)
+            img = get_image(4 + see[2] * 2 + see[3], see[0] * 2 + see[1], size=10)
             if see[0] and see[1] and not see2[1]:
                 img.set_at((9, 0), (170, 181, 193))
             if see[1] and see[2] and not see2[2]:
@@ -110,6 +67,10 @@ class Block():
             if see[3] and see[0] and not see2[0]:
                 img.set_at((0, 0), (170, 181, 193))
             self.image.blit(pygame.transform.scale(img, (self.world.block_scale, self.world.block_scale)), (0, 0))
+
+    def get_image(self):
+        image = pygame.Surface((self.world.block_scale, self.world.block_scale))
+        return(image)
 
     def draw(self, screen, world_pos):
         screen.blit(self.image, (world_pos[0] + self.pos[0] * self.world.block_scale, world_pos[1] + self.pos[1] * self.world.block_scale))
@@ -141,8 +102,15 @@ class Block():
     def get_activated_key(self, rotate):#-|-
         return(None)
 
+    def get_pushable(self, rotate):#-|-
+        return(1)
+
     def connect_with_armored_wire(self):
-        pass
+        for i in range(4):
+            pos = self.get_rotate_position(i)
+            if self.border(pos):
+                if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
+                    self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
 
 from wire import Wire
 from activator import Activator
@@ -156,9 +124,16 @@ from memory import Memory
 from sensor import Sensor
 from energy_block import EnergyBlock
 from button_block import ButtonBlock
+from piston import Piston
+from brick import Brick
+from piston_head import PistonHead
 
 def get_block(world, pos, type, glassed=0, data=None):
-    if type == "wire":
+    if type == "air":
+        return (Wire(world, pos, glassed, data))
+    elif type == "block":
+        return(Brick(world, pos, glassed, data))
+    elif type == "wire":
         return(Wire(world, pos, glassed, data))
     elif type == "activator":
         return(Activator(world, pos, glassed, data))
@@ -182,6 +157,10 @@ def get_block(world, pos, type, glassed=0, data=None):
         return(EnergyBlock(world, pos, glassed, data))
     elif type == "button":
         return (ButtonBlock(world, pos, glassed, data))
+    elif type == "piston":
+        return(Piston(world, pos, glassed, data))
+    elif type == "piston head":
+        return (PistonHead(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))
 
 def get_block_params(type):
@@ -209,5 +188,9 @@ def get_block_params(type):
         return({"activated" : 1})
     elif type == "button":
         return ({"activated" : 0})
+    elif type == "piston":
+        return({"activated" : 0, "rotate" : 0})
+    elif type == "piston head":
+        return ({"rotate": 0, "sticky" : 0})
     else:
         return({})
