@@ -90,8 +90,43 @@ class World:
         self.buttons = pygame.sprite.Group()
         self.is_creative = 1
         self.can_break = 1
-        self.block_indexes = {"wire" : 0, "activator" : 1, "block" : 2, "NOT" : 3, "wire box" : 4, "AND" : 5, "XOR" : 6, "diode" : 7, "output" : 8, "glass" : 9, "armored wire" : 10, "memory" : 11, "sensor" : 12, "energy block" : 13, "button" : 14, "piston" : 15}
-        self.block_indexes2 = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "output", "glass", "armored wire", "memory", "sensor", "energy block", "button", "piston"]
+        self.block_indexes = {
+            "wire" : 0,
+            "activator" : 1,
+            "block" : 2,
+            "NOT" : 3,
+            "wire box" : 4,
+            "AND" : 5,
+            "XOR" : 6,
+            "diode" : 7,
+            "output" : 8,
+            "glass" : 9,
+            "armored wire" : 10,
+            "memory" : 11,
+            "sensor" : 12,
+            "energy block" : 13,
+            "button" : 14,
+            "piston" : 15,
+            "piston head" : 16
+        }
+        self.inventory_block_indexes = {
+            "wire": 0,
+            "activator": 1,
+            "block": 2,
+            "NOT": 3,
+            "wire box": 4,
+            "AND": 5,
+            "XOR": 6,
+            "diode": 7,
+            "output": 8,
+            "glass": 9,
+            "armored wire": 10,
+            "memory": 11,
+            "sensor": 12,
+            "energy block": 13,
+            "button": 14,
+            "piston": 15
+        }
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
@@ -164,7 +199,7 @@ class World:
                             i += 1
                         if i != None:
                             self.inventory_index = i
-                    else:
+                    elif self.field[blockpos[0]][blockpos[1]].type in self.inventory_block_indexes.keys():
                         if self.inventory_index == len(self.inventory_names) - 1:
                             self.inventory_index = 0
                         self.inventory_names[self.inventory_index] = self.field[blockpos[0]][blockpos[1]].type
@@ -228,6 +263,7 @@ class World:
                 #self.IM.mousetag_object = [None, None, None]
                 #self.IM.mousetag = [0, 0, 0]
         elif self.menu == "select blocks":
+            ibi2 = list(self.inventory_block_indexes.keys())
             if self.IM.get_key("T") or self.IM.get_key("ESC"):
                 self.menu = "game"
             #
@@ -241,9 +277,9 @@ class World:
             #
             blockpos = [(mousepos[0] - (self.display_w - 1040)) // 80, mousepos[1] // 80]
             i = blockpos[1] * 12 + blockpos[0]
-            if blockpos[0] >= 0 and blockpos[1] < 12 and self.IM.get_mouse(0) and i < len(self.block_indexes2) and not self.block_indexes2[i] in self.inventory_names:
-                self.inventory_names[self.inventory_index] = self.block_indexes2[i]
-                self.inventory[self.block_indexes2[i]] = 9999
+            if blockpos[0] >= 0 and blockpos[1] < 12 and self.IM.get_mouse(0) and i < len(ibi2) and not ibi2[i] in self.inventory_names:
+                self.inventory_names[self.inventory_index] = ibi2[i]
+                self.inventory[ibi2[i]] = 9999
         elif self.menu == "ESC":
             if self.IM.get_key("ESC"):
                 self.menu = "game"
@@ -356,6 +392,8 @@ class World:
                 img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+            #bl = [pygame.mouse.get_pos()[0] // self.block_scale, pygame.mouse.get_pos()[1] // self.block_scale]
+            #render_text(str(bl), pygame.mouse.get_pos(), screen, font=pygame.font.Font("files/font.ttf", 16))
         elif self.menu == "select blocks":
             if self.inventory_index != len(self.inventory_names) - 1:
                 pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
@@ -366,18 +404,19 @@ class World:
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
             mousepos = pygame.mouse.get_pos()
+            ibi2 = list(self.inventory_block_indexes.keys())
             for x in range(12):
                 for y in range(12):
                     i = y * 12 + x
-                    if i < len(self.block_indexes2):
+                    if i < len(ibi2):
                         if (mousepos[0] - (self.display_w - 1040)) // 80 == x and mousepos[1] // 80 == y:
                             pygame.draw.rect(screen, (40, 40, 40), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
                         else:
                             pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
                         pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 1025 + x * 80, y * 80 + 15, 50, 50))
-                        img = image_factory.get_block_image(self.block_indexes2[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                        img = image_factory.get_block_image(ibi2[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                         screen.blit(img, (self.display_w - 1020 + x * 80, y * 80 + 20))
-                        if self.block_indexes2[i] in self.inventory_names:
+                        if ibi2[i] in self.inventory_names:
                             img2 = pygame.Surface((50, 50))
                             img2.set_alpha(128)
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))

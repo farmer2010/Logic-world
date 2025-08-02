@@ -34,6 +34,8 @@ class Block():
 
     def __str__(self):
         s = f"{self.type} at {str(self.pos)}\n"
+        if self.glassed:
+            s += "glassed\n"
         param = self.data.keys()
         for p in param:
             s += f"{p}: {str(self.data[p])}\n"
@@ -189,7 +191,7 @@ def get_block_params(type):
     elif type == "button":
         return ({"activated" : 0})
     elif type == "piston":
-        return({"activated" : 0, "rotate" : 0})
+        return({"activated" : 0, "rotate" : 0, "power" : 5})
     elif type == "piston head":
         return ({"rotate": 0, "sticky" : 0})
     else:
