@@ -27,4 +27,4 @@ class EnergyBlock(Block):
         return("activated")
 
     def get_image(self):
-        return(get_image(1, 3, size=self.world.block_size))
+        return(get_image(1, 3, size=self.world.block_scale))

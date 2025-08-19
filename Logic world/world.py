@@ -475,6 +475,7 @@ class World:
         file.close()
 
     def load_level(self, name):
+        bi2 = list(self.block_indexes.keys())
         file = open("files/levels/" + name + ".dat", "r")
         txt = file.readline()
         self.w = int(txt.split(";")[0])
@@ -492,48 +493,31 @@ class World:
                     self.floor_img.blit(get_image(1, 0), (x * self.block_scale, y * self.block_scale))
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * self.block_scale, y * self.block_scale))
-        self.field = [[Block(self, (x, y), "air") for y in range(self.h)] for x in range(self.w)]
+        self.field = [[get_block(self, [x, y], "air") for y in range(self.h)] for x in range(self.w)]
         #
         inv = txt.split(";")[5].split(":")
         self.inventory = {"air" : 0}
         self.inventory_names = []
         for i in range(len(inv) - 1):
             invi = inv[i].split(",")
-            self.inventory_names.append(self.block_indexes2[int(invi[0])])
-            self.inventory[self.block_indexes2[int(invi[0])]] = int(invi[1])
+            self.inventory_names.append(bi2[int(invi[0])])
+            self.inventory[bi2[int(invi[0])]] = int(invi[1])
         self.inventory_names.append("air")
         #
         blocks = txt.split(";")[6].split(":")
         for i in range(len(blocks)):
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
-                new_block = block.get_block(self, (int(bl[1]), int(bl[2])), self.block_indexes2[int(bl[0])])
-                if int(bl[0]) == 0 or int(bl[0]) == 1 or int(bl[0]) == 13:
-                    new_block.data["activated"] = int(bl[3])
-                elif int(bl[0]) == 3:
-                    new_block.data["activated"] = int(bl[3])
-                    new_block.data["rotate"] = int(bl[4])
-                elif int(bl[0]) == 4 or int(bl[0]) == 8 or int(bl[0]) == 12:
-                    new_block.data["activated1"] = int(bl[3])
-                    new_block.data["activated2"] = int(bl[4])
-                elif int(bl[0]) == 5 or int(bl[0]) == 6:
-                    new_block.data["activated1"] = int(bl[3])
-                    new_block.data["activated2"] = int(bl[4])
-                    new_block.data["activated"] = int(bl[5])
-                    new_block.data["rotate"] = int(bl[6])
-                elif int(bl[0]) == 7:
-                    new_block.data["activated1"] = int(bl[3])
-                    new_block.data["activated2"] = int(bl[4])
-                    new_block.data["rotate"] = int(bl[5])
-                elif int(bl[0]) == 10:
-                    new_block.data["activated"] = int(bl[3])
-                    new_block.data["connections"] = [bl[4][i] == "1" for i in range(4)]
-                elif int(bl[0]) == 11:
-                    new_block.data["activated1"] = int(bl[3])
-                    new_block.data["activated2"] = int(bl[4])
-                    new_block.data["activated"] = int(bl[5])
-                    new_block.data["rotate"] = int(bl[6])
-                    new_block.data["inverted"] = int(bl[7])
+                new_block = block.get_block(self, (int(bl[1]), int(bl[2])), bi2[int(bl[0])])
+                p = get_block_params(bi2[int(bl[0])])
+                j = 3
+                for p_name in p.keys():
+                    if p_name != "connections":
+                        new_block.data[p_name] = int(bl[j])
+                    else:
+                        for o in range(4):
+                            new_block.data["connections"][o] = int(bl[j][o])
+                    j += 1
         #
         glass = dec_to_bin(int(txt.split(";")[4]))
         glass = ("0" * (self.w * self.h - len(glass))) + glass

@@ -6,7 +6,7 @@ from air import Air
 
 class Piston(Block):
     def __init__(self, world, pos, glassed=0, data=None):
-        preset_data = {"activated" : 0, "rotate" : 0, "power" : 5}
+        preset_data = {"activated" : 0, "rotate" : 0, "power" : 12}
         Block.__init__(self, world, pos, "piston", glassed, data, preset_data)
         self.is_logic_gate = 1
 

@@ -130,10 +130,11 @@ from piston import Piston
 from brick import Brick
 from piston_head import PistonHead
 from no_pushable import NoPushable
+from air import Air
 
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "air":
-        return (Wire(world, pos, glassed, data))
+        return (Air(world, pos, glassed, data))
     elif type == "block":
         return(Brick(world, pos, glassed, data))
     elif type == "wire":
@@ -192,10 +193,10 @@ def get_block_params(type):
     elif type == "energy block":
         return({"activated" : 1})
     elif type == "button":
-        return ({"activated" : 0})
+        return({"activated" : 0})
     elif type == "piston":
         return({"activated" : 0, "rotate" : 0, "power" : 5})
     elif type == "piston head":
-        return ({"rotate": 0, "sticky" : 0})
+        return({"rotate": 0, "sticky" : 0})
     else:
         return({})
