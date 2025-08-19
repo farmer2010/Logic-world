@@ -129,6 +129,7 @@ from button_block import ButtonBlock
 from piston import Piston
 from brick import Brick
 from piston_head import PistonHead
+from no_pushable import NoPushable
 
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "air":
@@ -162,7 +163,9 @@ def get_block(world, pos, type, glassed=0, data=None):
     elif type == "piston":
         return(Piston(world, pos, glassed, data))
     elif type == "piston head":
-        return (PistonHead(world, pos, glassed, data))
+        return(PistonHead(world, pos, glassed, data))
+    elif type == "no pushable":
+        return(NoPushable(world, pos, glassed, data))
     return(Block(world, pos, type, glassed, data))
 
 def get_block_params(type):

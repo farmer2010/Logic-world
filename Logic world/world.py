@@ -107,25 +107,27 @@ class World:
             "energy block" : 13,
             "button" : 14,
             "piston" : 15,
-            "piston head" : 16
+            "piston head" : 16,
+            "no pushable" : 17
         }
         self.inventory_block_indexes = {
-            "wire": 0,
-            "activator": 1,
-            "block": 2,
-            "NOT": 3,
-            "wire box": 4,
-            "AND": 5,
-            "XOR": 6,
-            "diode": 7,
-            "output": 8,
-            "glass": 9,
-            "armored wire": 10,
-            "memory": 11,
-            "sensor": 12,
-            "energy block": 13,
-            "button": 14,
-            "piston": 15
+            "wire" : 0,
+            "activator" : 1,
+            "block" : 2,
+            "NOT" : 3,
+            "wire box" : 4,
+            "AND" : 5,
+            "XOR" : 6,
+            "diode" : 7,
+            "output" : 8,
+            "glass" : 9,
+            "armored wire" : 10,
+            "memory" : 11,
+            "sensor" : 12,
+            "energy block" : 13,
+            "button" : 14,
+            "piston" : 15,
+            "no pushable" : 16
         }
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}

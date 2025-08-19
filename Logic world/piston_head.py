@@ -20,4 +20,4 @@ class PistonHead(Block):
         return(0)
 
     def get_image(self):
-        return(get_image(self.data["sticky"], 12 + self.data["rotate"], size=self.world.block_scale))
+        return(get_image(2 + self.data["sticky"], self.data["rotate"], size=self.world.block_scale))
