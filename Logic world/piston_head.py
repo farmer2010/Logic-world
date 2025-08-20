@@ -13,7 +13,7 @@ class PistonHead(Block):
         if enr == 0:
             behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
             if self.border(behind_pos):
-                if self.world.field[behind_pos[0]][behind_pos[1]].type != "piston":
+                if not "piston" in self.world.field[behind_pos[0]][behind_pos[1]].type:
                     self.world.field[self.pos[0]][self.pos[1]] = Air(self.world, self.pos)
 
     def get_pushable(self, rotate):

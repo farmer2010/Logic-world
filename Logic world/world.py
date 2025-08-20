@@ -108,7 +108,8 @@ class World:
             "button" : 14,
             "piston" : 15,
             "piston head" : 16,
-            "no pushable" : 17
+            "no pushable" : 17,
+            "sticky piston" : 18
         }
         self.inventory_block_indexes = {
             "wire" : 0,
@@ -127,7 +128,8 @@ class World:
             "energy block" : 13,
             "button" : 14,
             "piston" : 15,
-            "no pushable" : 16
+            "sticky piston" : 16,
+            "no pushable" : 17
         }
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}

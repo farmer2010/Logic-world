@@ -5,9 +5,9 @@ from piston_head import PistonHead
 from air import Air
 
 class Piston(Block):
-    def __init__(self, world, pos, glassed=0, data=None):
+    def __init__(self, world, pos, type, glassed=0, data=None):
         preset_data = {"activated" : 0, "rotate" : 0, "power" : 12}
-        Block.__init__(self, world, pos, "piston", glassed, data, preset_data)
+        Block.__init__(self, world, pos, type, glassed, data, preset_data)
         self.is_logic_gate = 1
 
     def update(self, data={}, enr=1):
@@ -49,13 +49,22 @@ class Piston(Block):
                         self.data["activated"] = 1
                         front_pos = self.get_rotate_position(self.data["rotate"])
                         if self.border(front_pos):
-                            self.world.field[front_pos[0]][front_pos[1]] = PistonHead(self.world, front_pos, data={"rotate" : self.data["rotate"], "sticky" : 0})
+                            self.world.field[front_pos[0]][front_pos[1]] = PistonHead(self.world, front_pos, data={"rotate" : self.data["rotate"], "sticky" : "sticky" in self.type})
             else:
                 if self.data["activated"] == 1:
                     self.data["activated"] = 0
                     front_pos = self.get_rotate_position(self.data["rotate"])
                     if self.border(front_pos):
-                        self.world.field[front_pos[0]][front_pos[1]] = Air(self.world, front_pos)
+                        if self.type == "piston":
+                            self.world.field[front_pos[0]][front_pos[1]] = Air(self.world, front_pos)
+                        else:
+                            front_pos2 = self.get_rotate_position(self.data["rotate"], dist=2)
+                            if self.border(front_pos2):
+                                self.world.field[front_pos[0]][front_pos[1]] = self.world.field[front_pos2[0]][front_pos2[1]]
+                                self.world.field[front_pos[0]][front_pos[1]].pos = front_pos
+                                self.world.field[front_pos2[0]][front_pos2[1]] = Air(self.world, front_pos2)
+                            else:
+                                self.world.field[front_pos[0]][front_pos[1]] = Air(self.world, front_pos)
             front_pos = self.get_rotate_position(self.data["rotate"])
             if self.data["activated"]:
                 if self.border(front_pos):
@@ -78,4 +87,4 @@ class Piston(Block):
         return([self.pos[0] + self.movelist[rotate][0] * dist, self.pos[1] + self.movelist[rotate][1] * dist])
 
     def get_image(self):
-        return(get_image(self.data["activated"], 8 + self.data["rotate"], size=self.world.block_scale))
+        return(get_image(self.data["activated"] + 2 * (self.type == "sticky piston"), 8 + self.data["rotate"], size=self.world.block_scale))

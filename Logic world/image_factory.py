@@ -64,6 +64,9 @@ def get_sensor_image(data, size=40):
 def get_piston_image(data, size=40):
     return(get_image(data["activated"], 8 + data["rotate"], size=size))
 
+def get_sticky_piston_image(data, size=40):
+    return(get_image(2 + data["activated"], 8 + data["rotate"], size=size))
+
 def get_no_pushable_image(neighbours, size=40):
     return(get_image(neighbours[2] * 2 + neighbours[3], 12 + neighbours[0] * 2 + neighbours[1], size=size))
 
@@ -100,6 +103,8 @@ def get_block_image(sftype, neighbours, data, size=40):
         return(get_image(0, 3, size=size))
     elif sftype == "piston":
         return(get_piston_image(data, size=size))
+    elif sftype == "sticky piston":
+        return (get_sticky_piston_image(data, size=size))
     elif sftype == "no pushable":
         return(get_no_pushable_image(neighbours, size=size))
     elif sftype == "air":

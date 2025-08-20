@@ -134,7 +134,7 @@ from air import Air
 
 def get_block(world, pos, type, glassed=0, data=None):
     if type == "air":
-        return (Air(world, pos, glassed, data))
+        return(Air(world, pos, glassed, data))
     elif type == "block":
         return(Brick(world, pos, glassed, data))
     elif type == "wire":
@@ -160,9 +160,9 @@ def get_block(world, pos, type, glassed=0, data=None):
     elif type == "energy block":
         return(EnergyBlock(world, pos, glassed, data))
     elif type == "button":
-        return (ButtonBlock(world, pos, glassed, data))
-    elif type == "piston":
-        return(Piston(world, pos, glassed, data))
+        return(ButtonBlock(world, pos, glassed, data))
+    elif type == "piston" or type == "sticky piston":
+        return(Piston(world, pos, type, glassed, data))
     elif type == "piston head":
         return(PistonHead(world, pos, glassed, data))
     elif type == "no pushable":
@@ -194,8 +194,8 @@ def get_block_params(type):
         return({"activated" : 1})
     elif type == "button":
         return({"activated" : 0})
-    elif type == "piston":
-        return({"activated" : 0, "rotate" : 0, "power" : 5})
+    elif type == "piston" or type == "sticky piston":
+        return({"activated" : 0, "rotate" : 0, "power" : 12})
     elif type == "piston head":
         return({"rotate": 0, "sticky" : 0})
     else:
