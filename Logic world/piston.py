@@ -59,7 +59,7 @@ class Piston(Block):
                             self.world.field[front_pos[0]][front_pos[1]] = Air(self.world, front_pos)
                         else:
                             front_pos2 = self.get_rotate_position(self.data["rotate"], dist=2)
-                            if self.border(front_pos2):
+                            if self.border(front_pos2) and self.world.field[front_pos2[0]][front_pos2[1]].get_pushable((self.data["rotate"] + 2) % 4):
                                 self.world.field[front_pos[0]][front_pos[1]] = self.world.field[front_pos2[0]][front_pos2[1]]
                                 self.world.field[front_pos[0]][front_pos[1]].pos = front_pos
                                 self.world.field[front_pos2[0]][front_pos2[1]] = Air(self.world, front_pos2)
