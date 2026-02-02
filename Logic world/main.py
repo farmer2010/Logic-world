@@ -1,7 +1,7 @@
 #настройка
+from utils import *
 import shutil
 import pygame
-from ui import UI
 from main_menu import MainMenu
 
 pygame.init()

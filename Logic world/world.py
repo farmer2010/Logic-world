@@ -136,23 +136,23 @@ class World:
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.IM = IM()#input manager
         self.buttons = []
-        self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 300, 12, 2, "EDIT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
-        self.buttons.append(get_button(720, 500, 5, 2, "SAVE", self.IM, font_size=50, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", self.IM, font_size=50, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 600, 12, 2, "QUIT", self.IM, font_size=50, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 300, 12, 2, "EDIT", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 40)))
+        self.buttons.append(get_button(720, 500, 5, 2, "SAVE", self.IM, font_size=40, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", self.IM, font_size=40, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 600, 12, 2, "QUIT", self.IM, font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
         self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
-        self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
-        self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=50, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=50, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
-        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/faithful.ttf", 50)))
-        self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", self.IM, font_size=50, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", self.IM, font_size=50, onrelease=resise, onrelease_params=[self, self.edit_buttons[5], self.edit_buttons[6]]))
+        self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 40)))
+        self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 40)))
+        self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=40, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=40, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 50)))
+        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 50)))
+        self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", self.IM, font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[5], self.edit_buttons[6]]))
 
     def update(self, events):
         self.IM.update(events)
@@ -431,10 +431,10 @@ class World:
         elif self.menu == "edit":
             for b in self.edit_buttons:
                 b.draw(screen)
-            render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
-            render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
-            render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
-            render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/faithful.ttf", 50))
+            render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
+            render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
+            render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
+            render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
 
     def change_image(self):
         for x in range(self.w):

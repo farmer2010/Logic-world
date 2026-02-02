@@ -4,8 +4,6 @@ from input_manager import InputManager
 from button import *
 from image_factory import *
 from world import World
-from ui import UI
-
 
 def editor(main):
     W = pygame.display.Info().current_w
@@ -25,9 +23,9 @@ class MainMenu():
             for y in range(int(H / 40)):
                     self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.buttons = []
-        self.buttons.append(get_button(720, 450, 12, 3, "PLAY", self.input_manager, font_size=90))
-        self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", self.input_manager, font_size=90, onrelease=editor, onrelease_params=[self.main]))
-        self.buttons.append(get_button(720, 750, 12, 3, "SETTINGS", self.input_manager, font_size=90))
+        self.buttons.append(get_button(720, 450, 12, 3, "PLAY", self.input_manager, font_size=80))
+        self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", self.input_manager, font_size=80, onrelease=editor, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 750, 12, 3, "SETTINGS", self.input_manager, font_size=80))
 
     def update(self, events):
         #self.input_manager.update(events)
