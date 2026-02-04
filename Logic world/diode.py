@@ -6,7 +6,7 @@ class Diode(Block):
         preset_data = {"activated1": 0, "activated2": 0, "rotate" : 0}
         Block.__init__(self, world, pos, "diode", glassed, data, preset_data)
 
-    def update(self, data={}):
+    def update(self, data={}, enr=1):
         if data["rotate"] == self.data["rotate"]:
             self.active = 1
             self.data["activated1"] = 1
@@ -32,4 +32,4 @@ class Diode(Block):
         return("activated2")
 
     def get_image(self):
-        get_image(4 + self.data["activated1"] + self.data["activated2"], 8 + self.data["rotate"], size=self.world.block_scale)
+        return(get_image(4 + self.data["activated1"] + self.data["activated2"], 8 + self.data["rotate"], size=self.world.block_scale))
