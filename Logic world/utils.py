@@ -15,8 +15,8 @@ def dec_to_bin(dec):
         dec //= 2
     return(b)
 
-def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up", font=pygame.font.SysFont(None, 40)):#отрисовка текста на экране
-    text_img = font.render(text, True, color)
+def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up", font=pygame.font.SysFont(None, 40), alpha=True):#отрисовка текста на экране
+    text_img = font.render(text, alpha, color)
     text_rect = text_img.get_rect()
     if centerx == "left":
         text_rect.x = pos[0]

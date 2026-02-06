@@ -13,13 +13,39 @@ def get_image(x, y, size=40, txtr=texture):
     img = pygame.transform.scale(img, (size, size))
     return(img)
 
-def get_button_image(w, h, type, text=None, size=40):
+def get_button_image2(w, h, type, text=None, size=40):
     img = pygame.Surface((w * size, h * size), flags=pygame.SRCALPHA)
     for x in range(w):
         for y in range(h):
             n = [y < h - 1, x < w - 1, y > 0, x > 0]
             st = get_image(n[0] * 2 + n[3] + type * 4, n[2] * 2 + n[1], size=size, txtr=texture_ui)
             img.blit(st, (x * size, y * size))
+    if (text != None):
+        img.blit(text, (0, 0))
+    return(img)
+
+def get_button_image(w, h, type, text=None, size=40):
+    offset = 4
+    ch = 30
+    color1 = (90, 90, 90)
+    color2 = (120, 120, 120)
+    color3 = (50, 50, 50)
+    img = pygame.Surface((w * size, h * size), flags=pygame.SRCALPHA)
+    w *= size
+    h *= size
+    if type == 0:
+        img.fill((min(color1[0] + ch, 255), min(color1[1] + ch, 255), min(color1[2] + ch, 255)))
+        pygame.draw.rect(img, (max(color1[0] - ch, 0), max(color1[1] - ch, 0), max(color1[2] - ch, 0)), (offset, offset, w - offset, h - offset))
+        pygame.draw.rect(img, color1, (offset, offset, w - offset * 2, h - offset * 2))
+    elif type == 1:
+        img.fill((min(color2[0] + ch, 255), min(color2[1] + ch, 255), min(color2[2] + ch, 255)))
+        pygame.draw.rect(img, (max(color2[0] - ch, 0), max(color2[1] - ch, 0), max(color2[2] - ch, 0)), (offset, offset, w - offset, h - offset))
+        pygame.draw.rect(img, color2, (offset, offset, w - offset * 2, h - offset * 2))
+    elif type == 2:
+        img.fill((max(color3[0] - ch, 0), max(color3[1] - ch, 0), max(color3[2] - ch, 0)))
+        pygame.draw.rect(img, (min(color3[0] + ch, 255), min(color3[1] + ch, 255), min(color3[2] + ch, 255)), (offset, offset, w - offset, h - offset))
+        pygame.draw.rect(img, color3, (offset, offset, w - offset * 2, h - offset * 2))
+    #
     if (text != None):
         img.blit(text, (0, 0))
     return(img)

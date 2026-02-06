@@ -15,30 +15,14 @@ def change_menu(self, menu):
 def mainmenu(main):
     from main_menu import MainMenu
     main.menu = MainMenu(main)
-def setpos(self, x, y):
-    try:
-        self.fpos = [int(x.text), int(y.text)]
-        if -1 in self.fpos:
-            self.pos = [int(self.display_w / self.block_scale / 2) - int(self.w / 2), int(self.display_h / self.block_scale / 2) - int(self.h / 2)]
-        else:
-            self.pos[0] = int(x.text) * self.block_scale
-            self.pos[1] = int(y.text) * self.block_scale
-        for xm in range(int(self.display_w / self.block_scale)):
-            for ym in range(int(self.display_h / self.block_scale)):
-                if xm >= int(x.text) and xm < int(x.text) + self.w and ym >= int(y.text) and ym < int(y.text) + self.h:
-                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (xm * self.block_scale, ym * self.block_scale))
-                else:
-                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (xm * self.block_scale, ym * self.block_scale))
-    except:
-        print(x.text, y.text)
-def center(x, y):
-    x.text = "-1"
-    y.text = "-1"
 def resise(self, w, h):
+    W = pygame.display.Info().current_w
+    H = pygame.display.Info().current_h
     try:
         self.w = int(w.text)
         self.h = int(h.text)
         self.floor_img = pygame.Surface((self.display_w, self.display_h))
+        self.pos = [int((W / 2 - self.w * 40 / 2) / 40) * 40, int((H / 2 - self.h * 40 / 2) / 40) * 40]
         for x in range(int(self.display_w / self.block_scale)):
             for y in range(int(self.display_h / self.block_scale)):
                 if x >= self.pos[0] / 40 and x < self.pos[0] / 40 + self.w and y >= self.pos[1] / 40 and y < self.pos[1] / 40 + self.h:
@@ -60,7 +44,7 @@ def resise(self, w, h):
         print(ex, w.text, h.text)
 
 class World:
-    def __init__(self, main, w=10, h=10, pos=[0, 0], block_scale=20):
+    def __init__(self, main, w=10, h=10, block_scale=20):
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
         self.display_w = W
@@ -71,15 +55,15 @@ class World:
         self.block_scale = block_scale
         self.field = [[None for y in range(h)] for x in range(w)]
         self.field = [[Air(self, (x, y)) for y in range(h)] for x in range(w)]
-        self.fpos = pos
-        if -1 in pos:
+        self.pos = [int((W / 2 - self.w * 40 / 2) / 40) * 40, int((H / 2 - self.h * 40 / 2) / 40) * 40]
+        if -1 in self.pos:
             self.pos = [int(W / self.block_scale / 2) - int(self.w / 2), int(H / self.block_scale / 2) - int(self.h / 2)]
         else:
-            self.pos = [pos[0] * self.block_scale, pos[1] * self.block_scale]
+            self.pos = [self.pos[0] * self.block_scale, self.pos[1] * self.block_scale]
         self.floor_img = pygame.Surface((W, H))
         for x in range(int(W / self.block_scale)):
             for y in range(int(H / self.block_scale)):
-                if x >= pos[0] and x < pos[0] + self.w and y >= pos[1] and y < pos[1] + self.h:
+                if x >= self.pos[0] and x < self.pos[0] + self.w and y >= self.pos[1] and y < self.pos[1] + self.h:
                     self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
                 else:
                     self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
@@ -138,21 +122,21 @@ class World:
         self.buttons = []
         self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
         self.buttons.append(get_button(720, 300, 12, 2, "EDIT", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 40)))
+        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 25)))
         self.buttons.append(get_button(720, 500, 5, 2, "SAVE", self.IM, font_size=40, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
         self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", self.IM, font_size=40, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
         self.buttons.append(get_button(720, 600, 12, 2, "QUIT", self.IM, font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
         self.edit_buttons = []
         self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 40)))
-        self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 40)))
-        self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=40, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=40, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 50)))
-        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/HomeVideo-Regular.otf", 50)))
+        #self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 40)))
+        #self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 40)))
+        #self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=40, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        #self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=40, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
+        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
         self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
         self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", self.IM, font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[5], self.edit_buttons[6]]))
+        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", self.IM, font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
 
     def update(self, events):
         self.IM.update(events)
@@ -431,10 +415,10 @@ class World:
         elif self.menu == "edit":
             for b in self.edit_buttons:
                 b.draw(screen)
-            render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
-            render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
-            render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
-            render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", 50))
+            render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
+            render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
+            render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
+            render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
 
     def change_image(self):
         for x in range(self.w):
@@ -446,8 +430,6 @@ class World:
         txt = ""
         txt += str(self.w) + ";"
         txt += str(self.h) + ";"
-        txt += str(int(self.pos[0] / self.block_scale)) + ";"
-        txt += str(int(self.pos[1] / self.block_scale)) + ";"
         glassed = ""
         for x in range(self.w):
             for y in range(self.h):
@@ -477,14 +459,16 @@ class World:
         file.close()
 
     def load_level(self, name):
-        bi2 = list(self.block_indexes.keys())
+        W = pygame.display.Info().current_w
+        H = pygame.display.Info().current_h
+        #
+        bi2 = list(self.block_indexes.keys())#block indexes 2
         file = open("files/levels/" + name + ".dat", "r")
         txt = file.readline()
         self.w = int(txt.split(";")[0])
         self.h = int(txt.split(";")[1])
-        self.pos[0] = int(txt.split(";")[2]) * self.block_scale
-        self.pos[1] = int(txt.split(";")[3]) * self.block_scale
-        pos = [int(txt.split(";")[2]) , int(txt.split(";")[3])]
+        self.pos = [int((W / 2 - self.w * 40 / 2) / 40) * 40, int((H / 2 - self.h * 40 / 2) / 40) * 40]
+        pos = [self.pos[0] // self.block_scale, self.pos[1] // self.block_scale]
         file.close()
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
@@ -497,7 +481,7 @@ class World:
                     self.floor_img.blit(get_image(0, 0), (x * self.block_scale, y * self.block_scale))
         self.field = [[get_block(self, [x, y], "air") for y in range(self.h)] for x in range(self.w)]
         #
-        inv = txt.split(";")[5].split(":")
+        inv = txt.split(";")[3].split(":")
         self.inventory = {"air" : 0}
         self.inventory_names = []
         for i in range(len(inv) - 1):
@@ -506,7 +490,7 @@ class World:
             self.inventory[bi2[int(invi[0])]] = int(invi[1])
         self.inventory_names.append("air")
         #
-        blocks = txt.split(";")[6].split(":")
+        blocks = txt.split(";")[4].split(":")
         for i in range(len(blocks)):
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
@@ -521,7 +505,7 @@ class World:
                             new_block.data["connections"][o] = int(bl[j][o])
                     j += 1
         #
-        glass = dec_to_bin(int(txt.split(";")[4]))
+        glass = dec_to_bin(int(txt.split(";")[2]))
         glass = ("0" * (self.w * self.h - len(glass))) + glass
         for x in range(self.w):
             for y in range(self.h):

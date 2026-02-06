@@ -45,11 +45,6 @@ class Button():
                 self.image = self.pressed_image
             if not mousedown:
                 if self.input_manager.mousetag_object[0] == self:
-                    if str(type(self.onrelease)) == "<class 'function'>":
-                        if self.onrelease_params != None:
-                            self.onrelease(*self.onrelease_params)
-                        else:
-                            self.onrelease()
                     self.input_manager.mousetag_object[0] = None
                 self.image = self.inactive_image
 
@@ -59,6 +54,6 @@ class Button():
 def get_button(x, y, w, h, text, input_manager, font_size=70, text_color=(0, 0, 0), **kwargs):
     t = pygame.Surface((w * 40, h * 40), pygame.SRCALPHA)
     t.fill((0, 0, 0, 0))
-    render_text(text, (w * 20, h * 20), t, centerx="center", centery="center", font=pygame.font.Font("files/HomeVideo-Regular.otf", font_size), color=text_color)
+    render_text(text, (w * 20, h * 20), t, centerx="center", centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", font_size), color=text_color, alpha=0)
     b = Button((x, y), input_manager, get_button_image(w, h, 0, text=t), get_button_image(w, h, 2, text=t), get_button_image(w, h, 1, text=t), onclick=kwargs.get("onclick"), onclick_params=kwargs.get("onclick_params"), onrelease=kwargs.get("onrelease"), onrelease_params=kwargs.get("onrelease_params"))
     return(b)
