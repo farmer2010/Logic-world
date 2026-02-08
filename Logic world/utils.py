@@ -31,3 +31,14 @@ def render_text(text, pos, screen, color=(0, 0, 0), centerx="left", centery="up"
     elif centery == "down":
         text_rect.y = pos[1] - text_img.get_height()
     screen.blit(text_img, text_rect)
+
+def get_button_image2(w, h, type, text=None, size=40):
+    img = pygame.Surface((w * size, h * size), flags=pygame.SRCALPHA)
+    for x in range(w):
+        for y in range(h):
+            n = [y < h - 1, x < w - 1, y > 0, x > 0]
+    #        st = get_image(n[0] * 2 + n[3] + type * 4, n[2] * 2 + n[1], size=size, txtr=texture_ui)
+    #        img.blit(st, (x * size, y * size))
+    if (text != None):
+        img.blit(text, (0, 0))
+    return(img)

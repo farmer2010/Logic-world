@@ -1,40 +1,36 @@
+#from world import World
+from select_level import SelectLevel
+from farmgui.gui import *
+from blocks.image_factory import *
 import pygame
 pygame.init()
-from input_manager import InputManager
-from button import *
-from image_factory import *
-from world import World
 
-def editor(main):
-    W = pygame.display.Info().current_w
-    H = pygame.display.Info().current_h
-    b = 40
-    main.menu = World(main, w=int(W / b), h=int(H / b), block_scale=b)
+W = pygame.display.Info().current_w
+H = pygame.display.Info().current_h
+font60=pygame.font.Font("files/Better VCR 6.1.ttf", 60)
+
+def editor(self):
+    self.visible = 0
+    self.parent.get_component(2).set_visible(2)
+def play(self):
+    self.visible = 0
+    self.parent.get_component(1).set_visible(1)
 def quit(main):
     main.keep_going = 0
 
-class MainMenu():
-    def __init__(self, main):
-        self.main = main
-        self.input_manager = InputManager()
-        W = pygame.display.Info().current_w
-        H = pygame.display.Info().current_h
-        self.floor_img = pygame.Surface((W, H))
-        self.floor_img.fill((30, 30, 30))
+class MainMenu(Panel):
+    def __init__(self, rect, visible=1):
+        Panel.__init__(self, rect, visible=visible)
         for x in range(int(W / 40)):
             for y in range(int(H / 40)):
-                    self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
-        self.buttons = []
-        self.buttons.append(get_button(720, 450, 12, 3, "PLAY", self.input_manager, font_size=60))
-        self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", self.input_manager, font_size=60, onrelease=editor, onrelease_params=[self.main]))
-        self.buttons.append(get_button(720, 750, 12, 3, "QUIT", self.input_manager, font_size=60, onrelease=quit, onrelease_params=[self.main]))
+                    self.background_image.blit(get_image(1, 0), (x * 40, y * 40))
+        #
+        self.add(Button((720, 450, 480, 120), text="PLAY", font=font60, font_alpha=0, onrelease=play, onrelease_params=[self]))
+        self.add(Button((720, 600, 480, 120), text="EDITOR", font=font60, font_alpha=0, onrelease=editor,onrelease_params=[self]))
+        self.add(Button((720, 750, 480, 120), text="QUIT", font=font60, font_alpha=0, onrelease=quit,onrelease_params=[self]))
 
     def update(self, events):
-        #self.input_manager.update(events)
-        for b in self.buttons:
-            b.update(events)
-
-    def draw(self, screen):
-        screen.blit(self.floor_img, (0, 0))
-        for b in self.buttons:
-            b.draw(screen)
+        #
+        #DRAW
+        #
+        screen = self.get_screen()
