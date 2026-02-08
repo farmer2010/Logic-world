@@ -38,7 +38,11 @@ class Component():
 
     def collide(self):
         mousepos = self.get_mousepos()
-        return((mousepos[0] >= self.rect.x and mousepos[0] <= self.rect.x + self.rect.w) and (mousepos[1] >= self.rect.y and mousepos[1] <= self.rect.y + self.rect.h))
+        c = (mousepos[0] >= self.rect.x and mousepos[0] <= self.rect.x + self.rect.w) and (mousepos[1] >= self.rect.y and mousepos[1] <= self.rect.y + self.rect.h)
+        n = 1
+        if self.parent != None:
+            n = self.parent.press_inv_button
+        return(c and not n)
 
     def update(self, events):
         pass

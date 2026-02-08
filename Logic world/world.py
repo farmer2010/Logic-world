@@ -81,7 +81,7 @@ class World(Panel):
                           "glass": 9999, "air": 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.menu = "game"
-
+        self.mousetag_object = None
 
     def update(self, events):
         #смена блока "в руке"
@@ -99,7 +99,7 @@ class World(Panel):
         block_index = mousepos[1] // 80
         xborder = mousepos[0] >= W - 80
         yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
-        if self.input_manager.get_mouse(0):
+        if self.get_mouse():
             if xborder and yborder:
                 self.inventory_index = block_index
         #поворот блока
@@ -150,27 +150,25 @@ class World(Panel):
                         pos = bl.get_rotate_position(i)
                         if bl.data["connections"][i] == 1:
                             bl.data["connections"][i] = 0
-                        elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][
-                            pos[1]].is_block_connect_with_armored_wire(i):
+                        elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i):
                             bl.data["connections"][i] = 1
                         bl.connect_armored_wires()
         #нажатие на блок
         if self.input_manager.get_mouse(0):
-            if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "action"):
+            if (self.mousetag_object == None or self.mousetag_object == "action"):
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.fpos[0], mousepos[1] - self.fpos[1]]
                 blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
-                if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[
-                    1] < self.h and not xborder:
+                if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
                     if self.field[blockpos[0]][blockpos[1]].has_action:
                         self.field[blockpos[0]][blockpos[1]].action()
-                        self.input_manager.mousetag_object[0] = "action"
+                        self.mousetag_object = "action"
         if not pygame.mouse.get_pressed()[0]:
-            self.input_manager.mousetag_object[0] = None
+            self.mousetag_object = None
         #
         if pygame.mouse.get_pressed()[0]:#установка
-            if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "set"):
-                self.input_manager.mousetag_object[0] = "set"
+            if (self.mousetag_object == None or self.mousetag_object == "set"):
+                self.mousetag_object = "set"
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.fpos[0], mousepos[1] - self.fpos[1]]
                 blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
@@ -194,9 +192,43 @@ class World(Panel):
         if self.input_manager.get_key("ESC"):
             self.menu = "ESC"
         #
+        #
+        #
+        if self.menu == "select blocks":
+            ibi2 = list(self.inventory_block_indexes.keys())
+            if self.input_manager.get_key("T") or self.input_manager.get_key("ESC"):
+                self.menu = "game"
+            #
+            mousepos = pygame.mouse.get_pos()
+            block_index = mousepos[1] // 80
+            xborder = mousepos[0] >= W - 70
+            yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
+            if self.input_manager.get_mouse(0):
+                if xborder and yborder:
+                    self.inventory_index = block_index
+            #
+            blockpos = [(mousepos[0] - (W - 1040)) // 80, mousepos[1] // 80]
+            i = blockpos[1] * 12 + blockpos[0]
+            if blockpos[0] >= 0 and blockpos[1] < 12 and self.input_manager.get_mouse(0) and i < len(ibi2) and not ibi2[i] in self.inventory_names:
+                self.inventory_names[self.inventory_index] = ibi2[i]
+                self.inventory[ibi2[i]] = 9999
+        elif self.menu == "ESC":
+            if self.input_manager.get_key("ESC"):
+                self.menu = "game"
+            for b in self.buttons:
+                b.update(events)
+        elif self.menu == "edit":
+            if self.input_manager.get_key("ESC"):
+                self.menu = "ESC"
+            for b in self.edit_buttons:#error
+                b.update(events)
+        #
         #DRAW
         #
         self.paint()
+
+    def get_mouse(self):
+        return(pygame.mouse.get_pressed()[0] and self.mousetag_object == None)
 
     def update_map(self):
         if self.timer == 0:#обновление карты
