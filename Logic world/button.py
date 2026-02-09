@@ -1,12 +1,13 @@
+from input_manager import *
 from image_factory import *
 from utils import *
 import pygame
 pygame.init()
 
 class Button():
-    def __init__(self, pos, IM, inactive_image, pressed_image, hover_image, **kwargs):
-        self.input_manager = IM
+    def __init__(self, pos, inactive_image, pressed_image, hover_image, **kwargs):
         self.pos = pos
+        self.input_manager = input_manager
         self.inactive_image = inactive_image
         self.pressed_image = pressed_image
         self.hover_image = hover_image
@@ -51,9 +52,12 @@ class Button():
     def draw(self, screen):
         screen.blit(self.image, self.pos)
 
-def get_button(x, y, w, h, text, input_manager, font_size=70, text_color=(0, 0, 0), **kwargs):
+def get_button(x, y, w, h, text, font_size=70, text_color=(0, 0, 0), **kwargs):
     t = pygame.Surface((w * 40, h * 40), pygame.SRCALPHA)
     t.fill((0, 0, 0, 0))
     render_text(text, (w * 20, h * 20), t, centerx="center", centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", font_size), color=text_color, alpha=0)
-    b = Button((x, y), input_manager, get_button_image(w, h, 0, text=t), get_button_image(w, h, 2, text=t), get_button_image(w, h, 1, text=t), onclick=kwargs.get("onclick"), onclick_params=kwargs.get("onclick_params"), onrelease=kwargs.get("onrelease"), onrelease_params=kwargs.get("onrelease_params"))
+    b = Button((x, y), get_button_image(w, h, 0, text=t), get_button_image(w, h, 2, text=t),
+               get_button_image(w, h, 1, text=t), onclick=kwargs.get("onclick"),
+               onclick_params=kwargs.get("onclick_params"), onrelease=kwargs.get("onrelease"),
+               onrelease_params=kwargs.get("onrelease_params"))
     return(b)

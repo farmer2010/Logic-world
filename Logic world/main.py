@@ -8,13 +8,13 @@ pygame.init()
 steps = 0
 
 shutil.rmtree("__pycache__")
+shutil.rmtree("blocks/__pycache__")
 
 W = pygame.display.Info().current_w
 H = pygame.display.Info().current_h
 screen = pygame.display.set_mode([W, H])
 pygame.display.set_caption("Logic world")
 timer = pygame.time.Clock()
-black = (0, 0, 0)
 
 class Main():
     def __init__(self):

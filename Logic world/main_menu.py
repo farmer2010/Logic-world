@@ -1,9 +1,10 @@
 import pygame
 pygame.init()
-from input_manager import InputManager
+from input_manager import *
 from button import *
 from image_factory import *
 from world import World
+from select_level import SelectLevel
 
 def editor(main):
     W = pygame.display.Info().current_w
@@ -12,11 +13,13 @@ def editor(main):
     main.menu = World(main, w=int(W / b), h=int(H / b), block_scale=b)
 def quit(main):
     main.keep_going = 0
+def play(main):
+    main.menu = SelectLevel(main)
 
 class MainMenu():
     def __init__(self, main):
         self.main = main
-        self.input_manager = InputManager()
+        self.input_manager = input_manager
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
         self.floor_img = pygame.Surface((W, H))
@@ -25,12 +28,11 @@ class MainMenu():
             for y in range(int(H / 40)):
                     self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.buttons = []
-        self.buttons.append(get_button(720, 450, 12, 3, "PLAY", self.input_manager, font_size=60))
-        self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", self.input_manager, font_size=60, onrelease=editor, onrelease_params=[self.main]))
-        self.buttons.append(get_button(720, 750, 12, 3, "QUIT", self.input_manager, font_size=60, onrelease=quit, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 450, 12, 3, "PLAY", font_size=60, onrelease=play, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 600, 12, 3, "EDITOR", font_size=60, onrelease=editor, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 750, 12, 3, "QUIT", font_size=60, onrelease=quit, onrelease_params=[self.main]))
 
     def update(self, events):
-        #self.input_manager.update(events)
         for b in self.buttons:
             b.update(events)
 

@@ -66,3 +66,5 @@ class InputManager():
 
     def get_mouse(self, ind):
         return(self.mouse[ind])
+
+input_manager = InputManager()

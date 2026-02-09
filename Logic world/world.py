@@ -1,4 +1,4 @@
-from input_manager import InputManager as IM
+from input_manager import *
 from blocks import *
 from button import *
 from text_box import *
@@ -115,31 +115,31 @@ class World:
         self.inventory_index = 0
         self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
-        self.IM = IM()#input manager
+        self.input_manager = input_manager
         self.buttons = []
-        self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 300, 12, 2, "EDIT", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 25)))
-        self.buttons.append(get_button(720, 500, 5, 2, "SAVE", self.IM, font_size=40, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", self.IM, font_size=40, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 600, 12, 2, "QUIT", self.IM, font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 300, 12, 2, "EDIT", font_size=40, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.input_manager, font=pygame.font.Font("files/Better VCR 6.1.ttf", 25)))
+        self.buttons.append(get_button(720, 500, 5, 2, "SAVE", font_size=40, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", font_size=40, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 600, 12, 2, "QUIT", font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
         self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
         #self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 40)))
         #self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 40)))
         #self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=40, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
         #self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=40, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
-        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
-        self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", self.IM, font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", self.IM, font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.input_manager, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
+        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.input_manager, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
+        self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
 
     def update(self, events):
-        self.IM.update(events)
+        self.input_manager.update(events)
         if self.menu == "game":
             #смена блока "в руке"
-            y = self.IM.get_mousewheel()
+            y = self.input_manager.get_mousewheel()
             if self.inventory_index > len(self.inventory_names) - 2:
                 self.inventory_index = (self.inventory_index - y) % len(self.inventory_names)
             else:
@@ -153,11 +153,11 @@ class World:
             block_index = mousepos[1] // 80
             xborder = mousepos[0] >= self.display_w - 80
             yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
-            if self.IM.get_mouse(0):
+            if self.input_manager.get_mouse(0):
                 if xborder and yborder:
                     self.inventory_index = block_index
             #поворот блока
-            if self.IM.get_key("R"):
+            if self.input_manager.get_key("R"):
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                 blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
@@ -173,7 +173,7 @@ class World:
                         self.select_rotate += 1
                         self.select_rotate %= 4
             #пипетка
-            if self.IM.get_key("Q"):
+            if self.input_manager.get_key("Q"):
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                 blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
@@ -192,7 +192,7 @@ class World:
                 else:
                     self.select_block = "air"
             #изменение подключений защищенного провода
-            con = [self.IM.get_key("W"), self.IM.get_key("D"), self.IM.get_key("S"), self.IM.get_key("A")]
+            con = [self.input_manager.get_key("W"), self.input_manager.get_key("D"), self.input_manager.get_key("S"), self.input_manager.get_key("A")]
             mousepos = pygame.mouse.get_pos()
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
@@ -208,27 +208,27 @@ class World:
                                 bl.data["connections"][i] = 1
                             bl.connect_armored_wires()
             #нажатие на блок
-            if self.IM.get_mouse(0):
-                if (self.IM.mousetag_object[0] == None or self.IM.mousetag_object[0] == "action"):
+            if self.input_manager.get_mouse(0):
+                if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "action"):
                     mousepos = pygame.mouse.get_pos()
                     mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                     blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                     if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
                         if self.field[blockpos[0]][blockpos[1]].has_action:
                             self.field[blockpos[0]][blockpos[1]].action()
-                            self.IM.mousetag_object[0] = "action"
+                            self.input_manager.mousetag_object[0] = "action"
             if not pygame.mouse.get_pressed()[0]:
-                self.IM.mousetag_object[0] = None
+                self.input_manager.mousetag_object[0] = None
             #
             if pygame.mouse.get_pressed()[0]:#установка
-                if (self.IM.mousetag_object[0] == None or self.IM.mousetag_object[0] == "set"):
-                    self.IM.mousetag_object[0] = "set"
+                if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "set"):
+                    self.input_manager.mousetag_object[0] = "set"
                     mousepos = pygame.mouse.get_pos()
                     mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                     blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                     self.set_block(blockpos, xborder)
             else:
-                self.IM.mousetag_object[0] = None
+                self.input_manager.mousetag_object[0] = None
             #---------------------------------------------------------------------------------------------------------------
             if pygame.mouse.get_pressed()[2]:#ломание
                 mousepos = pygame.mouse.get_pos()
@@ -239,39 +239,39 @@ class World:
             #обновление карты
             self.update_map()
             #открыть инвентарь
-            if self.IM.get_key("T"):
+            if self.input_manager.get_key("T"):
                 self.menu = "select blocks"
                 if self.inventory_index > len(self.inventory_names) - 2:
                     self.inventory_index = 0
-            if self.IM.get_key("ESC"):
+            if self.input_manager.get_key("ESC"):
                 self.menu = "ESC"
                 #self.IM.mousetag_object = [None, None, None]
                 #self.IM.mousetag = [0, 0, 0]
         elif self.menu == "select blocks":
             ibi2 = list(self.inventory_block_indexes.keys())
-            if self.IM.get_key("T") or self.IM.get_key("ESC"):
+            if self.input_manager.get_key("T") or self.input_manager.get_key("ESC"):
                 self.menu = "game"
             #
             mousepos = pygame.mouse.get_pos()
             block_index = mousepos[1] // 80
             xborder = mousepos[0] >= self.display_w - 70
             yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
-            if self.IM.get_mouse(0):
+            if self.input_manager.get_mouse(0):
                 if xborder and yborder:
                     self.inventory_index = block_index
             #
             blockpos = [(mousepos[0] - (self.display_w - 1040)) // 80, mousepos[1] // 80]
             i = blockpos[1] * 12 + blockpos[0]
-            if blockpos[0] >= 0 and blockpos[1] < 12 and self.IM.get_mouse(0) and i < len(ibi2) and not ibi2[i] in self.inventory_names:
+            if blockpos[0] >= 0 and blockpos[1] < 12 and self.input_manager.get_mouse(0) and i < len(ibi2) and not ibi2[i] in self.inventory_names:
                 self.inventory_names[self.inventory_index] = ibi2[i]
                 self.inventory[ibi2[i]] = 9999
         elif self.menu == "ESC":
-            if self.IM.get_key("ESC"):
+            if self.input_manager.get_key("ESC"):
                 self.menu = "game"
             for b in self.buttons:
                 b.update(events)
         elif self.menu == "edit":
-            if self.IM.get_key("ESC"):
+            if self.input_manager.get_key("ESC"):
                 self.menu = "ESC"
             for b in self.edit_buttons:
                 b.update(events)
@@ -476,7 +476,8 @@ class World:
                     self.floor_img.blit(get_image(1, 0), (x * self.block_scale, y * self.block_scale))
                 else:
                     self.floor_img.blit(get_image(0, 0), (x * self.block_scale, y * self.block_scale))
-        self.field = [[get_block(self, [x, y], "air") for y in range(self.h)] for x in range(self.w)]
+        self.field = [[None for y in range(self.h)] for x in range(self.w)]
+        self.field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]
         #
         inv = txt.split(";")[3].split(":")
         self.inventory = {"air" : 0}
@@ -491,7 +492,7 @@ class World:
         for i in range(len(blocks)):
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
-                new_block = block.get_block(self, (int(bl[1]), int(bl[2])), bi2[int(bl[0])])
+                new_block = get_block(self, (int(bl[1]), int(bl[2])), bi2[int(bl[0])])
                 p = get_block_params(bi2[int(bl[0])])
                 j = 3
                 for p_name in p.keys():

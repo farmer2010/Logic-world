@@ -1,9 +1,10 @@
+from input_manager import *
 from image_factory import *
 import pygame
 pygame.init()
 
 class TextBox():
-    def __init__(self, pos, input_manager, inactive_image, hover_image, **kwargs):
+    def __init__(self, pos, inactive_image, hover_image, **kwargs):
         self.pos = pos
         self.input_manager = input_manager
         self.text = ""
@@ -70,6 +71,7 @@ class TextBox():
             pygame.draw.rect(screen, self.color, (self.pos[0] + self.text_x + text_img.get_width(), self.pos[1] + self.rect.h / 2 - text_img.get_height() / 2, 4, text_img.get_height()))
 
 def get_text_box(x, y, w, h, text, input_manager, **kwargs):
-    text_box = TextBox((x, y), input_manager, get_button_image(w, h, 2), get_button_image(w, h, 3), font=kwargs.get("font"), size=kwargs.get("size"), color=kwargs.get("color"), text_x=kwargs.get("text_x"))
+    text_box = TextBox((x, y), get_button_image(w, h, 2), get_button_image(w, h, 3), font=kwargs.get("font"),
+                       size=kwargs.get("size"), color=kwargs.get("color"), text_x=kwargs.get("text_x"))
     text_box.text = text
     return(text_box)
