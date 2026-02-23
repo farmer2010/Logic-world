@@ -112,8 +112,27 @@ class World:
             "no pushable" : 17
         }
         self.inventory_index = 0
-        self.inventory = {"wire" : 9999, "activator" : 9999, "block" : 9999, "NOT" : 9999, "wire box" : 9999, "AND" : 9999, "XOR" : 9999, "diode" : 9999, "armored wire" : 9999, "memory" : 9999, "output" : 9999, "glass" : 9999, "air" : 0}
-        self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
+        self.inventory_count = {
+            "wire" : 9999,
+            "activator" : 9999,
+            "block" : 9999,
+            "NOT" : 9999,
+            "wire box" : 9999,
+            "AND" : 9999,
+            "XOR" : 9999,
+            "diode" : 9999,
+            "output" : 9999,
+            "glass" : 9999,
+            "armored wire" : 9999,
+            "memory" : 9999,
+            "sensor" : 9999,
+            "energy block" : 9999,
+            "button" : 9999,
+            "piston" : 9999,
+            "no pushable" : 9999,
+            "sticky piston" : 9999
+        }
+        self.inventory = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.input_manager = input_manager
         self.buttons = []
         self.buttons.append(get_button(720, 200, 480, 80, "BACK TO GAME", font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
@@ -135,19 +154,19 @@ class World:
         if self.menu == "game":
             #смена блока "в руке"
             y = self.input_manager.get_mousewheel()
-            if self.inventory_index > len(self.inventory_names) - 2:
-                self.inventory_index = (self.inventory_index - y) % len(self.inventory_names)
+            if self.inventory_index > len(self.inventory) - 2:
+                self.inventory_index = (self.inventory_index - y) % len(self.inventory)
             else:
                 self.inventory_index -= y
                 if self.inventory_index < 0:
                     self.inventory_index = 0
-                elif self.inventory_index > len(self.inventory_names) - 2:
-                    self.inventory_index = len(self.inventory_names) - 2
+                elif self.inventory_index > len(self.inventory) - 2:
+                    self.inventory_index = len(self.inventory) - 2
             #смена активного блока посредством курсора
             mousepos = pygame.mouse.get_pos()
             block_index = mousepos[1] // 80
             xborder = mousepos[0] >= self.display_w - 80
-            yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
+            yborder = (block_index < len(self.inventory) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
             if self.input_manager.get_mouse(0):
                 if xborder and yborder:
                     self.inventory_index = block_index
@@ -160,11 +179,11 @@ class World:
                     if "rotate" in self.field[blockpos[0]][blockpos[1]].data:
                         self.field[blockpos[0]][blockpos[1]].data["rotate"] += 1
                         self.field[blockpos[0]][blockpos[1]].data["rotate"] %= 4
-                    elif "rotate" in get_block_params(self.inventory_names[self.inventory_index]):
+                    elif "rotate" in get_block_params(self.inventory[self.inventory_index]):
                         self.select_rotate += 1
                         self.select_rotate %= 4
                 else:
-                    if "rotate" in get_block_params(self.inventory_names[self.inventory_index]):
+                    if "rotate" in get_block_params(self.inventory[self.inventory_index]):
                         self.select_rotate += 1
                         self.select_rotate %= 4
             #пипетка
@@ -173,17 +192,16 @@ class World:
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                 blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                 if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
-                    if self.field[blockpos[0]][blockpos[1]].type in self.inventory_names:
+                    if self.field[blockpos[0]][blockpos[1]].type in self.inventory:
                         i = 0
-                        while self.inventory_names[i] != self.field[blockpos[0]][blockpos[1]].type:
+                        while self.inventory[i] != self.field[blockpos[0]][blockpos[1]].type:
                             i += 1
                         if i != None:
                             self.inventory_index = i
                     elif self.field[blockpos[0]][blockpos[1]].type in self.inventory_block_indexes.keys():
-                        if self.inventory_index == len(self.inventory_names) - 1:
+                        if self.inventory_index == len(self.inventory) - 1:
                             self.inventory_index = 0
-                        self.inventory_names[self.inventory_index] = self.field[blockpos[0]][blockpos[1]].type
-                        self.inventory[self.inventory_index] = 9999
+                        self.inventory[self.inventory_index] = self.field[blockpos[0]][blockpos[1]].type
                 else:
                     self.select_block = "air"
             #изменение подключений защищенного провода
@@ -236,7 +254,7 @@ class World:
             #открыть инвентарь
             if self.input_manager.get_key("T"):
                 self.menu = "select blocks"
-                if self.inventory_index > len(self.inventory_names) - 2:
+                if self.inventory_index > len(self.inventory) - 2:
                     self.inventory_index = 0
             if self.input_manager.get_key("ESC"):
                 self.menu = "ESC"
@@ -250,16 +268,15 @@ class World:
             mousepos = pygame.mouse.get_pos()
             block_index = mousepos[1] // 80
             xborder = mousepos[0] >= self.display_w - 70
-            yborder = (block_index < len(self.inventory_names) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
+            yborder = (block_index < len(self.inventory) - 1) and mousepos[1] >= block_index * 80 + 10 and mousepos[1] <= block_index * 80 + 70
             if self.input_manager.get_mouse(0):
                 if xborder and yborder:
                     self.inventory_index = block_index
             #
             blockpos = [(mousepos[0] - (self.display_w - 1040)) // 80, mousepos[1] // 80]
             i = blockpos[1] * 12 + blockpos[0]
-            if blockpos[0] >= 0 and blockpos[1] < 12 and self.input_manager.get_mouse(0) and i < len(ibi2) and not ibi2[i] in self.inventory_names:
-                self.inventory_names[self.inventory_index] = ibi2[i]
-                self.inventory[ibi2[i]] = 9999
+            if blockpos[0] >= 0 and blockpos[1] < 12 and self.input_manager.get_mouse(0) and i < len(ibi2) and not ibi2[i] in self.inventory:
+                self.inventory[self.inventory_index] = ibi2[i]
         elif self.menu == "ESC":
             if self.input_manager.get_key("ESC"):
                 self.menu = "game"
@@ -300,36 +317,36 @@ class World:
 
     def set_block(self, blockpos, xborder):
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
-            if self.inventory_names[self.inventory_index] == "glass":
+            if self.inventory[self.inventory_index] == "glass":
                 if self.is_creative:
                     self.field[blockpos[0]][blockpos[1]].glassed = 1
                     self.change_image()
             else:
                 if self.field[blockpos[0]][blockpos[1]].type == "air":
                     do_set = 1
-                    if self.is_creative == 0 and self.inventory[self.inventory_names[self.inventory_index]] == 0:
+                    if self.is_creative == 0 and self.inventory_count[self.inventory[self.inventory_index]] == 0:
                         do_set = 0
                     if self.field[blockpos[0]][blockpos[1]].glassed == 0 and do_set:
                         self.timer = 0
-                        bl = get_block(self, blockpos, self.inventory_names[self.inventory_index])
-                        sl = self.inventory_names[self.inventory_index]
+                        bl = get_block(self, blockpos, self.inventory[self.inventory_index])
+                        sl = self.inventory[self.inventory_index]
                         if "rotate" in get_block_params(sl):
                             bl.data["rotate"] = self.select_rotate
                         bl.connect_with_armored_wire()
                         self.change_image()
                         if self.is_creative == 0:
-                            self.inventory[self.inventory_names[self.inventory_index]] -= 1
+                            self.inventory_count[self.inventory[self.inventory_index]] -= 1
 
     def remove_block(self, blockpos, xborder):
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
-            if self.inventory_names[self.inventory_index] == "glass":
+            if self.inventory[self.inventory_index] == "glass":
                 if self.is_creative:
                     self.field[blockpos[0]][blockpos[1]].glassed = 0
                     self.change_image()
             else:
                 if self.field[blockpos[0]][blockpos[1]].glassed == 0:
                     if self.is_creative == 0:
-                        self.inventory[self.field[blockpos[0]][blockpos[1]].type] += 1
+                        self.inventory_count[self.field[blockpos[0]][blockpos[1]].type] += 1
                     self.timer = 0
                     self.field[blockpos[0]][blockpos[1]] = Air(self, blockpos)
                     # ------------------------------------------------
@@ -354,35 +371,35 @@ class World:
             mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
             blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
             if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
-                if self.field[blockpos[0]][blockpos[1]].type == "air" or self.inventory_names[self.inventory_index] == "glass":
-                    if self.inventory_names[self.inventory_index] != "air":
-                        select_image = image_factory.get_block_image(self.inventory_names[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0}, size=self.block_scale)
+                if self.field[blockpos[0]][blockpos[1]].type == "air" or self.inventory[self.inventory_index] == "glass":
+                    if self.inventory[self.inventory_index] != "air":
+                        select_image = image_factory.get_block_image(self.inventory[self.inventory_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0}, size=self.block_scale)
                         select_image.convert_alpha()
                         select_image.set_alpha(90)
                     else:
                         select_image = image_factory.get_block_image("air", [], {}, size=self.block_scale)
                     screen.blit(select_image, (blockpos[0] * self.block_scale + self.pos[0], blockpos[1] * self.block_scale + self.pos[1]))
             #
-            if self.inventory_index != len(self.inventory_names) - 1:
+            if self.inventory_index != len(self.inventory) - 1:
                 pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
             #
-            for i in range(len(self.inventory_names) - 1):
+            for i in range(len(self.inventory) - 1):
                 pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
-                img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
+                img = image_factory.get_block_image(self.inventory[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
-                render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+                render_text(str(self.inventory_count[self.inventory[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
             #bl = [pygame.mouse.get_pos()[0] // self.block_scale, pygame.mouse.get_pos()[1] // self.block_scale]
             #render_text(str(bl), pygame.mouse.get_pos(), screen, font=pygame.font.Font("files/font.ttf", 16))
         elif self.menu == "select blocks":
-            if self.inventory_index != len(self.inventory_names) - 1:
+            if self.inventory_index != len(self.inventory) - 1:
                 pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.inventory_index * 80 + 5, 70, 70))
-            for i in range(len(self.inventory_names) - 1):
+            for i in range(len(self.inventory) - 1):
                 pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
-                img = image_factory.get_block_image(self.inventory_names[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                img = image_factory.get_block_image(self.inventory[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
-                render_text(str(self.inventory[self.inventory_names[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+                render_text(str(self.inventory_count[self.inventory[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
             mousepos = pygame.mouse.get_pos()
             ibi2 = list(self.inventory_block_indexes.keys())
             for x in range(12):
@@ -396,7 +413,7 @@ class World:
                         pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 1025 + x * 80, y * 80 + 15, 50, 50))
                         img = image_factory.get_block_image(ibi2[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                         screen.blit(img, (self.display_w - 1020 + x * 80, y * 80 + 20))
-                        if ibi2[i] in self.inventory_names:
+                        if ibi2[i] in self.inventory:
                             img2 = pygame.Surface((50, 50))
                             img2.set_alpha(128)
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
@@ -425,8 +442,8 @@ class World:
             for y in range(self.h):
                 glassed += str(self.field[x][y].glassed)
         txt += str(bin_to_dec(glassed)) + ";"
-        for i in range(len(self.inventory_names) - 1):
-            txt += str(self.block_indexes[self.inventory_names[i]]) + "," + str(self.inventory[self.inventory_names[i]])
+        for i in range(len(self.inventory) - 1):
+            txt += str(self.block_indexes[self.inventory[i]]) + "," + str(self.inventory_count[self.inventory[i]])
             txt += ":"
         txt += ";"
         for x in range(self.w):
@@ -473,13 +490,13 @@ class World:
         self.field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]
         #
         inv = txt.split(";")[3].split(":")
-        self.inventory = {"air" : 0}
-        self.inventory_names = []
+        self.inventory_count = {"air" : 0}
+        self.inventory = []
         for i in range(len(inv) - 1):
             invi = inv[i].split(",")
-            self.inventory_names.append(bi2[int(invi[0])])
-            self.inventory[bi2[int(invi[0])]] = int(invi[1])
-        self.inventory_names.append("air")
+            self.inventory.append(bi2[int(invi[0])])
+            self.inventory_count[bi2[int(invi[0])]] = int(invi[1])
+        self.inventory.append("air")
         #
         blocks = txt.split(";")[4].split(":")
         for i in range(len(blocks)):
