@@ -15,13 +15,13 @@ def resise(self, w, h):
     W = pygame.display.Info().current_w
     H = pygame.display.Info().current_h
     try:
-        self.w = int(w.text)
-        self.h = int(h.text)
+        self.w = w
+        self.h = h
         self.floor_img = pygame.Surface((self.display_w, self.display_h))
-        self.pos = [int((W / 2 - self.w * 40 / 2) / 40) * 40, int((H / 2 - self.h * 40 / 2) / 40) * 40]
+        self.pos = [int((W / 2 - self.w * self.block_scale / 2) / self.block_scale) * self.block_scale, int((H / 2 - self.h * self.block_scale / 2) / self.block_scale) * self.block_scale]
         for x in range(int(self.display_w / self.block_scale)):
             for y in range(int(self.display_h / self.block_scale)):
-                if x >= self.pos[0] / 40 and x < self.pos[0] / 40 + self.w and y >= self.pos[1] / 40 and y < self.pos[1] / 40 + self.h:
+                if x >= self.pos[0] / self.block_scale and x < self.pos[0] / self.block_scale + self.w and y >= self.pos[1] / self.block_scale and y < self.pos[1] / self.block_scale + self.h:
                     self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
                 else:
                     self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
@@ -51,7 +51,7 @@ class World:
         self.block_scale = block_scale
         self.field = [[None for y in range(h)] for x in range(w)]
         self.field = [[Air(self, (x, y)) for y in range(h)] for x in range(w)]
-        self.pos = [int((W / 2 - self.w * 40 / 2) / 40) * 40, int((H / 2 - self.h * 40 / 2) / 40) * 40]
+        self.pos = [int((W / 2 - self.w * block_scale / 2) / self.block_scale) * block_scale, int((H / 2 - self.h * block_scale / 2) / block_scale) * block_scale]
         if -1 in self.pos:
             self.pos = [int(W / self.block_scale / 2) - int(self.w / 2), int(H / self.block_scale / 2) - int(self.h / 2)]
         else:
@@ -127,8 +127,8 @@ class World:
         self.edit_buttons.append(get_text_box(760, 500, 120, 80, str(self.w), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
         self.edit_buttons.append(get_text_box(1080, 500, 120, 80, str(self.h), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
         self.edit_buttons.append(get_button(720, 600, 240, 80, "CUT", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(960, 600, 240, 80, "FULL", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(720, 700, 480, 80, "RESISE", font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_button(960, 600, 240, 80, "FULL", font_size=40, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+        self.edit_buttons.append(get_button(720, 700, 480, 80, "RESISE", font_size=40, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
 
     def update(self, events):
         self.input_manager.update(events)
@@ -155,7 +155,7 @@ class World:
             if self.input_manager.get_key("R"):
                 mousepos = pygame.mouse.get_pos()
                 mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
-                blockpos = [int(mouse_world_pos[0] / 40), int(mouse_world_pos[1] / 40)]
+                blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
                 if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
                     if "rotate" in self.field[blockpos[0]][blockpos[1]].data:
                         self.field[blockpos[0]][blockpos[1]].data["rotate"] += 1
@@ -407,8 +407,6 @@ class World:
         elif self.menu == "edit":
             for b in self.edit_buttons:
                 b.draw(screen)
-            render_text("X:", (720, 340), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
-            render_text("Y:", (1040, 340), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
             render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
             render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
 
