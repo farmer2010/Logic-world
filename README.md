@@ -9,7 +9,7 @@
 
 ![](https://github.com/farmer2010/Logic-world/blob/main/README%20images/activator.png) **Активатор** - передает сигнал во все стороны, если активен. Можно переключать нажатием мыши
 
-<img src="README images\activator.png" style="width: 5px; image-rendering: pixelated;"> **Логическое НЕ** - передает сигнал вперед, если не получает сигнал сзади
+<img src="README images\activator.png" style="width: 20px; image-rendering: pixelated;"> **Логическое НЕ** - передает сигнал вперед, если не получает сигнал сзади
 
 **Логическое И** - передает сигнал вперед, только если получает два сигнала с боковых входов
 
