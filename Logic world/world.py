@@ -6,38 +6,44 @@ import image_factory
 import pygame
 pygame.init()
 
+W = pygame.display.Info().current_w
+H = pygame.display.Info().current_h
+
 def change_menu(self, menu):
     self.menu = menu
 def mainmenu(main):
     from main_menu import MainMenu
     main.menu = MainMenu(main)
 def resise(self, w, h):
-    W = pygame.display.Info().current_w
-    H = pygame.display.Info().current_h
     try:
+        self.edit_buttons[1].text = str(w)
+        self.edit_buttons[2].text = str(h)
         self.w = w
         self.h = h
-        self.floor_img = pygame.Surface((self.display_w, self.display_h))
-        self.pos = [int((W / 2 - self.w * self.block_scale / 2) / self.block_scale) * self.block_scale, int((H / 2 - self.h * self.block_scale / 2) / self.block_scale) * self.block_scale]
-        for x in range(int(self.display_w / self.block_scale)):
-            for y in range(int(self.display_h / self.block_scale)):
-                if x >= self.pos[0] / self.block_scale and x < self.pos[0] / self.block_scale + self.w and y >= self.pos[1] / self.block_scale and y < self.pos[1] / self.block_scale + self.h:
-                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
-                else:
-                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+        self.change_floor_image()
         f = [[None for y in range(self.h)] for x in range(self.w)]
         for x in range(self.w):
             for y in range(self.h):
                 if x < len(self.field) and y < len(self.field[0]):
                     f[x][y] = self.field[x][y]
         self.field = f
+        self.blocks = []
         for x in range(self.w):
             for y in range(self.h):
                 if self.field[x][y] == None:
                     self.field[x][y] = Air(self, (x, y))
+                elif self.field[x][y].type != "air":
+                    self.blocks.append(self.field[x][y])
         self.change_image()
     except Exception as ex:
-        print(ex, w.text, h.text)
+        print(ex, w, h)
+def change_block_scale(self, b):
+    try:
+        self.block_scale = b
+        self.change_floor_image()
+    except Exception as ex:
+        print(ex, b)
+    self.change_image()
 
 class World:
     def __init__(self, main, w=10, h=10, block_scale=20):
@@ -52,18 +58,7 @@ class World:
         self.field = [[None for y in range(h)] for x in range(w)]
         self.field = [[Air(self, (x, y)) for y in range(h)] for x in range(w)]
         self.blocks = []
-        self.pos = [int((W / 2 - self.w * block_scale / 2) / self.block_scale) * block_scale, int((H / 2 - self.h * block_scale / 2) / block_scale) * block_scale]
-        if -1 in self.pos:
-            self.pos = [int(W / self.block_scale / 2) - int(self.w / 2), int(H / self.block_scale / 2) - int(self.h / 2)]
-        else:
-            self.pos = [self.pos[0] * self.block_scale, self.pos[1] * self.block_scale]
-        self.floor_img = pygame.Surface((W, H))
-        for x in range(int(W / self.block_scale)):
-            for y in range(int(H / self.block_scale)):
-                if x >= self.pos[0] and x < self.pos[0] + self.w and y >= self.pos[1] and y < self.pos[1] + self.h:
-                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
-                else:
-                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+        self.change_floor_image()
         self.change_image()
         self.timer = 0
         self.menu = "game"
@@ -144,8 +139,10 @@ class World:
         self.buttons.append(get_button(720, 600, 480, 80, "QUIT", font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
         self.edit_buttons = []
         self.edit_buttons.append(get_button(720, 200, 480, 80, "BACK TO MENU", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(760, 500, 120, 80, str(self.w), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
-        self.edit_buttons.append(get_text_box(1080, 500, 120, 80, str(self.h), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
+        self.edit_buttons.append(get_text_box(760, 500, 120, 80, str(self.w), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))#w
+        self.edit_buttons.append(get_text_box(1080, 500, 120, 80, str(self.h), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))#h
+        self.edit_buttons.append(get_text_box(720, 300, 240, 80, str(self.block_scale), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))#block scale
+        self.edit_buttons.append(get_button(960, 300, 240, 80, "CHANGE", font_size=40, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[3]]))
         self.edit_buttons.append(get_button(720, 600, 240, 80, "CUT", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
         self.edit_buttons.append(get_button(960, 600, 240, 80, "FULL", font_size=40, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
         self.edit_buttons.append(get_button(720, 700, 480, 80, "RESISE", font_size=40, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
@@ -431,6 +428,16 @@ class World:
         for x in range(self.w):
             for y in range(self.h):
                 self.field[x][y].change_image()
+
+    def change_floor_image(self):
+        self.floor_img = pygame.Surface((W, H))
+        self.pos = [int((W / 2 - self.w * self.block_scale / 2) / self.block_scale) * self.block_scale, int((H / 2 - self.h * self.block_scale / 2) / self.block_scale) * self.block_scale]
+        for x in range(int(self.display_w / self.block_scale)):
+            for y in range(int(self.display_h / self.block_scale)):
+                if x >= self.pos[0] / self.block_scale and x < self.pos[0] / self.block_scale + self.w and y >= self.pos[1] / self.block_scale and y < self.pos[1] / self.block_scale + self.h:
+                    self.floor_img.blit(get_image(1, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
+                else:
+                    self.floor_img.blit(get_image(0, 0, size=self.block_scale), (x * self.block_scale, y * self.block_scale))
 
     def save_level(self, name):
         file = open("files/levels/" + name + ".dat", "w")
