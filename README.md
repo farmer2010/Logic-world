@@ -6,9 +6,7 @@
 ### Блоки:
 Провод - передает сигнал. Активируется мгновенно
 
-![](https://github.com/farmer2010/Logic-world/blob/main/README%20images/activator.png) **Активатор** - передает сигнал во все стороны, если активен. Можно переключать нажатием мыши ![](https://github.com/farmer2010/Logic-world/blob/main/Logic%20world/files/images/blocks.png)
-
-![](https://github.com/farmer2010/Logic-world/blob/main/README%20images/activator.png)
+![](https://github.com/farmer2010/Logic-world/blob/main/README%20images/activator.png) **Активатор** - передает сигнал во все стороны, если активен. Можно переключать нажатием мыши
 
 **Логическое НЕ** - передает сигнал вперед, если не получает сигнал сзади
 
