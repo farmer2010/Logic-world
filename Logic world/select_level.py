@@ -21,11 +21,17 @@ class SelectLevel():
                 self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.buttons = []
         for i in range(7):
-            self.buttons.append(get_button(80 + 120 * i, 80, 2, 2, str(i + 1), onrelease=change_level, onrelease_params=[self.main, i]))
+            self.buttons.append(get_button(80 + 120 * i, 80, 80, 80, str(i + 1), onrelease=change_level, onrelease_params=[self.main, i]))
 
     def update(self, events):
+        self.input_manager.update(events)
+        #
         for b in self.buttons:
             b.update(events)
+        #
+        if self.input_manager.get_key("ESC"):
+            from main_menu import MainMenu
+            self.main.menu = MainMenu(self.main)
 
     def draw(self, screen):
         screen.blit(self.floor_img, (0, 0))

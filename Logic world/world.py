@@ -2,7 +2,6 @@ from input_manager import *
 from blocks import *
 from button import *
 from text_box import *
-from blocks import block
 import image_factory
 import pygame
 pygame.init()
@@ -117,23 +116,19 @@ class World:
         self.inventory_names = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.input_manager = input_manager
         self.buttons = []
-        self.buttons.append(get_button(720, 200, 12, 2, "BACK TO GAME", font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 300, 12, 2, "EDIT", font_size=40, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 400, 12, 2, "", self.input_manager, font=pygame.font.Font("files/Better VCR 6.1.ttf", 25)))
-        self.buttons.append(get_button(720, 500, 5, 2, "SAVE", font_size=40, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(1000, 500, 5, 2, "LOAD", font_size=40, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 600, 12, 2, "QUIT", font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 200, 480, 80, "BACK TO GAME", font_size=40, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 300, 480, 80, "EDIT", font_size=40, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 400, 480, 80, "", font=pygame.font.Font("files/Better VCR 6.1.ttf", 25)))
+        self.buttons.append(get_button(720, 500, 200, 80, "SAVE", font_size=40, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(1000, 500, 200, 80, "LOAD", font_size=40, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 600, 480, 80, "QUIT", font_size=40, onrelease=mainmenu, onrelease_params=[self.main]))
         self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 200, 12, 2, "BACK TO MENU", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        #self.edit_buttons.append(get_text_box(760, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 40)))
-        #self.edit_buttons.append(get_text_box(1080, 300, 3, 2, "0", self.IM, font=pygame.font.Font("files/Better VCR 6.1.ttf", 40)))
-        #self.edit_buttons.append(get_button(720, 400, 6, 2, "SET POS", self.IM, font_size=40, onrelease=setpos, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
-        #self.edit_buttons.append(get_button(960, 400, 6, 2, "CENTER", self.IM, font_size=40, onrelease=center, onrelease_params=[self.edit_buttons[1], self.edit_buttons[2]]))
-        self.edit_buttons.append(get_text_box(760, 500, 3, 2, str(self.w), self.input_manager, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
-        self.edit_buttons.append(get_text_box(1080, 500, 3, 2, str(self.h), self.input_manager, font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
-        self.edit_buttons.append(get_button(720, 600, 6, 2, "CUT", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(960, 600, 6, 2, "FULL", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(720, 700, 12, 2, "RESISE", font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_button(720, 200, 480, 80, "BACK TO MENU", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_text_box(760, 500, 120, 80, str(self.w), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
+        self.edit_buttons.append(get_text_box(1080, 500, 120, 80, str(self.h), font=pygame.font.Font("files/Better VCR 6.1.ttf", 50)))
+        self.edit_buttons.append(get_button(720, 600, 240, 80, "CUT", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(960, 600, 240, 80, "FULL", font_size=40, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(720, 700, 480, 80, "RESISE", font_size=40, onrelease=resise, onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
 
     def update(self, events):
         self.input_manager.update(events)

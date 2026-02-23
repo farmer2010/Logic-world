@@ -24,30 +24,29 @@ def get_button_image2(w, h, type, text=None, size=40):
         img.blit(text, (0, 0))
     return(img)
 
-def get_button_image(w, h, type, text=None, size=40):
+def get_button_image(w, h, type, color, text=None):
     offset = 4
     ch = 30
-    color1 = (90, 90, 90)
-    color2 = (120, 120, 120)
-    color3 = (50, 50, 50)
-    img = pygame.Surface((w * size, h * size), flags=pygame.SRCALPHA)
-    w *= size
-    h *= size
+    img = pygame.Surface((w, h), flags=pygame.SRCALPHA)
     if type == 0:
-        img.fill((min(color1[0] + ch, 255), min(color1[1] + ch, 255), min(color1[2] + ch, 255)))
-        pygame.draw.rect(img, (max(color1[0] - ch, 0), max(color1[1] - ch, 0), max(color1[2] - ch, 0)), (offset, offset, w - offset, h - offset))
-        pygame.draw.rect(img, color1, (offset, offset, w - offset * 2, h - offset * 2))
+        img.fill((min(color[0] + ch, 255), min(color[1] + ch, 255), min(color[2] + ch, 255)))
+        pygame.draw.rect(img, (max(color[0] - ch, 0), max(color[1] - ch, 0), max(color[2] - ch, 0)), (offset, offset, w - offset, h - offset))
+        pygame.draw.rect(img, color, (offset, offset, w - offset * 2, h - offset * 2))
     elif type == 1:
-        img.fill((min(color2[0] + ch, 255), min(color2[1] + ch, 255), min(color2[2] + ch, 255)))
-        pygame.draw.rect(img, (max(color2[0] - ch, 0), max(color2[1] - ch, 0), max(color2[2] - ch, 0)), (offset, offset, w - offset, h - offset))
-        pygame.draw.rect(img, color2, (offset, offset, w - offset * 2, h - offset * 2))
-    elif type == 2:
-        img.fill((max(color3[0] - ch, 0), max(color3[1] - ch, 0), max(color3[2] - ch, 0)))
-        pygame.draw.rect(img, (min(color3[0] + ch, 255), min(color3[1] + ch, 255), min(color3[2] + ch, 255)), (offset, offset, w - offset, h - offset))
-        pygame.draw.rect(img, color3, (offset, offset, w - offset * 2, h - offset * 2))
+        img.fill((max(color[0] - ch, 0), max(color[1] - ch, 0), max(color[2] - ch, 0)))
+        pygame.draw.rect(img, (min(color[0] + ch, 255), min(color[1] + ch, 255), min(color[2] + ch, 255)), (offset, offset, w - offset, h - offset))
+        pygame.draw.rect(img, color, (offset, offset, w - offset * 2, h - offset * 2))
     #
     if (text != None):
         img.blit(text, (0, 0))
+    return(img)
+
+def get_text_box_image(w, h, color, offset=3, ch=30):
+    img = pygame.Surface((w, h), pygame.SRCALPHA)
+    img.fill((min(color[0] + ch*2, 255), min(color[1] + ch*2, 255), min(color[2] + ch*2, 255)))
+    pygame.draw.rect(img, (max(color[0] - ch, 0), max(color[1] - ch, 0), max(color[2] - ch, 0)), (offset, offset, w - offset*2, h - offset*2))
+    pygame.draw.rect(img, (min(color[0] + ch, 255), min(color[1] + ch, 255), min(color[2] + ch, 255)), (offset*2, offset*2, w - offset*3, h - offset*3))
+    pygame.draw.rect(img, color, (offset*2, offset*2, w - offset*4, h - offset*4))
     return(img)
 
 def get_wire_image(data, neighbours, size=40):

@@ -4,27 +4,29 @@ import pygame
 pygame.init()
 
 class TextBox():
-    def __init__(self, pos, inactive_image, hover_image, **kwargs):
+    def __init__(self, pos, inactive_image, hover_image,
+                 text="",
+                 font=None,
+                 font_name="times new roman",
+                 font_size=40,
+                 font_color=(0, 0, 0),
+                 font_alpha=True,
+                 text_x=10,
+                 **kwargs):
         self.pos = pos
         self.input_manager = input_manager
-        self.text = ""
+        self.text = text
         self.inactive_image = inactive_image
         self.hover_image = hover_image
         self.image = inactive_image
         self.rect = self.image.get_rect()
         self.mouselast = 0
-        self.size = kwargs.get("size")
-        if self.size == None:
-            self.size = 40
-        self.color = kwargs.get("color")
-        if self.color == None:
-            self.color = (0, 0, 0)
-        self.font = kwargs.get("font")
-        if self.font == None:
-            self.font = pygame.font.SysFont(None, self.size)
-        self.text_x = kwargs.get("text_x")
-        if self.text_x == None:
-            self.text_x = 10
+        self.size = font_size
+        self.color = font_color
+        if font == None: font = pygame.font.SysFont(font_name, font_size)
+        self.font = font
+        self.font_alpha = font_alpha
+        self.text_x = text_x
         self.timer = 0
 
     def update(self, events):
@@ -65,13 +67,13 @@ class TextBox():
 
     def draw(self, screen):
         screen.blit(self.image, self.pos)
-        render_text(self.text, (self.pos[0] + self.text_x, self.pos[1] + self.rect.h / 2), screen, centery="center", font=self.font, color=self.color)
+        render_text(self.text, (self.pos[0] + self.text_x, self.pos[1] + self.rect.h / 2), screen, centery="center", font=self.font, color=self.color, alpha=self.font_alpha)
         if self.timer < 30 and self.input_manager.mouse_connect_object[0] == self:
-            text_img = self.font.render(self.text, True, self.color)
+            text_img = self.font.render(self.text, self.font_alpha, self.color)
             pygame.draw.rect(screen, self.color, (self.pos[0] + self.text_x + text_img.get_width(), self.pos[1] + self.rect.h / 2 - text_img.get_height() / 2, 4, text_img.get_height()))
 
-def get_text_box(x, y, w, h, text, input_manager, **kwargs):
-    text_box = TextBox((x, y), get_button_image(w, h, 2), get_button_image(w, h, 3), font=kwargs.get("font"),
-                       size=kwargs.get("size"), color=kwargs.get("color"), text_x=kwargs.get("text_x"))
+def get_text_box(x, y, w, h, text, size=40, color=(0, 0, 0), text_x=10, **kwargs):
+    text_box = TextBox((x, y), get_text_box_image(w, h, (90, 90, 90)), get_text_box_image(w, h, (120, 120, 120)), font=kwargs.get("font"),
+                       size=size, color=color, text_x=text_x, font_alpha=False)
     text_box.text = text
     return(text_box)

@@ -31,6 +31,6 @@ while game_world.keep_going:
     game_world.menu.update(events)
     render_text(str(round(timer.get_fps(), 2)), (0, 0), screen, color=(255, 0, 0))
     pygame.display.update()
-    timer.tick(60)
+    timer.tick(30)
     steps += 1
 pygame.quit()
