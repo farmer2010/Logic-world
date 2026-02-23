@@ -51,6 +51,7 @@ class World:
         self.block_scale = block_scale
         self.field = [[None for y in range(h)] for x in range(w)]
         self.field = [[Air(self, (x, y)) for y in range(h)] for x in range(w)]
+        self.blocks = []
         self.pos = [int((W / 2 - self.w * block_scale / 2) / self.block_scale) * block_scale, int((H / 2 - self.h * block_scale / 2) / block_scale) * block_scale]
         if -1 in self.pos:
             self.pos = [int(W / self.block_scale / 2) - int(self.w / 2), int(H / self.block_scale / 2) - int(self.h / 2)]
@@ -290,23 +291,20 @@ class World:
 
     def update_map(self):
         if self.timer == 0:#обновление карты
-            for x in range(self.w):#стираем active и электричество
-                for y in range(self.h):
-                    self.field[x][y].active = 0
-                    self.field[x][y].logic_gate_active = 0
-                    if self.field[x][y].type == "wire" or self.field[x][y].type == "output" or self.field[x][y].type == "armored wire":
-                        self.field[x][y].data["activated"] = 0
-                    elif self.field[x][y].type == "wire box" or self.field[x][y].type == "diode":
-                        self.field[x][y].data["activated1"] = 0
-                        self.field[x][y].data["activated2"] = 0
-            for x in range(self.w):#распространение электричества
-                for y in range(self.h):
-                    if self.field[x][y].has_output:
-                        self.field[x][y].update()
-            for x in range(self.w):#активация логических вентилей
-                for y in range(self.h):
-                    if self.field[x][y].is_logic_gate:
-                        self.field[x][y].update(self.field[x][y].data, enr=0)
+            for bl in self.blocks:#стираем active и электричество
+                bl.active = 0
+                bl.logic_gate_active = 0
+                if bl.type == "wire" or bl.type == "output" or bl.type == "armored wire":
+                    bl.data["activated"] = 0
+                elif bl.type == "wire box" or bl.type == "diode":
+                    bl.data["activated1"] = 0
+                    bl.data["activated2"] = 0
+            for bl in self.blocks:#распространение электричества
+                if bl.has_output:
+                    bl.update()
+            for bl in self.blocks:#активация логических вентилей
+                if bl.is_logic_gate:
+                    bl.update(bl.data, enr=0)
             self.change_image()
         self.timer = 0
         #self.timer += 1
@@ -329,6 +327,7 @@ class World:
                     if self.field[blockpos[0]][blockpos[1]].glassed == 0 and do_set:
                         self.timer = 0
                         bl = get_block(self, blockpos, self.inventory[self.inventory_index])
+                        self.blocks.append(bl)
                         sl = self.inventory[self.inventory_index]
                         if "rotate" in get_block_params(sl):
                             bl.data["rotate"] = self.select_rotate
@@ -348,6 +347,8 @@ class World:
                     if self.is_creative == 0:
                         self.inventory_count[self.field[blockpos[0]][blockpos[1]].type] += 1
                     self.timer = 0
+                    if self.field[blockpos[0]][blockpos[1]].type != "air":
+                        self.blocks.remove(self.field[blockpos[0]][blockpos[1]])
                     self.field[blockpos[0]][blockpos[1]] = Air(self, blockpos)
                     # ------------------------------------------------
                     for i in range(4):
@@ -362,9 +363,8 @@ class World:
         screen.fill((90, 90, 90))
         screen.blit(self.floor_img, [0, 0])#пол
         #print(self.w, self.h, len(self.field), len(self.field[0]))
-        for x in range(self.w):#блоки
-            for y in range(self.h):
-                self.field[x][y].draw(screen, self.pos)
+        for bl in self.blocks:#блоки
+            bl.draw(screen, self.pos)
         if self.menu == "game":
             #"тень" от блока в "руке"
             mousepos = pygame.mouse.get_pos()
@@ -488,6 +488,7 @@ class World:
                     self.floor_img.blit(get_image(0, 0), (x * self.block_scale, y * self.block_scale))
         self.field = [[None for y in range(self.h)] for x in range(self.w)]
         self.field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]
+        self.blocks = []
         #
         inv = txt.split(";")[3].split(":")
         self.inventory_count = {"air" : 0}
@@ -503,6 +504,7 @@ class World:
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
                 new_block = get_block(self, (int(bl[1]), int(bl[2])), bi2[int(bl[0])])
+                self.blocks.append(new_block)
                 p = get_block_params(bi2[int(bl[0])])
                 j = 3
                 for p_name in p.keys():
