@@ -10,7 +10,8 @@ pygame.init()
 W = pygame.display.Info().current_w
 H = pygame.display.Info().current_h
 font16 = pygame.font.Font("files/Better VCR 6.1.ttf", 16)
-font_text = pygame.font.Font("files/Better VCR 6.1.ttf", 24)
+font_text = pygame.font.Font("files/Better VCR 6.1.ttf", 16)
+ocolor = (128, 128, 128)
 
 def change_menu(self, menu):
     self.menu = menu
@@ -19,8 +20,8 @@ def mainmenu(main):
     main.menu = MainMenu(main)
 def resise(self, w, h):
     try:
-        self.edit_buttons[1].text = str(w)
-        self.edit_buttons[2].text = str(h)
+        self.edit_buttons[2].text = str(w)
+        self.edit_buttons[3].text = str(h)
         self.w = w
         self.h = h
         self.change_floor_image()
@@ -135,24 +136,25 @@ class World:
         self.input_manager = input_manager
         #
         self.buttons = []
-        self.buttons.append(get_button(720, 200, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 250, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 300, 480, 40, "", font=font16))
-        self.buttons.append(get_button(720, 350, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(965, 350, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 400, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 450, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 500, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 550, 480, 40, "", font=font16))
+        self.buttons.append(get_button(720, 600, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(965, 600, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 650, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
         #
         self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 200, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(720, 250, 240, 40, str(self.block_scale), font=font16))#block scale
-        self.edit_buttons.append(get_text_box(760, 300, 140, 40, str(self.w), font=font16))#w
-        self.edit_buttons.append(get_text_box(1005, 300, 120, 40, str(self.h), font=font16))#h
-        self.edit_buttons.append(TextLabel("W:", (720, 320), font_color=(0, 0, 0), font=font_text, center=(0, 0.5)))
-        self.edit_buttons.append(TextLabel("H:", (965, 320), font_color=(0, 0, 0), font=font_text, center=(0, 0.5)))
-        self.edit_buttons.append(get_button(960, 250, 240, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
-        self.edit_buttons.append(get_button(720, 350, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(965, 350, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
-        self.edit_buttons.append(get_button(720, 400, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
+        self.edit_buttons.append(get_button(720, 450, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_text_box(870, 500, 85, 40, str(self.block_scale), font=font16))#block scale
+        self.edit_buttons.append(get_text_box(750, 550, 205, 40, str(self.w), font=font16))#w
+        self.edit_buttons.append(get_text_box(995, 550, 205, 40, str(self.h), font=font16))#h
+        self.edit_buttons.append(TextLabel("W:", (720, 570), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_buttons.append(TextLabel("H:", (965, 570), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_buttons.append(TextLabel("BLOCK SCALE:", (720, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_buttons.append(get_button(965, 500, 235, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
+        self.edit_buttons.append(get_button(720, 600, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(965, 600, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+        self.edit_buttons.append(get_button(720, 650, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
         #
 
 
