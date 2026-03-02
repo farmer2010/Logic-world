@@ -2,12 +2,15 @@ from input_manager import *
 from blocks import *
 from button import *
 from text_box import *
+from text_label import *
 import image_factory
 import pygame
 pygame.init()
 
 W = pygame.display.Info().current_w
 H = pygame.display.Info().current_h
+font16 = pygame.font.Font("files/Better VCR 6.1.ttf", 16)
+font_text = pygame.font.Font("files/Better VCR 6.1.ttf", 24)
 
 def change_menu(self, menu):
     self.menu = menu
@@ -130,22 +133,28 @@ class World:
         }
         self.inventory = ["wire", "activator", "block", "NOT", "wire box", "AND", "XOR", "diode", "armored wire", "memory", "output", "glass", "air"]
         self.input_manager = input_manager
+        #
         self.buttons = []
         self.buttons.append(get_button(720, 200, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
         self.buttons.append(get_button(720, 250, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 300, 480, 40, "", font=pygame.font.Font("files/Better VCR 6.1.ttf", 16)))
-        self.buttons.append(get_button(720, 350, 200, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(1000, 350, 200, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 400, 480, 40, "QUIT", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_text_box(720, 300, 480, 40, "", font=font16))
+        self.buttons.append(get_button(720, 350, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(965, 350, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 400, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
+        #
         self.edit_buttons = []
         self.edit_buttons.append(get_button(720, 200, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(760, 300, 120, 40, str(self.w), font=pygame.font.Font("files/Better VCR 6.1.ttf", 16)))#w
-        self.edit_buttons.append(get_text_box(1080, 300, 120, 40, str(self.h), font=pygame.font.Font("files/Better VCR 6.1.ttf", 16)))#h
-        self.edit_buttons.append(get_text_box(720, 250, 240, 40, str(self.block_scale), font=pygame.font.Font("files/Better VCR 6.1.ttf", 16)))#block scale
-        self.edit_buttons.append(get_button(960, 250, 240, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[3]]))
-        self.edit_buttons.append(get_button(720, 350, 240, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(960, 350, 240, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
-        self.edit_buttons.append(get_button(720, 400, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[1], self.edit_buttons[2]]))
+        self.edit_buttons.append(get_text_box(720, 250, 240, 40, str(self.block_scale), font=font16))#block scale
+        self.edit_buttons.append(get_text_box(760, 300, 140, 40, str(self.w), font=font16))#w
+        self.edit_buttons.append(get_text_box(1005, 300, 120, 40, str(self.h), font=font16))#h
+        self.edit_buttons.append(TextLabel("W:", (720, 320), font_color=(0, 0, 0), font=font_text, center=(0, 0.5)))
+        self.edit_buttons.append(TextLabel("H:", (965, 320), font_color=(0, 0, 0), font=font_text, center=(0, 0.5)))
+        self.edit_buttons.append(get_button(960, 250, 240, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
+        self.edit_buttons.append(get_button(720, 350, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(965, 350, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+        self.edit_buttons.append(get_button(720, 400, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
+        #
+
 
     def update(self, events):
         self.input_manager.update(events)
@@ -421,8 +430,6 @@ class World:
         elif self.menu == "edit":
             for b in self.edit_buttons:
                 b.draw(screen)
-            render_text("W:", (720, 540), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
-            render_text("H:", (1040, 540), screen, centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", 50), alpha=0)
 
     def change_image(self):
         for x in range(self.w):
