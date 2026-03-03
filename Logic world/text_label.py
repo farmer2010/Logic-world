@@ -1,3 +1,4 @@
+from utils import *
 import pygame
 pygame.init()
 
@@ -33,10 +34,4 @@ class TextLabel():
             self.text = self.update_text()
 
     def draw(self, screen):
-        self.image = self.font.render(self.text, self.font_alpha, self.font_color)
-        img = self.font.render(self.text, self.font_alpha, self.outline_color)
-        for x in range(-self.outline_size, self.outline_size + 1, 1):
-            for y in range(-self.outline_size, self.outline_size + 1, 1):
-                if x != 0 and y != 0:
-                    screen.blit(img, (self.rect.x + x, self.rect.y + y))
-        screen.blit(self.image, self.rect)
+        render_text(self.text, (self.rect.x, self.rect.y), screen, color=self.font_color, font=self.font, font_alpha=self.font_alpha, outline_color=self.outline_color, outline_size=self.outline_size)

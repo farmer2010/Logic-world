@@ -3,6 +3,7 @@ from blocks import *
 from button import *
 from text_box import *
 from text_label import *
+from radiobutton import *
 import image_factory
 import pygame
 pygame.init()
@@ -136,27 +137,30 @@ class World:
         self.input_manager = input_manager
         #
         self.buttons = []
-        self.buttons.append(get_button(720, 450, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 500, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 550, 480, 40, "", font=font16))
-        self.buttons.append(get_button(720, 600, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(965, 600, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 650, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 400, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
+        self.buttons.append(get_button(720, 450, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.buttons.append(get_text_box(720, 500, 480, 40, "", font=font16))
+        self.buttons.append(get_button(720, 550, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(965, 550, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+        self.buttons.append(get_button(720, 600, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
         #
         self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 450, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(870, 500, 85, 40, str(self.block_scale), font=font16))#block scale
-        self.edit_buttons.append(get_text_box(750, 550, 205, 40, str(self.w), font=font16))#w
-        self.edit_buttons.append(get_text_box(995, 550, 205, 40, str(self.h), font=font16))#h
-        self.edit_buttons.append(TextLabel("W:", (720, 570), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_buttons.append(TextLabel("H:", (965, 570), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_buttons.append(TextLabel("BLOCK SCALE:", (720, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_buttons.append(get_button(965, 500, 235, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
-        self.edit_buttons.append(get_button(720, 600, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(965, 600, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
-        self.edit_buttons.append(get_button(720, 650, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
+        self.edit_buttons.append(get_button(720, 400, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_text_box(870, 450, 85, 40, str(self.block_scale), font=font16))#block scale
+        self.edit_buttons.append(get_text_box(750, 500, 205, 40, str(self.w), font=font16))#w
+        self.edit_buttons.append(get_text_box(995, 500, 205, 40, str(self.h), font=font16))#h
+        self.edit_buttons.append(TextLabel("W:", (720, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_buttons.append(TextLabel("H:", (965, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_buttons.append(TextLabel("BLOCK SCALE:", (720, 470), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_buttons.append(get_button(965, 450, 235, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
+        self.edit_buttons.append(get_button(720, 550, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+        self.edit_buttons.append(get_button(965, 550, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+        self.edit_buttons.append(get_button(720, 600, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
+        self.edit_buttons.append(RadioButton((720, 650, 40, 40), text="CAN BREAK BLOCKS", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
+        self.edit_buttons.append(get_button(720, 700, 480, 40, "INVENTORY", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit inventory"]))
         #
-
+        self.edit_inv_buttons = []
+        self.edit_inv_buttons.append(get_button(720, 400, 480, 40, "BACK", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
 
     def update(self, events):
         self.input_manager.update(events)
@@ -296,6 +300,11 @@ class World:
                 self.menu = "ESC"
             for b in self.edit_buttons:
                 b.update(events)
+        elif self.menu == "edit inventory":
+            if self.input_manager.get_key("ESC"):
+                self.menu = "edit"
+            for b in self.edit_inv_buttons:
+                b.update(events)
 
     def update_map(self):
         if self.timer == 0:#обновление карты
@@ -432,6 +441,9 @@ class World:
         elif self.menu == "edit":
             for b in self.edit_buttons:
                 b.draw(screen)
+        elif self.menu == "edit inventory":
+            for b in self.edit_inv_buttons:
+                b.draw(screen)
 
     def change_image(self):
         for x in range(self.w):
@@ -462,6 +474,8 @@ class World:
             txt += str(self.block_indexes[self.inventory[i]]) + "," + str(self.inventory_count[self.inventory[i]])
             txt += ":"
         txt += ";"
+        txt += str(self.block_scale) + ";"
+        txt += str(int(self.edit_buttons[11].get_selected())) + ";"
         for x in range(self.w):
             for y in range(self.h):
                 if self.field[x][y].type != "air":
@@ -488,20 +502,17 @@ class World:
         bi2 = list(self.block_indexes.keys())#block indexes 2
         file = open("files/levels/" + name + ".dat", "r")
         txt = file.readline()
+        file.close()
         self.w = int(txt.split(";")[0])
         self.h = int(txt.split(";")[1])
-        self.pos = [int((W / 2 - self.w * 40 / 2) / 40) * 40, int((H / 2 - self.h * 40 / 2) / 40) * 40]
-        pos = [self.pos[0] // self.block_scale, self.pos[1] // self.block_scale]
-        file.close()
-        W = pygame.display.Info().current_w
-        H = pygame.display.Info().current_h
-        self.floor_img = pygame.Surface((W, H))
-        for x in range(int(W / 40)):
-            for y in range(int(H / 40)):
-                if x >= pos[0] and x < pos[0] + self.w and y >= pos[1] and y < pos[1] + self.h:
-                    self.floor_img.blit(get_image(1, 0), (x * self.block_scale, y * self.block_scale))
-                else:
-                    self.floor_img.blit(get_image(0, 0), (x * self.block_scale, y * self.block_scale))
+        self.block_scale = int(txt.split(";")[4])
+        if not self.is_creative:
+            self.can_break = int(txt.split(";")[5])
+        self.edit_buttons[1].text = str(self.block_scale)
+        self.edit_buttons[2].text = str(self.w)
+        self.edit_buttons[3].text = str(self.h)
+        self.edit_buttons[11].selected = int(txt.split(";")[5])
+        self.change_floor_image()
         self.field = [[None for y in range(self.h)] for x in range(self.w)]
         self.field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]
         self.blocks = []
@@ -515,7 +526,7 @@ class World:
             self.inventory_count[bi2[int(invi[0])]] = int(invi[1])
         self.inventory.append("air")
         #
-        blocks = txt.split(";")[4].split(":")
+        blocks = txt.split(";")[6].split(":")
         for i in range(len(blocks)):
             bl = blocks[i].split(",")#данные блока
             if bl != [""]:
