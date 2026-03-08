@@ -14,6 +14,27 @@ font16 = pygame.font.Font("files/Better VCR 6.1.ttf", 16)
 font_text = pygame.font.Font("files/Better VCR 6.1.ttf", 16)
 ocolor = (128, 128, 128)
 
+inv_original = {
+    "wire" : 9999,
+    "armored wire": 9999,
+    "wire box": 9999,
+    "diode": 9999,
+    "energy block": 9999,
+    "activator" : 9999,
+    "button": 9999,
+    "NOT" : 9999,
+    "AND" : 9999,
+    "XOR" : 9999,
+    "memory": 9999,
+    "sensor": 9999,
+    "output" : 9999,
+    "glass" : 9999,
+    "block": 9999,
+    "piston" : 9999,
+    "sticky piston" : 9999,
+    "no pushable" : 9999,
+}
+
 def change_menu(self, menu):
     self.menu = menu
 def mainmenu(main):
@@ -51,7 +72,7 @@ def change_block_scale(self, b):
     self.change_image()
 
 class World:
-    def __init__(self, main, w=10, h=10, block_scale=20):
+    def __init__(self, main, w=10, h=10, block_scale=20, is_creative=1):
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
         self.display_w = W
@@ -69,7 +90,7 @@ class World:
         self.menu = "game"
         self.select_rotate = 0
         self.buttons = pygame.sprite.Group()
-        self.is_creative = 1
+        self.is_creative = is_creative
         self.can_break = 1
         self.block_indexes = {
             "wire" : 0,
@@ -92,26 +113,28 @@ class World:
             "no pushable" : 17,
             "sticky piston" : 18
         }#для сохранения/загрузки
-        self.inventory = {
-            "wire" : 9999,
-            "armored wire": 9999,
-            "wire box": 9999,
-            "diode": 9999,
-            "energy block": 9999,
-            "activator" : 9999,
-            "button": 9999,
-            "NOT" : 9999,
-            "AND" : 9999,
-            "XOR" : 9999,
-            "memory": 9999,
-            "sensor": 9999,
-            "output" : 9999,
-            "glass" : 9999,
-            "block": 9999,
-            "piston" : 9999,
-            "sticky piston" : 9999,
-            "no pushable" : 9999,
+        self.inventory = inv_original.copy()
+        self.creative_inventory_for_save = {
+            "wire": [1, 9999],
+            "armored wire": [1, 9999],
+            "wire box": [1, 9999],
+            "diode": [1, 9999],
+            "energy block": [1, 9999],
+            "activator": [1, 9999],
+            "button": [1, 9999],
+            "NOT": [1, 9999],
+            "AND": [1, 9999],
+            "XOR": [1, 9999],
+            "memory": [1, 9999],
+            "sensor": [1, 9999],
+            "output": [1, 9999],
+            "glass": [1, 9999],
+            "block": [1, 9999],
+            "piston": [1, 9999],
+            "sticky piston": [1, 9999],
+            "no pushable": [1, 9999],
         }
+        self.creative_select_block_index = 0
         self.hand = ["wire", "button", "activator", "NOT", "AND", "XOR", "memory", "wire box", "diode", "armored wire", "output", "glass", "air"]
         self.input_manager = input_manager
         self.hand_index = len(self.hand) - 1
@@ -140,7 +163,10 @@ class World:
         self.edit_buttons.append(get_button(720, 700, 480, 40, "INVENTORY", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit inventory"]))
         #
         self.edit_inv_buttons = []
-        self.edit_inv_buttons.append(get_button(720, 400, 480, 40, "BACK", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.edit_inv_buttons.append(get_button(10, 10, 480, 40, "<- BACK", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
+        self.edit_inv_buttons.append(get_text_box(670, 100, 200, 40, "9999", font=font16))#count blocks
+        self.edit_inv_buttons.append(TextLabel("COUNT:", (660, 120), font_color=(0, 0, 0), font=font_text, center=(1, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+        self.edit_inv_buttons.append(RadioButton((670, 50, 40, 40), text="INCLUDE", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
 
     def update(self, events):
         self.input_manager.update(events)
@@ -283,6 +309,20 @@ class World:
                 self.menu = "edit"
             for b in self.edit_inv_buttons:
                 b.update(events)
+            #
+            inv = list(inv_original.keys())
+            mousepos = pygame.mouse.get_pos()
+            blockpos = [(mousepos[0] - (self.display_w - 1040)) // 80, mousepos[1] // 80]
+            i = blockpos[1] * 12 + blockpos[0]
+            if blockpos[0] >= 0 and blockpos[1] < 12 and self.input_manager.get_mouse(0) and i < len(inv):
+                self.creative_select_block_index = i
+                self.edit_inv_buttons[3].selected = self.creative_inventory_for_save[inv[i]][0]
+                self.edit_inv_buttons[1].text = str(self.creative_inventory_for_save[inv[i]][1])
+            self.creative_inventory_for_save[inv[self.creative_select_block_index]][0] = self.edit_inv_buttons[3].selected
+            try:
+                self.creative_inventory_for_save[inv[self.creative_select_block_index]][1] = int(self.edit_inv_buttons[1].text)
+            except:
+                pass
 
     def update_map(self):
         if self.timer == 0:#обновление карты
@@ -382,7 +422,7 @@ class World:
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
                 img = image_factory.get_block_image(self.hand[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
-                render_text(str(self.inventory[self.hand[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+                render_text(str(self.inventory[self.hand[i]]), (self.display_w - 10, i * 80 + 45), screen, center=(1, 0), font=pygame.font.Font("files/font.ttf", 16))
         elif self.menu == "select blocks":
             if self.hand_index != len(self.hand) - 1:
                 pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.hand_index * 80 + 5, 70, 70))
@@ -391,7 +431,7 @@ class World:
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
                 img = image_factory.get_block_image(self.hand[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
-                render_text(str(self.inventory[self.hand[i]]), (self.display_w - 10, i * 80 + 45), screen, centerx="right", font=pygame.font.Font("files/font.ttf", 16))
+                render_text(str(self.inventory[self.hand[i]]), (self.display_w - 10, i * 80 + 45), screen, center=(1, 0), font=pygame.font.Font("files/font.ttf", 16))
             mousepos = pygame.mouse.get_pos()
             inv = list(self.inventory.keys())
             for x in range(12):
@@ -410,7 +450,6 @@ class World:
                             img2.set_alpha(128)
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
         elif self.menu == "ESC":
-            #screen.blit(get_button_image(14, 14, 6), (680, 160))
             for b in self.buttons:
                 b.draw(screen)
         elif self.menu == "edit":
@@ -420,6 +459,27 @@ class World:
             for b in self.edit_inv_buttons:
                 b.draw(screen)
             #
+            mousepos = pygame.mouse.get_pos()
+            inv = list(self.inventory.keys())
+            pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 1035 + (self.creative_select_block_index % 12) * 80, (self.creative_select_block_index // 12) * 80 + 5, 70, 70))
+            #
+            for x in range(12):
+                for y in range(12):
+                    i = y * 12 + x
+                    if i < len(inv):
+                        if (mousepos[0] - (self.display_w - 1040)) // 80 == x and mousepos[1] // 80 == y:
+                            pygame.draw.rect(screen, (40, 40, 40), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
+                        else:
+                            pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
+                        pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 1025 + x * 80, y * 80 + 15, 50, 50))
+                        img = image_factory.get_block_image(inv[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                        screen.blit(img, (self.display_w - 1020 + x * 80, y * 80 + 20))
+                        if self.creative_inventory_for_save[inv[i]][0] == 0:
+                            img2 = pygame.Surface((50, 50))
+                            img2.set_alpha(128)
+                            screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
+                        c = self.creative_inventory_for_save[inv[i]][1]
+                        render_text(str(c), (self.display_w - 970 + x * 80, y * 80 + 65), screen, center=(1, 1), font=pygame.font.Font("files/font.ttf", 16))
 
     def change_image(self):
         for x in range(self.w):
@@ -446,10 +506,17 @@ class World:
             for y in range(self.h):
                 glassed += str(self.field[x][y].glassed)
         txt += str(bin_to_dec(glassed)) + ";"
-        inv = list(self.inventory.keys())
-        for i in range(len(inv) - 1):
-            txt += str(self.block_indexes[inv[i]]) + "," + str(self.inventory[inv[i]])
-            txt += ":"
+        if self.is_creative:
+            inv = list(self.creative_inventory_for_save.keys())
+            for i in range(len(inv)):
+                if self.creative_inventory_for_save[inv[i]][0]:
+                    txt += str(self.block_indexes[inv[i]]) + "," + str(self.creative_inventory_for_save[inv[i]][1])
+                    txt += ":"
+        else:
+            inv = list(self.inventory.keys())
+            for i in range(len(inv) - 1):
+                txt += str(self.block_indexes[inv[i]]) + "," + str(self.inventory[inv[i]])
+                txt += ":"
         txt += ";"
         txt += str(self.block_scale) + ";"
         txt += str(int(self.edit_buttons[11].get_selected())) + ";"
@@ -473,7 +540,6 @@ class World:
         file.close()
 
     def load_level(self, name):
-        self.is_creative = 0
         bi2 = list(self.block_indexes.keys())#block indexes 2
         file = open("files/levels/" + name + ".dat", "r")
         txt = file.readline()
@@ -493,15 +559,45 @@ class World:
         self.blocks = []
         #
         inv = txt.split(";")[3].split(":")
-        self.inventory = {}
-        self.hand = []
-        for i in range(len(inv) - 1):
-            invi = inv[i].split(",")
-            if i < 12:
-                self.hand.append(bi2[int(invi[0])])
-            self.inventory[bi2[int(invi[0])]] = int(invi[1])
-        self.hand.append("air")
-        self.hand_index = len(self.hand) - 1
+        if self.is_creative:
+            self.creative_inventory_for_save = {
+                "wire": [0, 9999],
+                "armored wire": [0, 9999],
+                "wire box": [0, 9999],
+                "diode": [0, 9999],
+                "energy block": [0, 9999],
+                "activator": [0, 9999],
+                "button": [0, 9999],
+                "NOT": [0, 9999],
+                "AND": [0, 9999],
+                "XOR": [0, 9999],
+                "memory": [0, 9999],
+                "sensor": [0, 9999],
+                "output": [0, 9999],
+                "glass": [0, 9999],
+                "block": [0, 9999],
+                "piston": [0, 9999],
+                "sticky piston": [0, 9999],
+                "no pushable": [0, 9999],
+            }
+            for i in range(len(inv) - 1):
+                invi = inv[i].split(",")
+                self.creative_inventory_for_save[bi2[int(invi[0])]][0] = 1
+                self.creative_inventory_for_save[bi2[int(invi[0])]][1] = int(invi[1])
+            #
+            ib = list(inv_original.keys())[self.creative_select_block_index]
+            self.edit_inv_buttons[3].selected = self.creative_inventory_for_save[ib][0]
+            self.edit_inv_buttons[1].text = str(self.creative_inventory_for_save[ib][1])
+        else:
+            self.inventory = {}
+            self.hand = []
+            for i in range(len(inv) - 1):
+                invi = inv[i].split(",")
+                if i < 12:
+                    self.hand.append(bi2[int(invi[0])])
+                self.inventory[bi2[int(invi[0])]] = int(invi[1])
+            self.hand.append("air")
+            self.hand_index = len(self.hand) - 1
         #
         blocks = txt.split(";")[6].split(":")
         for i in range(len(blocks)):

@@ -67,7 +67,7 @@ class TextBox():
 
     def draw(self, screen):
         screen.blit(self.image, self.pos)
-        render_text(self.text, (self.pos[0] + self.text_x, self.pos[1] + self.rect.h / 2), screen, centery="center", font=self.font, color=self.color, font_alpha=self.font_alpha)
+        render_text(self.text, (self.pos[0] + self.text_x, self.pos[1] + self.rect.h / 2), screen, center=(0, 0.5), font=self.font, color=self.color, font_alpha=self.font_alpha)
         if self.timer < 30 and self.input_manager.mouse_connect_object[0] == self:
             text_img = self.font.render(self.text, self.font_alpha, self.color)
             pygame.draw.rect(screen, self.color, (self.pos[0] + self.text_x + text_img.get_width(), self.pos[1] + self.rect.h / 2 - text_img.get_height() / 2, 2, text_img.get_height()))

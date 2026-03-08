@@ -122,4 +122,4 @@ class RadioButton():
         screen.blit(self.image, self.rect)
         if self.selected:
             screen.blit(self.c_image, (self.rect.x + self.offset, self.rect.y + self.offset))
-        render_text(self.text, (self.rect.x + self.rect.w + self.x_offset, self.rect.y + self.rect.h / 2), screen, font=self.font, color=self.font_color, font_alpha=self.font_alpha, centery="center", outline_size=self.outline_size, outline_color=self.outline_color)
+        render_text(self.text, (self.rect.x + self.rect.w + self.x_offset, self.rect.y + self.rect.h / 2), screen, font=self.font, color=self.font_color, font_alpha=self.font_alpha, center=(0, 0.5), outline_size=self.outline_size, outline_color=self.outline_color)

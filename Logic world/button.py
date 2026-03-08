@@ -55,7 +55,7 @@ class Button():
 def get_button(x, y, w, h, text, font_size=70, text_color=(0, 0, 0), get_bt_img=get_button_image, color1=(90, 90, 90), color2=(120, 120, 120), color3=(50, 50, 50), **kwargs):
     t = pygame.Surface((w, h), pygame.SRCALPHA)
     t.fill((0, 0, 0, 0))
-    render_text(text, (w/2, h/2), t, centerx="center", centery="center", font=pygame.font.Font("files/Better VCR 6.1.ttf", font_size), color=text_color, font_alpha=0)
+    render_text(text, (w/2, h/2), t, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", font_size), color=text_color, font_alpha=0)
     b = Button((x, y), get_bt_img(w, h, 0, color=color1, text=t), get_bt_img(w, h, 1, color=color3, text=t),
                get_bt_img(w, h, 0, color=color2, text=t), onclick=kwargs.get("onclick"),
                onclick_params=kwargs.get("onclick_params"), onrelease=kwargs.get("onrelease"),
