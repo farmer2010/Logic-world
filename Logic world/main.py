@@ -5,7 +5,6 @@ import pygame
 from main_menu import MainMenu
 
 pygame.init()
-steps = 0
 
 shutil.rmtree("__pycache__")
 shutil.rmtree("blocks/__pycache__")
@@ -32,5 +31,4 @@ while game_world.keep_going:
     render_text(str(round(timer.get_fps(), 2)), (0, 0), screen, color=(255, 0, 0))
     pygame.display.update()
     timer.tick(30)
-    steps += 1
 pygame.quit()
