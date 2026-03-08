@@ -33,7 +33,7 @@ inv_original = {
     "piston" : 9999,
     "sticky piston" : 9999,
     "no pushable" : 9999,
-}
+}#все блоки в игре в количестве 9999
 
 def change_menu(self, menu):
     self.menu = menu
@@ -139,34 +139,39 @@ class World:
         self.input_manager = input_manager
         self.hand_index = len(self.hand) - 1
         #
-        self.buttons = []
-        self.buttons.append(get_button(720, 400, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
-        self.buttons.append(get_button(720, 450, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.buttons.append(get_text_box(720, 500, 480, 40, "", font=font16))
-        self.buttons.append(get_button(720, 550, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(965, 550, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
-        self.buttons.append(get_button(720, 600, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
-        #
-        self.edit_buttons = []
-        self.edit_buttons.append(get_button(720, 400, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_text_box(870, 450, 85, 40, str(self.block_scale), font=font16))#block scale
-        self.edit_buttons.append(get_text_box(750, 500, 205, 40, str(self.w), font=font16))#w
-        self.edit_buttons.append(get_text_box(995, 500, 205, 40, str(self.h), font=font16))#h
-        self.edit_buttons.append(TextLabel("W:", (720, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_buttons.append(TextLabel("H:", (965, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_buttons.append(TextLabel("BLOCK SCALE:", (720, 470), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_buttons.append(get_button(965, 450, 235, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
-        self.edit_buttons.append(get_button(720, 550, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-        self.edit_buttons.append(get_button(965, 550, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
-        self.edit_buttons.append(get_button(720, 600, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
-        self.edit_buttons.append(RadioButton((720, 650, 40, 40), text="CAN BREAK BLOCKS", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
-        self.edit_buttons.append(get_button(720, 700, 480, 40, "INVENTORY", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit inventory"]))
-        #
-        self.edit_inv_buttons = []
-        self.edit_inv_buttons.append(get_button(10, 10, 480, 40, "<- BACK", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
-        self.edit_inv_buttons.append(get_text_box(670, 100, 200, 40, "9999", font=font16))#count blocks
-        self.edit_inv_buttons.append(TextLabel("COUNT:", (660, 120), font_color=(0, 0, 0), font=font_text, center=(1, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
-        self.edit_inv_buttons.append(RadioButton((670, 50, 40, 40), text="INCLUDE", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
+        if self.is_creative:
+            self.buttons = []
+            self.buttons.append(get_button(720, 400, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
+            self.buttons.append(get_button(720, 450, 480, 40, "EDIT", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
+            self.buttons.append(get_text_box(720, 500, 480, 40, "", font=font16))
+            self.buttons.append(get_button(720, 550, 235, 40, "SAVE", font_size=16, onrelease=lambda s, t: s.save_level(t.text), onrelease_params=[self, self.buttons[2]]))
+            self.buttons.append(get_button(965, 550, 235, 40, "LOAD", font_size=16, onrelease=lambda s, t: s.load_level(t.text), onrelease_params=[self, self.buttons[2]]))
+            self.buttons.append(get_button(720, 600, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
+            #
+            self.edit_buttons = []
+            self.edit_buttons.append(get_button(720, 400, 480, 40, "BACK TO MENU", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+            self.edit_buttons.append(get_text_box(870, 450, 85, 40, str(self.block_scale), font=font16))#block scale
+            self.edit_buttons.append(get_text_box(750, 500, 205, 40, str(self.w), font=font16))#w
+            self.edit_buttons.append(get_text_box(995, 500, 205, 40, str(self.h), font=font16))#h
+            self.edit_buttons.append(TextLabel("W:", (720, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+            self.edit_buttons.append(TextLabel("H:", (965, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+            self.edit_buttons.append(TextLabel("BLOCK SCALE:", (720, 470), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+            self.edit_buttons.append(get_button(965, 450, 235, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
+            self.edit_buttons.append(get_button(720, 550, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
+            self.edit_buttons.append(get_button(965, 550, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+            self.edit_buttons.append(get_button(720, 600, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
+            self.edit_buttons.append(RadioButton((720, 650, 40, 40), text="CAN BREAK BLOCKS", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
+            self.edit_buttons.append(get_button(720, 700, 480, 40, "INVENTORY", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit inventory"]))
+            #
+            self.edit_inv_buttons = []
+            self.edit_inv_buttons.append(get_button(10, 10, 480, 40, "<- BACK", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit"]))
+            self.edit_inv_buttons.append(get_text_box(670, 100, 200, 40, "9999", font=font16))#count blocks
+            self.edit_inv_buttons.append(TextLabel("COUNT:", (660, 120), font_color=(0, 0, 0), font=font_text, center=(1, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
+            self.edit_inv_buttons.append(RadioButton((670, 50, 40, 40), text="INCLUDE", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
+        else:
+            self.buttons = []
+            self.buttons.append(get_button(720, 400, 480, 40, "BACK TO GAME", font_size=16, onrelease=change_menu, onrelease_params=[self, "game"]))
+            self.buttons.append(get_button(720, 450, 480, 40, "QUIT TO MENU", font_size=16, onrelease=mainmenu, onrelease_params=[self.main]))
 
     def update(self, events):
         self.input_manager.update(events)
@@ -547,12 +552,13 @@ class World:
         self.w = int(txt.split(";")[0])
         self.h = int(txt.split(";")[1])
         self.block_scale = int(txt.split(";")[4])
-        if not self.is_creative:
+        if self.is_creative:
+            self.edit_buttons[1].text = str(self.block_scale)
+            self.edit_buttons[2].text = str(self.w)
+            self.edit_buttons[3].text = str(self.h)
+            self.edit_buttons[11].selected = int(txt.split(";")[5])
+        else:
             self.can_break = int(txt.split(";")[5])
-        self.edit_buttons[1].text = str(self.block_scale)
-        self.edit_buttons[2].text = str(self.w)
-        self.edit_buttons[3].text = str(self.h)
-        self.edit_buttons[11].selected = int(txt.split(";")[5])
         self.change_floor_image()
         self.field = [[None for y in range(self.h)] for x in range(self.w)]
         self.field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]

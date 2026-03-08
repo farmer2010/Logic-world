@@ -6,8 +6,7 @@ import pygame
 pygame.init()
 
 def change_level(main, num):
-    main.menu = World(main, w=10, h=10, block_scale=40)
-    main.menu.is_creative = 0
+    main.menu = World(main, w=10, h=10, block_scale=40, is_creative=0)
     main.menu.load_level("game_levels/level" + str(num))
 
 class SelectLevel():
