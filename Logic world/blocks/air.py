@@ -7,6 +7,6 @@ class Air(Block):
         Block.__init__(self, world, pos, "air", glassed, data, preset_data)
 
     def get_image(self):
-        image = pygame.Surface((self.world.block_scale, self.world.block_scale))
-        image.set_colorkey((0, 0, 0))
+        image = pygame.Surface((self.world.block_scale, self.world.block_scale), pygame.SRCALPHA)
+        image.fill((0, 0, 0, 0))
         return(image)

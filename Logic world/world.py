@@ -389,9 +389,11 @@ class World:
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
             if self.hand[self.hand_index] == "glass":
                 if self.is_creative:
+                    if self.field[blockpos[0]][blockpos[1]].type == "air" and self.field[blockpos[0]][blockpos[1]].glassed == 0:
+                        self.blocks.append(self.field[blockpos[0]][blockpos[1]])
                     self.field[blockpos[0]][blockpos[1]].glassed = 1
                     self.change_image()
-            else:
+            elif self.hand[self.hand_index] != "air":
                 if self.field[blockpos[0]][blockpos[1]].type == "air":
                     do_set = 1
                     if self.is_creative == 0 and self.inventory[self.hand[self.hand_index]] == 0:
@@ -412,6 +414,8 @@ class World:
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
             if self.hand[self.hand_index] == "glass":
                 if self.is_creative:
+                    if self.field[blockpos[0]][blockpos[1]].type == "air" and self.field[blockpos[0]][blockpos[1]].glassed == 1:
+                        self.blocks.remove(self.field[blockpos[0]][blockpos[1]])
                     self.field[blockpos[0]][blockpos[1]].glassed = 0
                     self.change_image()
             else:
@@ -658,4 +662,6 @@ class World:
         for x in range(self.w):
             for y in range(self.h):
                 self.field[x][y].glassed = int(glass[x * self.h + y])
+                if self.field[x][y].type == "air" and self.field[x][y].glassed:
+                    self.blocks.append(self.field[x][y])
         self.change_image()

@@ -1,4 +1,3 @@
-#настройка
 from utils import *
 import shutil
 import pygame
