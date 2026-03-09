@@ -29,8 +29,9 @@ class MainMenu():
                     self.floor_img.blit(get_image(1, 0), (x * 40, y * 40))
         self.buttons = []
         self.buttons.append(get_button(720, 450, 480, 40, "PLAY", font_size=16, onrelease=play, onrelease_params=[self.main]))
-        self.buttons.append(get_button(720, 500, 480, 40, "EDITOR", font_size=16, onrelease=editor, onrelease_params=[self.main]))
-        self.buttons.append(get_button(720, 550, 480, 40, "QUIT", font_size=16, onrelease=quit, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 500, 480, 40, "PLAY USER LEVELS", font_size=16, onrelease=editor, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 550, 480, 40, "EDITOR", font_size=16, onrelease=editor, onrelease_params=[self.main]))
+        self.buttons.append(get_button(720, 600, 480, 40, "QUIT", font_size=16, onrelease=quit, onrelease_params=[self.main]))
 
     def update(self, events):
         for b in self.buttons:

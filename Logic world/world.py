@@ -40,6 +40,9 @@ def change_menu(self, menu):
 def mainmenu(main):
     from main_menu import MainMenu
     main.menu = MainMenu(main)
+def selectlevelmenu(main):
+    from select_level import SelectLevel
+    main.menu = SelectLevel(main)
 def resise(self, w, h):
     try:
         self.edit_buttons[2].text = str(w)
@@ -72,7 +75,7 @@ def change_block_scale(self, b):
     self.change_image()
 
 class World:
-    def __init__(self, main, w=10, h=10, block_scale=20, is_creative=1):
+    def __init__(self, main, w=10, h=10, block_scale=20, is_creative=1, number=0):
         W = pygame.display.Info().current_w
         H = pygame.display.Info().current_h
         self.display_w = W
@@ -87,11 +90,13 @@ class World:
         self.change_floor_image()
         self.change_image()
         self.timer = 0
+        self.number = number
         self.menu = "game"
         self.select_rotate = 0
         self.buttons = pygame.sprite.Group()
         self.is_creative = is_creative
         self.can_break = 1
+        self.win_timer = -1
         self.block_indexes = {
             "wire" : 0,
             "activator" : 1,
@@ -175,6 +180,12 @@ class World:
 
     def update(self, events):
         self.input_manager.update(events)
+        #
+        if self.win_timer > 0:
+            self.win_timer -= 1
+        if self.win_timer == 0:
+            self.win()
+        #
         if self.menu == "game":
             #смена блока "в руке"
             y = self.input_manager.get_mousewheel()
@@ -274,7 +285,8 @@ class World:
                 self.remove_block(blockpos, xborder)
             #---------------------------------------------------------------------------------------------------------------
             #обновление карты
-            self.update_map()
+            if self.win_timer == -1:
+                self.update_map()
             #открыть инвентарь
             if self.input_manager.get_key("T"):
                 self.menu = "select blocks"
@@ -330,7 +342,7 @@ class World:
                 pass
 
     def update_map(self):
-        if self.timer == 0:#обновление карты
+        if self.timer >= 0:#обновление карты
             for bl in self.blocks:#стираем active и электричество
                 bl.active = 0
                 bl.logic_gate_active = 0
@@ -346,12 +358,32 @@ class World:
                 if bl.is_logic_gate:
                     bl.update(bl.data, enr=0)
             self.change_image()
-        self.timer = 0
-        #self.timer += 1
-        #if self.timer >= 60:
-        #    self.timer = 0
+        #self.timer = 0
+        self.timer += 1
+        if self.timer >= 60:
+            self.timer = 0
         #
-        self.calculate_win()
+        if not self.is_creative and self.timer % 30 == 0:
+            self.calculate_win()
+
+    def calculate_win(self):
+        win_list = []
+        for b in self.blocks:
+            if b.type == "output":
+                win_list.append(b.data["activated"])
+        if sum(win_list) == len(win_list) and len(win_list) > 0:
+            self.win_timer = 100
+
+    def win(self):
+        file = open("files/save.dat")
+        txt = file.readline()
+        file.close()
+        n = int(txt)
+        if n + 1 == self.number:
+            file = open("files/save.dat", "w")
+            file.write(str(n + 1))
+            file.close()
+        selectlevelmenu(self.main)
 
     def set_block(self, blockpos, xborder):
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
@@ -627,13 +659,3 @@ class World:
             for y in range(self.h):
                 self.field[x][y].glassed = int(glass[x * self.h + y])
         self.change_image()
-
-    def calculate_win(self):
-        win_list = []
-        for x in range(self.w):
-            for y in range(self.h):
-                if self.field[x][y].type == "output":
-                    win_list.append(self.field[x][y].data["activated"])
-        if sum(win_list) == len(win_list) and len(win_list) > 0:
-            pass
-            #win
