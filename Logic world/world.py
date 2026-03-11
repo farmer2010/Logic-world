@@ -97,6 +97,7 @@ class World:
         self.is_creative = is_creative
         self.can_break = 1
         self.win_timer = -1
+        self.test_mode = 0
         self.block_indexes = {
             "wire" : 0,
             "activator" : 1,
@@ -521,6 +522,19 @@ class World:
                             screen.blit(img2, (self.display_w - 1025 + x * 80, y * 80 + 15))
                         c = self.creative_inventory_for_save[inv[i]][1]
                         render_text(str(c), (self.display_w - 970 + x * 80, y * 80 + 65), screen, center=(1, 1), font=pygame.font.Font("files/font.ttf", 16))
+        #
+        #анимация надписи при победе
+        #
+        if self.win_timer > 70:
+            render_text("YOU WIN!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 192),
+                outline_color=ocolor, outline_size=3, alpha=8.5 * (100 - self.win_timer)
+            )
+        elif self.win_timer > 15:
+            render_text("YOU WIN!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 192), outline_color=ocolor, outline_size=3)
+        elif self.win_timer > 5:
+            render_text("YOU WIN!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 192),
+                outline_color=ocolor, outline_size=3, alpha=25.5 * (self.win_timer - 5)
+            )
 
     def change_image(self):
         for x in range(self.w):
