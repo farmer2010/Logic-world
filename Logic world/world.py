@@ -143,7 +143,7 @@ class World:
         self.creative_select_block_index = 0
         self.hand = ["wire", "button", "activator", "NOT", "AND", "XOR", "memory", "wire box", "diode", "armored wire", "output", "glass", "air"]
         self.input_manager = input_manager
-        self.hand_index = len(self.hand) - 1
+        self.hand_index = min(1, len(self.hand))
         #
         if self.is_creative:
             self.buttons = []
@@ -258,7 +258,7 @@ class World:
                             bl.connect_armored_wires()
             #нажатие на блок
             if self.input_manager.get_mouse(0):
-                if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "action"):
+                if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "action") and self.hand[self.hand_index] != "glass":
                     mousepos = pygame.mouse.get_pos()
                     mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
                     blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
@@ -413,13 +413,16 @@ class World:
 
     def remove_block(self, blockpos, xborder):
         if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and self.can_break and not xborder:
+            do_break = 1
+            if self.field[blockpos[0]][blockpos[1]].type == "output" and not self.is_creative:
+                do_break = 0
             if self.hand[self.hand_index] == "glass":
                 if self.is_creative:
                     if self.field[blockpos[0]][blockpos[1]].type == "air" and self.field[blockpos[0]][blockpos[1]].glassed == 1:
                         self.blocks.remove(self.field[blockpos[0]][blockpos[1]])
                     self.field[blockpos[0]][blockpos[1]].glassed = 0
                     self.change_image()
-            else:
+            elif do_break:
                 if self.field[blockpos[0]][blockpos[1]].glassed == 0:
                     self.timer = 0
                     if self.field[blockpos[0]][blockpos[1]].type != "air":
