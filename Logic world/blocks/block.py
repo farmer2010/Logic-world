@@ -95,13 +95,16 @@ class Block():
     def is_block_connect_with_armored_wire(self, rotate):
         return(self.is_block_connect_with_wire(rotate))
 
-    def is_block_connect_output(self, rotate):#-|-
+    def is_block_connect_output(self, rotate):#-|- выдает ли блок сигнал
         return(0)
 
-    def is_block_connect_input(self, rotate):#-|-
+    def is_block_connect_input(self, rotate):#-|- принимает ли блок сигнал
         return(0)
 
-    def get_activated_key(self, rotate):#-|-
+    def get_output_activated_key(self, rotate):#-|-
+        return(None)
+
+    def get_input_activated_key(self, rotate):#-|-
         return(None)
 
     def get_pushable(self, rotate):#-|-
@@ -113,3 +116,11 @@ class Block():
             if self.border(pos):
                 if self.world.field[pos[0]][pos[1]].type == "armored wire" and self.world.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i) and self.is_block_connect_with_wire((i + 2) % 4):
                     self.world.field[pos[0]][pos[1]].data["connections"][(i + 2) % 4] = 1
+
+    def signal(self, rotate):#распространить сигнал по направлению
+        pos = self.get_rotate_position(rotate)
+        if self.border(pos):
+            b = self.world.field[pos[0]][pos[1]]
+            if b.is_block_connect_input(rotate) and b.active == 0 and self.data[self.get_output_activated_key((rotate + 2) % 4)]:
+                b.data[b.get_input_activated_key(rotate)] = 1
+                b.update({"rotate": rotate})

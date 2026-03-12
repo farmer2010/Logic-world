@@ -11,13 +11,7 @@ class Diode(Block):
             self.active = 1
             self.data["activated1"] = 1
             self.data["activated2"] = 1
-            pos = self.get_rotate_position(self.data["rotate"])
-            if self.border(pos):
-                b = self.world.field[pos[0]][pos[1]]
-                if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or b.type == "armored wire") and b.active == 0:
-                    b.update({"rotate": self.data["rotate"]})
-        elif self.data["rotate"] == (data["rotate"] + 2) % 4:
-            self.data["activated2"] = 1
+            self.signal(self.data["rotate"])
 
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] == rotate or (self.data["rotate"] + 2) % 4 == rotate)
@@ -26,10 +20,17 @@ class Diode(Block):
         return((self.data["rotate"] + 2) % 4 == rotate)
 
     def is_block_connect_input(self, rotate):
-        return(self.data["rotate"] == rotate)
+        return(self.data["rotate"] == rotate or self.data["rotate"] == (rotate + 2) % 4)
 
-    def get_activated_key(self, rotate):
+    def get_output_activated_key(self, rotate):
         return("activated2")
+
+    def get_input_activated_key(self, rotate):
+        if self.data["rotate"] == rotate:
+            return("activated1")
+        elif self.data["rotate"] == (rotate + 2) % 4:
+            return("activated2")
+        return(None)
 
     def get_image(self):
         return(get_image(4 + self.data["activated1"] + self.data["activated2"], 8 + self.data["rotate"], size=self.world.block_scale))

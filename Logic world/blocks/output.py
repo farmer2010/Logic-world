@@ -17,7 +17,7 @@ class Output(Block):
     def is_block_connect_input(self, rotate):
         return (self.data["rotate"] == rotate)
 
-    def get_activated_key(self, rotate):#-|-
+    def get_input_activated_key(self, rotate):#-|-
         return("activated")
 
     def get_image(self):

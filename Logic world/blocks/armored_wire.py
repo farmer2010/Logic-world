@@ -11,14 +11,10 @@ class ArmoredWire(Block):
             self.active = 1
             self.data["activated"] = 1
             for i in range(4):
-                pos = self.get_rotate_position(i)
-                if self.border(pos) and self.data["connections"][i]:
-                    b = self.world.field[pos[0]][pos[1]]
-                    if (b.type == "wire" or b.type == "wire box" or b.type == "diode" or b.type == "output" or (b.type == "armored wire" and b.data["connections"][(i + 2) % 4])) and b.active == 0:
-                        b.update({"rotate": i})
+                if self.data["connections"][i]:
+                    self.signal(i)
 
     def is_block_connect_with_wire(self, rotate):
-        #return(sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
         return(self.data["connections"][(rotate + 2) % 4])
 
     def is_block_connect_with_armored_wire(self, rotate):
@@ -30,7 +26,10 @@ class ArmoredWire(Block):
     def is_block_connect_input(self, rotate):
         return(sum(self.data["connections"]) - self.data["connections"][(rotate + 2) % 4] <= 1)
 
-    def get_activated_key(self, rotate):#-|-
+    def get_output_activated_key(self, rotate):#-|-
+        return("activated")
+
+    def get_input_activated_key(self, rotate):
         return("activated")
 
     def get_image(self):

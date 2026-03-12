@@ -19,13 +19,13 @@ class Memory(Block):
                 r = (self.data["rotate"] - 1) % 4
                 left_block = self.world.field[left_pos[0]][left_pos[1]]
                 if left_block.is_block_connect_output(r) and left_block.logic_gate_active == 0:
-                    in1 = left_block.data[left_block.get_activated_key(r)]
+                    in1 = left_block.data[left_block.get_output_activated_key(r)]
             #правый вход
             if self.border(right_pos):
                 r = (self.data["rotate"] + 1) % 4
                 right_block = self.world.field[right_pos[0]][right_pos[1]]
                 if right_block.is_block_connect_output(r) and right_block.logic_gate_active == 0:
-                    in2 = right_block.data[right_block.get_activated_key(r)]
+                    in2 = right_block.data[right_block.get_output_activated_key(r)]
             #активация
             if (in1 and in2 != self.data["activated"]):
                 self.logic_gate_active = 1
@@ -34,11 +34,7 @@ class Memory(Block):
             self.data["activated2"] = in2
         #распространение сигнала
         if enr:
-            front_pos = self.get_rotate_position(self.data["rotate"])
-            if self.border(front_pos):
-                front_block = self.world.field[front_pos[0]][front_pos[1]]
-                if front_block.active == 0 and self.data["activated"] and front_block.is_block_connect_input(self.data["rotate"]):#если можно передать сигнал вперед
-                    front_block.update({"rotate": self.data["rotate"]})
+            self.signal(self.data["rotate"])
 
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] != rotate)
@@ -49,7 +45,7 @@ class Memory(Block):
     def is_block_connect_input(self, rotate):
         return((self.data["rotate"] + 1) % 4 == (rotate + 2) % 4 or (self.data["rotate"] - 1) % 4 == (rotate + 2) % 4)
 
-    def get_activated_key(self, rotate):#-|-
+    def get_output_activated_key(self, rotate):
         return("activated")
 
     def get_image(self):

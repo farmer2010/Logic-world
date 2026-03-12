@@ -17,7 +17,7 @@ class Piston(Block):
                 if self.border(pos):
                     behind_block = self.world.field[pos[0]][pos[1]]
                     if behind_block.is_block_connect_output((self.data["rotate"] + 2) % 4) and behind_block.logic_gate_active == 0:
-                        inp = inp or behind_block.data[behind_block.get_activated_key((self.data["rotate"] + 2) % 4)]
+                        inp = inp or behind_block.data[behind_block.get_output_activated_key((self.data["rotate"] + 2) % 4)]
             if inp:
                 if self.data["activated"] == 0:
                     push = 0
@@ -49,6 +49,7 @@ class Piston(Block):
                         front_pos = self.get_rotate_position(self.data["rotate"])
                         if self.border(front_pos):
                             self.world.field[front_pos[0]][front_pos[1]] = PistonHead(self.world, front_pos, data={"rotate" : self.data["rotate"], "sticky" : "sticky" in self.type})
+                            self.world.blocks.append(self.world.field[front_pos[0]][front_pos[1]])
             else:
                 if self.data["activated"] == 1:
                     self.data["activated"] = 0
@@ -69,6 +70,7 @@ class Piston(Block):
                 if self.border(front_pos):
                     if self.world.field[front_pos[0]][front_pos[1]].type != "piston head":
                         self.world.field[self.pos[0]][self.pos[1]] = Air(self.world, self.pos)
+                        self.world.blocks.remove(self)
 
     def is_block_connect_with_wire(self, rotate):
         return(self.data["rotate"] != (rotate + 2) % 4)
@@ -76,7 +78,7 @@ class Piston(Block):
     def is_block_connect_input(self, rotate):
         return(self.data["rotate"] != (rotate + 2) % 4)
 
-    def get_activated_key(self, rotate):# -|-
+    def get_input_activated_key(self, rotate):
         return("activated")
 
     def get_pushable(self, rotate):

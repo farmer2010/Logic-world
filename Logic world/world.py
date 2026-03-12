@@ -141,7 +141,7 @@ class World:
             "no pushable": [1, 9999],
         }
         self.creative_select_block_index = 0
-        self.hand = ["wire", "button", "activator", "NOT", "AND", "XOR", "memory", "wire box", "diode", "armored wire", "output", "glass", "air"]
+        self.hand = ["wire", "energy block", "activator", "NOT", "AND", "XOR", "memory", "wire box", "diode", "armored wire", "output", "glass", "air"]
         self.input_manager = input_manager
         self.hand_index = min(1, len(self.hand))
         #
