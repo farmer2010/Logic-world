@@ -451,13 +451,19 @@ class World:
             blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
             if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h:
                 if self.field[blockpos[0]][blockpos[1]].type == "air" or self.hand[self.hand_index] == "glass":
-                    if self.hand[self.hand_index] != "air":
+                    st = 1
+                    if self.hand[self.hand_index] == "glass":
+                        if self.field[blockpos[0]][blockpos[1]].glassed:
+                            st = 0
+                    elif self.hand[self.hand_index] != "air":
+                        if self.inventory[self.hand[self.hand_index]] == 0:
+                            st = 0
+                    #
+                    if self.hand[self.hand_index] != "air" and st:
                         select_image = image_factory.get_block_image(self.hand[self.hand_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0}, size=self.block_scale)
                         select_image.convert_alpha()
                         select_image.set_alpha(90)
-                    else:
-                        select_image = image_factory.get_block_image("air", [], {}, size=self.block_scale)
-                    screen.blit(select_image, (blockpos[0] * self.block_scale + self.pos[0], blockpos[1] * self.block_scale + self.pos[1]))
+                        screen.blit(select_image, (blockpos[0] * self.block_scale + self.pos[0], blockpos[1] * self.block_scale + self.pos[1]))
             #
             if self.hand_index != len(self.hand) - 1:
                 pygame.draw.rect(screen, (255, 255, 0), (self.display_w - 75, self.hand_index * 80 + 5, 70, 70))
