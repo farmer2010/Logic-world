@@ -110,6 +110,9 @@ class Block():
     def get_pushable(self, rotate):#-|-
         return(1)
 
+    def clear_inputs(self):
+        pass
+
     def connect_with_armored_wire(self):
         for i in range(4):
             pos = self.get_rotate_position(i)

@@ -10,40 +10,29 @@ class LogicGate(Block):
 
     def update(self, data={}, enr=1):
         if not enr:
-            left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
-            right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
-            in1 = 0
-            in2 = 0
             la = 0
             ra = 0
             s = self.data["activated"]
             #левый вход
+            left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
             if self.border(left_pos):
-                r = (self.data["rotate"] - 1) % 4
                 left_block = self.world.field[left_pos[0]][left_pos[1]]
-                if left_block.is_block_connect_output(r) and left_block.logic_gate_active == 0:
-                    in1 = left_block.data[left_block.get_output_activated_key(r)]
-                if left_block.type == "button":
-                    print(left_block)
                 la = left_block.logic_gate_active
             #правый вход
+            right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
             if self.border(right_pos):
-                r = (self.data["rotate"] + 1) % 4
                 right_block = self.world.field[right_pos[0]][right_pos[1]]
-                if right_block.is_block_connect_output(r) and right_block.logic_gate_active == 0:
-                    in2 = right_block.data[right_block.get_output_activated_key(r)]
                 ra = right_block.logic_gate_active
             #активация
             if la == 0 and ra == 0:
                 if self.type == "AND":
-                    self.data["activated"] = in1 and in2
+                    self.data["activated"] = self.data["activated1"] and self.data["activated2"]
                 elif self.type == "XOR":
-                    self.data["activated"] = in1 ^ in2
+                    self.data["activated"] = self.data["activated1"] ^ self.data["activated2"]
+            #
             self.active = self.data["activated"]
             if self.data["activated"] != s:
                 self.logic_gate_active = 1
-            self.data["activated1"] = in1
-            self.data["activated2"] = in2
         #распространение сигнала
         if enr:
             self.signal(self.data["rotate"])
@@ -59,6 +48,16 @@ class LogicGate(Block):
 
     def get_output_activated_key(self, rotate):
         return("activated")
+
+    def get_input_activated_key(self, rotate):
+        if rotate == (self.data["rotate"] + 1) % 4:
+            return("activated1")
+        elif rotate == (self.data["rotate"] - 1) % 4:
+            return ("activated2")
+
+    def clear_inputs(self):
+        self.data["activated1"] = 0
+        self.data["activated2"] = 0
 
     def get_image(self):
         if self.type == "AND":

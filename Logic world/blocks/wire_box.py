@@ -35,5 +35,9 @@ class WireBox(Block):
             return("activated2")
         return("activated1")
 
+    def clear_inputs(self):
+        self.data["activated1"] = 0
+        self.data["activated2"] = 0
+
     def get_image(self):
         return(get_image(7, self.data["activated1"] + self.data["activated2"] * 2 + 8, size=self.world.block_scale))

@@ -32,6 +32,9 @@ class ArmoredWire(Block):
     def get_input_activated_key(self, rotate):
         return("activated")
 
+    def clear_inputs(self):
+        self.data["activated"] = 0
+
     def get_image(self):
         return(get_image(4 + self.data["connections"][2] * 2 + self.data["connections"][3] + 4 * self.data["activated"], 4 + self.data["connections"][0] * 2 + self.data["connections"][1], size=self.world.block_scale))
 

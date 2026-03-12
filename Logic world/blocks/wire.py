@@ -26,6 +26,9 @@ class Wire(Block):
     def get_input_activated_key(self, rotate):#-|-
         return("activated")
 
+    def clear_inputs(self):
+        self.data["activated"] = 0
+
     def get_image(self):
         see = [0, 0, 0, 0]
         for i in range(4):

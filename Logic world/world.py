@@ -347,11 +347,7 @@ class World:
             for bl in self.blocks:#стираем active и электричество
                 bl.active = 0
                 bl.logic_gate_active = 0
-                if bl.type == "wire" or bl.type == "output" or bl.type == "armored wire":
-                    bl.data["activated"] = 0
-                elif bl.type == "wire box" or bl.type == "diode":
-                    bl.data["activated1"] = 0
-                    bl.data["activated2"] = 0
+                bl.clear_inputs()
             for bl in self.blocks:#распространение электричества
                 if bl.has_output:
                     bl.update()

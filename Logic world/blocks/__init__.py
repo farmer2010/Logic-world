@@ -60,7 +60,7 @@ def get_block_params(type):
     elif type == "activator":
         return({"activated" : 0})
     elif type == "NOT":
-        return({"activated" : 0, "rotate" : 0})
+        return({"activated1" : 0, "activated" : 0, "rotate" : 0})
     elif type == "XOR" or type == "AND":
         return({"activated1" : 0, "activated2" : 0, "activated" : 0, "rotate" : 0})
     elif type == "armored wire":

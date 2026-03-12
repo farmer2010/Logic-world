@@ -20,5 +20,8 @@ class Output(Block):
     def get_input_activated_key(self, rotate):#-|-
         return("activated")
 
+    def clear_inputs(self):
+        self.data["activated"] = 0
+
     def get_image(self):
         return(get_image(self.data["activated"], 4 + self.data["rotate"], size=self.world.block_scale))
