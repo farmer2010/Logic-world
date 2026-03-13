@@ -48,6 +48,12 @@ class Memory(Block):
     def get_output_activated_key(self, rotate):
         return("activated")
 
+    def get_input_activated_key(self, rotate):
+        if rotate == (self.data["rotate"] + 1) % 4:
+            return("activated1")
+        elif rotate == (self.data["rotate"] - 1) % 4:
+            return ("activated2")
+
     def clear_inputs(self):
         self.data["activated1"] = 0
         self.data["activated2"] = 0

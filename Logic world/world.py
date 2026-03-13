@@ -143,7 +143,7 @@ class World:
         self.creative_select_block_index = 0
         self.hand = ["wire", "energy block", "activator", "NOT", "AND", "XOR", "memory", "wire box", "diode", "armored wire", "output", "glass", "air"]
         self.input_manager = input_manager
-        self.hand_index = min(1, len(self.hand))
+        self.hand_index = len(self.hand) - 1
         #
         if self.is_creative:
             self.buttons = []
@@ -531,14 +531,16 @@ class World:
         #анимация надписи при победе
         #
         if self.win_timer > 70:
-            render_text("YOU WIN!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 192),
-                outline_color=ocolor, outline_size=3, alpha=8.5 * (100 - self.win_timer)
+            render_text("LEVEL IS COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
+                font_alpha=0, outline_color=ocolor, outline_size=3, alpha=8.5 * (100 - self.win_timer)
             )
         elif self.win_timer > 15:
-            render_text("YOU WIN!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 192), outline_color=ocolor, outline_size=3)
+            render_text("LEVEL IS COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
+                font_alpha=0, outline_color=ocolor, outline_size=3
+            )
         elif self.win_timer > 5:
-            render_text("YOU WIN!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 192),
-                outline_color=ocolor, outline_size=3, alpha=25.5 * (self.win_timer - 5)
+            render_text("LEVEL IS COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
+                font_alpha=0, outline_color=ocolor, outline_size=3, alpha=25.5 * (self.win_timer - 5)
             )
 
     def change_image(self):
@@ -658,7 +660,7 @@ class World:
                     self.hand.append(bi2[int(invi[0])])
                 self.inventory[bi2[int(invi[0])]] = int(invi[1])
             self.hand.append("air")
-            self.hand_index = len(self.hand) - 1
+            self.hand_index = 0
         #
         blocks = txt.split(";")[6].split(":")
         for i in range(len(blocks)):
