@@ -1,4 +1,4 @@
-# Logic-world
+# Logic world
 
 ## Библиотеки для запуска:
 
