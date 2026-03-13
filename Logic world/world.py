@@ -531,15 +531,15 @@ class World:
         #анимация надписи при победе
         #
         if self.win_timer > 70:
-            render_text("LEVEL IS COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
+            render_text("LEVEL COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
                 font_alpha=0, outline_color=ocolor, outline_size=3, alpha=8.5 * (100 - self.win_timer)
             )
         elif self.win_timer > 15:
-            render_text("LEVEL IS COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
+            render_text("LEVEL COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
                 font_alpha=0, outline_color=ocolor, outline_size=3
             )
         elif self.win_timer > 5:
-            render_text("LEVEL IS COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
+            render_text("LEVEL COMPLETED!", (W / 2, H / 2), screen, center=(0.5, 0.5), font=pygame.font.Font("files/Better VCR 6.1.ttf", 120),
                 font_alpha=0, outline_color=ocolor, outline_size=3, alpha=25.5 * (self.win_timer - 5)
             )
 

@@ -7,24 +7,24 @@ class LogicGate(Block):
         Block.__init__(self, world, pos, type, glassed, data, preset_data)
         self.is_logic_gate = 1
         self.has_output = 1
+        self.la = 0
+        self.ra = 0
 
     def update(self, data={}, enr=1):
         if not enr:
-            la = 0
-            ra = 0
             s = self.data["activated"]
             #левый вход
             left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
             if self.border(left_pos):
                 left_block = self.world.field[left_pos[0]][left_pos[1]]
-                la = left_block.logic_gate_active
+                self.la = left_block.logic_gate_active
             #правый вход
             right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
             if self.border(right_pos):
                 right_block = self.world.field[right_pos[0]][right_pos[1]]
-                ra = right_block.logic_gate_active
+                self.ra = right_block.logic_gate_active
             #активация
-            if la == 0 and ra == 0:
+            if self.la == 0 and self.ra == 0:
                 if self.type == "AND":
                     self.data["activated"] = self.data["activated1"] and self.data["activated2"]
                 elif self.type == "XOR":
@@ -56,8 +56,9 @@ class LogicGate(Block):
             return ("activated2")
 
     def clear_inputs(self):
-        self.data["activated1"] = 0
-        self.data["activated2"] = 0
+        if self.ra == 0 and self.la == 0:
+            self.data["activated1"] = 0
+            self.data["activated2"] = 0
 
     def get_image(self):
         if self.type == "AND":
