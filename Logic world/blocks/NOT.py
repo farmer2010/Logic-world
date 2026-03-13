@@ -10,16 +10,9 @@ class NOT(Block):
 
     def update(self, data={}, enr=1):
         if not enr:
-            behind_pos = self.get_rotate_position((self.data["rotate"] + 2) % 4)
-            ba = 1
-            #вход
             s = self.data["activated"]
-            if self.border(behind_pos):
-                behind_block = self.world.field[behind_pos[0]][behind_pos[1]]
-                ba = behind_block.logic_gate_active
             #активация
-            if ba == 0:
-                self.data["activated"] = not self.data["activated1"]
+            self.data["activated"] = not self.data["activated1"]
             self.active = self.data["activated"]
             if self.data["activated"] != s:
                 self.logic_gate_active = 1

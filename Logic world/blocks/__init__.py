@@ -80,7 +80,7 @@ def get_block_params(type):
     elif type == "button":
         return({"activated" : 0})
     elif type == "piston" or type == "sticky piston":
-        return({"activated" : 0, "rotate" : 0, "power" : 12})
+        return({"input" : 0, "activated" : 0, "rotate" : 0, "power" : 12})
     elif type == "piston head":
         return({"rotate": 0, "sticky" : 0})
     else:

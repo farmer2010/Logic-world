@@ -10,24 +10,11 @@ class Memory(Block):
 
     def update(self, data={}, enr=1):
         if not enr:
-            la = 0
-            ra = 0
             s = self.data["activated"]
-            #левый вход
-            left_pos = self.get_rotate_position((self.data["rotate"] - 1) % 4)
-            if self.border(left_pos):
-                left_block = self.world.field[left_pos[0]][left_pos[1]]
-                la = left_block.logic_gate_active
-            #правый вход
-            right_pos = self.get_rotate_position((self.data["rotate"] + 1) % 4)
-            if self.border(right_pos):
-                right_block = self.world.field[right_pos[0]][right_pos[1]]
-                ra = right_block.logic_gate_active
             #активация
-            if la == 0 and ra == 0:
-                if (self.data["activated1"] and self.data["activated2"] != self.data["activated"]):
-                    self.logic_gate_active = 1
-                    self.data["activated"] = self.data["activated2"]
+            if (self.data["activated1"] and self.data["activated2"] != self.data["activated"]):
+                self.logic_gate_active = 1
+                self.data["activated"] = self.data["activated2"]
             #
             self.active = self.data["activated"]
             if self.data["activated"] != s:

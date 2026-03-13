@@ -5,20 +5,13 @@ from blocks.air import Air
 
 class Piston(Block):
     def __init__(self, world, pos, type, glassed=0, data=None):
-        preset_data = {"activated" : 0, "rotate" : 0, "power" : 12}
+        preset_data = {"input" : 0, "activated" : 0, "rotate" : 0, "power" : 12}
         Block.__init__(self, world, pos, type, glassed, data, preset_data)
         self.is_logic_gate = 1
 
     def update(self, data={}, enr=1):
         if enr == 0:
-            inp = 0
-            for i in range(3):
-                pos = self.get_rotate_position((self.data["rotate"] + 1 + i) % 4)
-                if self.border(pos):
-                    behind_block = self.world.field[pos[0]][pos[1]]
-                    if behind_block.is_block_connect_output((self.data["rotate"] + 2) % 4) and behind_block.logic_gate_active == 0:
-                        inp = inp or behind_block.data[behind_block.get_output_activated_key((self.data["rotate"] + 2) % 4)]
-            if inp:
+            if self.data["input"]:
                 if self.data["activated"] == 0:
                     push = 0
                     count = self.data["power"]
@@ -51,20 +44,28 @@ class Piston(Block):
                             self.world.field[front_pos[0]][front_pos[1]] = PistonHead(self.world, front_pos, data={"rotate" : self.data["rotate"], "sticky" : "sticky" in self.type})
                             self.world.blocks.append(self.world.field[front_pos[0]][front_pos[1]])
             else:
-                if self.data["activated"] == 1:
+                if self.data["activated"] == 1:#деактивация
                     self.data["activated"] = 0
                     front_pos = self.get_rotate_position(self.data["rotate"])
                     if self.border(front_pos):
-                        if self.type == "piston":
+                        if self.type == "piston":#обычный поршень просто удаляет подвижную часть
+                            self.world.blocks.remove(self.world.field[front_pos[0]][front_pos[1]])
                             self.world.field[front_pos[0]][front_pos[1]] = Air(self.world, front_pos)
-                        else:
+                        else:#липкий поршень удаляет подвижную часть и сдвигает блок перед ней к себе
                             front_pos2 = self.get_rotate_position(self.data["rotate"], dist=2)
                             if self.border(front_pos2) and self.world.field[front_pos2[0]][front_pos2[1]].get_pushable((self.data["rotate"] + 2) % 4):
+                                self.world.blocks.remove(self.world.field[front_pos[0]][front_pos[1]])
                                 self.world.field[front_pos[0]][front_pos[1]] = self.world.field[front_pos2[0]][front_pos2[1]]
                                 self.world.field[front_pos[0]][front_pos[1]].pos = front_pos
                                 self.world.field[front_pos2[0]][front_pos2[1]] = Air(self.world, front_pos2)
                             else:
+                                self.world.blocks.remove(self.world.field[front_pos[0]][front_pos[1]])
                                 self.world.field[front_pos[0]][front_pos[1]] = Air(self.world, front_pos)
+            #
+            #
+            #
+            self.data["activated"] = self.data["input"]
+            #
             front_pos = self.get_rotate_position(self.data["rotate"])
             if self.data["activated"]:
                 if self.border(front_pos):
@@ -79,13 +80,16 @@ class Piston(Block):
         return(self.data["rotate"] != (rotate + 2) % 4)
 
     def get_input_activated_key(self, rotate):
-        return("activated")
+        return("input")
 
     def get_pushable(self, rotate):
         return(not self.data["activated"])
 
     def get_rotate_position(self, rotate, dist=1):
         return([self.pos[0] + self.movelist[rotate][0] * dist, self.pos[1] + self.movelist[rotate][1] * dist])
+
+    def clear_inputs(self):
+        self.data["input"] = 0
 
     def get_image(self):
         return(get_image(self.data["activated"] + 2 * (self.type == "sticky piston"), 8 + self.data["rotate"], size=self.world.block_scale))
