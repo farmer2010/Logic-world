@@ -81,7 +81,7 @@ def get_armored_wire_image(data, neighbours, size=40):
 
 def get_memory_image(data, size=40):
     p = data["activated1"] + data["activated2"] * 2 + data["activated"] * 4
-    return(get_image(8 + p - 1 * (p > 2) - 1 * (p > 4), data["rotate"] + 8, size=size))
+    return(get_image(8 + p - 1 * (p > 2) - 1 * (p > 4) + data["inverted"] * 6, data["rotate"] + 8, size=size))
 
 def get_sensor_image(data, size=40):
     return(get_image(2 + data["activated"], 4 + data["rotate"], size=size))

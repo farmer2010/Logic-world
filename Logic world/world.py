@@ -93,6 +93,7 @@ class World:
         self.number = number
         self.menu = "game"
         self.select_rotate = 0
+        self.select_inverted = 0
         self.buttons = pygame.sprite.Group()
         self.is_creative = is_creative
         self.can_break = 1
@@ -222,6 +223,19 @@ class World:
                     if "rotate" in get_block_params(self.hand[self.hand_index]):
                         self.select_rotate += 1
                         self.select_rotate %= 4
+            #инвертирование блока(ячейки памяти)
+            if self.input_manager.get_key("V"):
+                mousepos = pygame.mouse.get_pos()
+                mouse_world_pos = [mousepos[0] - self.pos[0], mousepos[1] - self.pos[1]]
+                blockpos = [int(mouse_world_pos[0] / self.block_scale), int(mouse_world_pos[1] / self.block_scale)]
+                if blockpos[0] >= 0 and blockpos[0] < self.w and blockpos[1] >= 0 and blockpos[1] < self.h and not xborder:
+                    if "inverted" in self.field[blockpos[0]][blockpos[1]].data:
+                        self.field[blockpos[0]][blockpos[1]].data["inverted"] = not self.field[blockpos[0]][blockpos[1]].data["inverted"]
+                    elif "inverted" in get_block_params(self.hand[self.hand_index]):
+                        self.select_inverted = not self.select_inverted
+                else:
+                    if "inverted" in get_block_params(self.hand[self.hand_index]):
+                        self.select_inverted = not self.select_inverted
             #пипетка
             if self.input_manager.get_key("Q"):
                 mousepos = pygame.mouse.get_pos()
@@ -402,6 +416,8 @@ class World:
                         sl = self.hand[self.hand_index]
                         if "rotate" in get_block_params(sl):
                             bl.data["rotate"] = self.select_rotate
+                        if "inverted" in get_block_params(sl):
+                            bl.data["inverted"] = self.select_inverted
                         bl.connect_with_armored_wire()
                         self.change_image()
                         if self.is_creative == 0:
@@ -456,7 +472,7 @@ class World:
                             st = 0
                     #
                     if self.hand[self.hand_index] != "air" and st:
-                        select_image = image_factory.get_block_image(self.hand[self.hand_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0}, size=self.block_scale)
+                        select_image = image_factory.get_block_image(self.hand[self.hand_index], [0, 0, 0, 0], {"activated" : 0, "rotate" : self.select_rotate, "activated1" : 0, "activated2" : 0, "inverted" : self.select_inverted}, size=self.block_scale)
                         select_image.convert_alpha()
                         select_image.set_alpha(90)
                         screen.blit(select_image, (blockpos[0] * self.block_scale + self.pos[0], blockpos[1] * self.block_scale + self.pos[1]))
@@ -467,7 +483,7 @@ class World:
             for i in range(len(self.hand) - 1):
                 pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
-                img = image_factory.get_block_image(self.hand[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0})
+                img = image_factory.get_block_image(self.hand[i], [0, 0, 0, 0], {"activated" : 0, "rotate" : 0, "activated1" : 0, "activated2" : 0, "inverted" : 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.hand[i]]), (self.display_w - 10, i * 80 + 45), screen, center=(1, 0), font=pygame.font.Font("files/font.ttf", 16))
         elif self.menu == "select blocks":

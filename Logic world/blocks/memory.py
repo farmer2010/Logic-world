@@ -12,9 +12,14 @@ class Memory(Block):
         if not enr:
             s = self.data["activated"]
             #активация
-            if (self.data["activated1"] and self.data["activated2"] != self.data["activated"]):
-                self.logic_gate_active = 1
-                self.data["activated"] = self.data["activated2"]
+            if not self.data["inverted"]:
+                if (self.data["activated1"] and self.data["activated2"] != self.data["activated"]):
+                    self.logic_gate_active = 1
+                    self.data["activated"] = self.data["activated2"]
+            else:
+                if (self.data["activated2"] and self.data["activated1"] != self.data["activated"]):
+                    self.logic_gate_active = 1
+                    self.data["activated"] = self.data["activated1"]
             #
             self.active = self.data["activated"]
             if self.data["activated"] != s:
@@ -46,5 +51,8 @@ class Memory(Block):
         self.data["activated2"] = 0
 
     def get_image(self):
-        p = self.data["activated1"] + self.data["activated2"] * 2 + self.data["activated"] * 4
-        return (get_image(8 + p - 1 * (p > 2) - 1 * (p > 4), self.data["rotate"] + 8, size=self.world.block_scale))
+        if not self.data["inverted"]:
+            p = self.data["activated1"] + self.data["activated2"] * 2 + self.data["activated"] * 4
+        else:
+            p = self.data["activated2"] + self.data["activated1"] * 2 + self.data["activated"] * 4
+        return (get_image(8 + p - 1 * (p > 2) - 1 * (p > 4) + self.data["inverted"] * 6, self.data["rotate"] + 8, size=self.world.block_scale))
