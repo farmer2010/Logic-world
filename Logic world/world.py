@@ -73,6 +73,62 @@ def change_block_scale(self, b):
     except Exception as ex:
         print(ex, b)
     self.change_image()
+def cut(self):
+    if len(self.blocks) > 0:
+        minpos = [10000, 10000]
+        maxpos = [0, 0]
+        for b in self.blocks:
+            if b.pos[0] < minpos[0]:
+                minpos[0] = b.pos[0]
+            if b.pos[1] < minpos[1]:
+                minpos[1] = b.pos[1]
+            if b.pos[0] > maxpos[0]:
+                maxpos[0] = b.pos[0]
+            if b.pos[1] > maxpos[1]:
+                maxpos[1] = b.pos[1]
+        #
+        self.w = maxpos[0] - minpos[0] + 1
+        self.h = maxpos[1] - minpos[1] + 1
+        self.edit_buttons[2].text = str(self.w)
+        self.edit_buttons[3].text = str(self.h)
+        #
+        self.field = [[None for y in range(self.h)] for x in range(self.w)]
+        self.field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]
+        for b in self.blocks:
+            b.pos = [b.pos[0] - minpos[0], b.pos[1] - minpos[1]]
+            self.field[b.pos[0]][b.pos[1]] = b
+        #
+        self.change_floor_image()
+def center(self):
+    if len(self.blocks) > 0:
+        # Находим минимальные и максимальные координаты блоков
+        min_x = min(block.pos[0] for block in self.blocks)
+        max_x = max(block.pos[0] for block in self.blocks)
+        min_y = min(block.pos[1] for block in self.blocks)
+        max_y = max(block.pos[1] for block in self.blocks)
+        # Вычисляем размеры постройки
+        build_width = max_x - min_x + 1
+        build_height = max_y - min_y + 1
+        # Вычисляем смещение для центрирования
+        offset_x = (self.w - build_width) // 2 - min_x
+        offset_y = (self.h - build_height) // 2 - min_y
+        # Создаем новый массив field, заполненный воздухом
+        new_field = [[Air(self, (x, y)) for y in range(self.h)] for x in range(self.w)]
+        new_blocks = []
+        # Перемещаем блоки на новые позиции
+        for b in self.blocks:
+            new_x = b.pos[0] + offset_x
+            new_y = b.pos[1] + offset_y
+            # Проверяем, что новые координаты в пределах поля
+            if 0 <= new_x < self.w and 0 <= new_y < self.h:
+                b.pos = [new_x, new_y]
+                new_field[new_x][new_y] = b
+                new_blocks.append(b)
+        # Обновляем field и blocks
+        self.field = new_field
+        self.blocks = new_blocks
+        #
+        self.change_image()
 
 class World:
     def __init__(self, main, w=10, h=10, block_scale=20, is_creative=1, number=0):
@@ -164,8 +220,9 @@ class World:
             self.edit_buttons.append(TextLabel("H:", (965, 520), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
             self.edit_buttons.append(TextLabel("BLOCK SCALE:", (720, 470), font_color=(0, 0, 0), font=font_text, center=(0, 0.5), font_alpha=0, outline_size=1, outline_color=ocolor))
             self.edit_buttons.append(get_button(965, 450, 235, 40, "CHANGE", font_size=16, onrelease=lambda self, b: change_block_scale(self, int(b.text)), onrelease_params=[self, self.edit_buttons[1]]))
-            self.edit_buttons.append(get_button(720, 550, 235, 40, "CUT", font_size=16, onrelease=change_menu, onrelease_params=[self, "ESC"]))
-            self.edit_buttons.append(get_button(965, 550, 235, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+            self.edit_buttons.append(get_button(720, 550, 155, 40, "CUT", font_size=16, onrelease=cut, onrelease_params=[self]))
+            self.edit_buttons.append(get_button(880, 550, 155, 40, "FULL", font_size=16, onrelease=lambda self: resise(self, self.display_w // self.block_scale, self.display_h // self.block_scale), onrelease_params=[self]))
+            self.edit_buttons.append(get_button(1040, 550, 160, 40, "CENTER", font_size=16, onrelease=center, onrelease_params=[self]))
             self.edit_buttons.append(get_button(720, 600, 480, 40, "RESISE", font_size=16, onrelease=lambda self, w, h: resise(self, int(w.text), int(h.text)), onrelease_params=[self, self.edit_buttons[2], self.edit_buttons[3]]))
             self.edit_buttons.append(RadioButton((720, 650, 40, 40), text="CAN BREAK BLOCKS", selected=1, font=font_text, outline_size=1, outline_color=(128, 128, 128)))
             self.edit_buttons.append(get_button(720, 700, 480, 40, "INVENTORY", font_size=16, onrelease=change_menu, onrelease_params=[self, "edit inventory"]))
@@ -597,7 +654,7 @@ class World:
                 txt += ":"
         txt += ";"
         txt += str(self.block_scale) + ";"
-        txt += str(int(self.edit_buttons[11].get_selected())) + ";"
+        txt += str(int(self.edit_buttons[12].get_selected())) + ";"
         for x in range(self.w):
             for y in range(self.h):
                 if self.field[x][y].type != "air":
@@ -629,7 +686,7 @@ class World:
             self.edit_buttons[1].text = str(self.block_scale)
             self.edit_buttons[2].text = str(self.w)
             self.edit_buttons[3].text = str(self.h)
-            self.edit_buttons[11].selected = int(txt.split(";")[5])
+            self.edit_buttons[12].selected = int(txt.split(";")[5])
         else:
             self.can_break = int(txt.split(";")[5])
         self.change_floor_image()
