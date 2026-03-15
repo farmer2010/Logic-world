@@ -5,8 +5,11 @@ from main_menu import MainMenu
 
 pygame.init()
 
-shutil.rmtree("__pycache__")
-shutil.rmtree("blocks/__pycache__")
+try:
+    shutil.rmtree("__pycache__")
+    shutil.rmtree("blocks/__pycache__")
+except:
+    pass
 
 W = pygame.display.Info().current_w
 H = pygame.display.Info().current_h

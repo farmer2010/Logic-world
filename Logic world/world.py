@@ -549,7 +549,7 @@ class World:
             for i in range(len(self.hand) - 1):
                 pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 70, i * 80 + 10, 60, 60))
                 pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 65, i * 80 + 15, 50, 50))
-                img = image_factory.get_block_image(self.hand[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                img = image_factory.get_block_image(self.hand[i], [0, 0, 0, 0], {"activated": 0, "inverted": 0, "rotate": 0, "activated1": 0, "activated2": 0})
                 screen.blit(img, (self.display_w - 60, i * 80 + 20))
                 render_text(str(self.inventory[self.hand[i]]), (self.display_w - 10, i * 80 + 45), screen, center=(1, 0), font=pygame.font.Font("files/font.ttf", 16))
             mousepos = pygame.mouse.get_pos()
@@ -563,7 +563,7 @@ class World:
                         else:
                             pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
                         pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 1025 + x * 80, y * 80 + 15, 50, 50))
-                        img = image_factory.get_block_image(inv[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                        img = image_factory.get_block_image(inv[i], [0, 0, 0, 0], {"activated": 0, "inverted" : 0, "rotate": 0, "activated1": 0, "activated2": 0})
                         screen.blit(img, (self.display_w - 1020 + x * 80, y * 80 + 20))
                         if inv[i] in self.hand:
                             img2 = pygame.Surface((50, 50))
@@ -592,7 +592,7 @@ class World:
                         else:
                             pygame.draw.rect(screen, (20, 20, 20), (self.display_w - 1030 + x * 80, y * 80 + 10, 60, 60))
                         pygame.draw.rect(screen, (50, 50, 50), (self.display_w - 1025 + x * 80, y * 80 + 15, 50, 50))
-                        img = image_factory.get_block_image(inv[i], [0, 0, 0, 0], {"activated": 0, "rotate": 0, "activated1": 0, "activated2": 0})
+                        img = image_factory.get_block_image(inv[i], [0, 0, 0, 0], {"activated": 0, "inverted" : 0, "rotate": 0, "activated1": 0, "activated2": 0})
                         screen.blit(img, (self.display_w - 1020 + x * 80, y * 80 + 20))
                         if self.creative_inventory_for_save[inv[i]][0] == 0:
                             img2 = pygame.Surface((50, 50))
