@@ -28,6 +28,7 @@ while game_world.keep_going:
     for event in events:
         if event.type == pygame.QUIT:#проверка выхода
             game_world.keep_going = False
+    #
     game_world.menu.draw(screen)
     game_world.menu.update(events)
     render_text(str(round(timer.get_fps(), 2)), (0, 0), screen, color=(255, 0, 0))

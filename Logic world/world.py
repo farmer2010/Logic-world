@@ -327,6 +327,15 @@ class World:
                             elif sum(bl.data["connections"]) < 2 and bl.border(pos) and self.field[pos[0]][pos[1]].is_block_connect_with_armored_wire(i):
                                 bl.data["connections"][i] = 1
                             bl.connect_armored_wires()
+            #очистить все сигналы
+            if self.input_manager.get_key("N"):
+                for b in self.blocks:
+                    b.clear_inputs()
+                    if "activated" in b.data:
+                        b.data["activated"] = 0
+            #выделение
+            if self.input_manager.get_key("E"):
+                pass
             #нажатие на блок
             if self.input_manager.get_mouse(0):
                 if (self.input_manager.mousetag_object[0] == None or self.input_manager.mousetag_object[0] == "action") and self.hand[self.hand_index] != "glass":
